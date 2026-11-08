@@ -65,7 +65,7 @@ export default function Index() {
     const link = src ? banner.link : ''
 
     return (
-        <div className="app-shell new-version-shell mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-page pb-[66px] font-inter text-sm leading-[21px] text-white">
+        <div className="app-shell new-version-shell mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-[#272727] pb-[66px] font-inter text-sm leading-[21px] text-white">
             <div className="relative shrink-0 overflow-hidden">
                 <div className="flex items-center justify-between bg-bar px-2 py-[9px] pt-[calc(0.5625rem+env(safe-area-inset-top))]">
                     <img src={logo} className="ml-3 h-8 w-28 shrink-0 origin-left scale-125 object-contain object-left" alt="Chorkiwala" />
@@ -89,7 +89,7 @@ export default function Index() {
                                 alt=""
                             />
                         </BannerLink>
-                        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-linear-to-t from-page to-transparent" />
+                        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-linear-to-t from-[#272727] to-transparent" />
                     </>
                 )}
             </div>

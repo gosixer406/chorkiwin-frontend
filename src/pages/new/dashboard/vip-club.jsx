@@ -64,7 +64,7 @@ export default function VipClub() {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[12px] font-medium text-(--menu-banner-sub)">VIP Points</p>
-                                    <div className="mt-1 inline-flex h-[30px] items-center gap-1 rounded-full bg-[#1E1606]/80 px-3 text-sm font-semibold text-gold-light">
+                                    <div className="mt-1 inline-flex h-[30px] items-center gap-1 rounded-full bg-on-gold/80 px-3 text-sm font-semibold text-gold-light">
                                         <Trophy className="size-4" strokeWidth={2} />{Number(vip.points || 0).toFixed(0)}
                                     </div>
                                 </div>

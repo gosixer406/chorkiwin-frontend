@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Check,
+  ChevronDown,
   ChevronsDown,
   Copy,
+  Gift,
+  Info,
   RefreshCw,
-  SendHorizontal,
-  UserRound,
-  Wallet,
   X,
 } from "lucide-react";
 import { api } from "@/lib/api";
@@ -16,45 +16,57 @@ import { setUser } from "@/lib/auth";
 import { DISPLAY_CURRENCY } from "@/lib/currency";
 
 const CURRENCY_CODE = DISPLAY_CURRENCY;
+const QUICK_AMOUNTS = [500, 1000, 1500, 3000, 5000, 10000, 15000, 25000, 200, 100, 50, 10];
+const TABS = ["Deposit", "Withdraw", "P2P"];
+
+// Shown until the site's own payment methods have loaded (the server's default limits).
+const FALLBACK_METHODS = ["Rocket", "upay", "Nagad", "bKash"].map((name) => ({
+  code: name.toLowerCase(),
+  name,
+  deposit_min_amount: 100,
+  deposit_max_amount: 30000,
+  withdrawal_min_amount: 300,
+  withdrawal_max_amount: 25000,
+}));
+const METHOD_COLORS = {
+  rocket: "#8C1D82",
+  upay: "#F2B705",
+  nagad: "#F7801E",
+  bkash: "#E2136E",
+};
 
 const fieldClass =
-  "h-[38px] w-full rounded-md border border-line bg-page px-2.5 text-[13px] text-ink outline-none transition-colors placeholder:text-ink-muted focus:border-gold";
+  "h-[42px] w-full rounded-md border border-line bg-surface px-3 font-poppins text-[13px] font-medium text-white outline-none transition-colors focus:border-gold";
+
+const formatAmount = (value) =>
+  Number(value || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
 
 function CurrencyBadge() {
   return (
-    <span className="grid size-[22px] place-items-center rounded-full border-[1.5px] border-gold text-[13px] font-semibold leading-none text-gold">
+    <span className="grid size-[22px] place-items-center rounded-full border-[1.5px] border-white text-[12px] font-semibold leading-none text-white">
       $
     </span>
   );
 }
 
-function SectionTitle({ children }) {
+function CheckDot() {
   return (
-    <div className="mb-3 flex items-center justify-between">
-      <div className="flex items-center gap-2.5">
-        <span className="h-3.5 w-1 rounded-[1px] bg-ink" />
-        <h3 className="font-poppins text-[13px] font-bold leading-5 tracking-wide text-gold">
-          {children}
-        </h3>
-      </div>
-    </div>
+    <span className="grid size-[18px] flex-none place-items-center rounded-full bg-gold text-white">
+      <Check className="size-3" strokeWidth={3.5} />
+    </span>
   );
 }
 
-const formatAmount = (value) =>
-  Number(value || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
-
-function LimitTile({ label, value, warn = false }) {
+function SectionTitle({ children, aside }) {
   return (
-    <div className="flex flex-col gap-0.5 rounded-md border border-line bg-surface px-3 py-2">
-      <span className="font-poppins text-[10.5px] font-medium text-ink-muted">
-        {label}
-      </span>
-      <strong
-        className={`truncate font-poppins text-[13px] font-semibold ${warn ? "text-[#FF7A84]" : "text-ink"}`}
-      >
-        {value}
-      </strong>
+    <div className="mb-2.5 flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2">
+        <span className="h-3.5 w-1 rounded-full bg-gold" />
+        <h3 className="font-poppins text-[13px] font-semibold leading-5 text-white">
+          {children}
+        </h3>
+      </div>
+      {aside}
     </div>
   );
 }
@@ -62,10 +74,9 @@ function LimitTile({ label, value, warn = false }) {
 function Reminder({ children }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="overflow-hidden rounded-md border border-line bg-surface transition-all duration-300">
+    <div className="overflow-hidden rounded-md border border-line bg-surface">
       <button
         type="button"
-        aria-label="Gentle Reminders"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
         className="flex h-[38px] w-full items-center justify-between px-2 text-white"
@@ -86,10 +97,130 @@ function Reminder({ children }) {
   );
 }
 
-export default function P2p() {
+function MethodLogo({ method }) {
+  return (
+    <span
+      className="grid size-[30px] place-items-center rounded-[3px] font-poppins text-[15px] font-bold text-white"
+      style={{ backgroundColor: METHOD_COLORS[method.code] || "var(--c-gold-dark)" }}
+    >
+      {String(method.name || "?").charAt(0).toUpperCase()}
+    </span>
+  );
+}
+
+// Layout only for now: online deposits and withdrawals are not open yet, so
+// nothing on these two tabs talks to the payment endpoints.
+function FundsForm({ flow, methods, network_title, children }) {
+  const is_deposit = flow === "deposit";
+  const [selected_code, set_selected_code] = useState(null);
+  const [amount, set_amount] = useState("");
+  const selected =
+    methods.find((method) => method.code === selected_code) || methods[0];
+  const minimum = selected?.[`${flow}_min_amount`] ?? 0;
+  const maximum = selected?.[`${flow}_max_amount`] ?? 0;
+
+  return (
+    <>
+      <section>
+        <SectionTitle>Select Payment</SectionTitle>
+        <div className="grid grid-cols-3 gap-2">
+          {methods.map((method) => {
+            const active = method.code === selected?.code;
+            return (
+              <button
+                key={method.code}
+                type="button"
+                aria-pressed={active}
+                onClick={() => set_selected_code(method.code)}
+                className={`relative flex h-[72px] flex-col items-center justify-center gap-1 rounded-md border bg-surface text-[11.5px] font-medium text-white ${active ? "border-gold" : "border-transparent"}`}
+              >
+                {active && (
+                  <span className="absolute left-1.5 top-1.5">
+                    <CheckDot />
+                  </span>
+                )}
+                <MethodLogo method={method} />
+                {method.name}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <section>
+        {network_title && <SectionTitle>{network_title}</SectionTitle>}
+        <div className="inline-flex h-[38px] items-center gap-2 rounded-md border border-gold bg-surface px-3.5 font-poppins text-[13px] font-medium text-white">
+          <CheckDot />
+          AGENT-PAY
+        </div>
+      </section>
+
+      <section>
+        <SectionTitle
+          aside={
+            <span className="flex items-center gap-1.5 text-[11px] text-ink-muted">
+              <Info className="size-4" />
+              $ {Number(minimum).toFixed(2)} - $ {Number(maximum).toFixed(2)}
+            </span>
+          }
+        >
+          Amount
+        </SectionTitle>
+        <label className="flex h-[38px] items-center rounded-md border border-line bg-surface focus-within:border-gold">
+          <span className="flex h-5 items-center border-r border-line px-2">
+            <CurrencyBadge />
+          </span>
+          <input
+            type="number"
+            inputMode="decimal"
+            min="0"
+            value={amount}
+            onChange={(event) => set_amount(event.target.value)}
+            placeholder="0"
+            aria-label="Amount"
+            className="h-full min-w-0 flex-1 border-0 bg-transparent px-3 text-right text-[13px] font-semibold text-white outline-none placeholder:text-ink-muted"
+          />
+        </label>
+        <div className="mt-2 grid grid-cols-5 gap-1">
+          {QUICK_AMOUNTS.map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => set_amount(String(Number(amount || 0) + value))}
+              className="h-[34px] rounded-[4px] border border-line bg-surface text-[11.5px] font-medium text-white hover:border-gold"
+            >
+              +{value}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {children}
+
+      <div className="flex flex-col gap-2 pb-5">
+        <button
+          type="button"
+          disabled
+          className="h-10 rounded-md bg-gold text-[13px] font-semibold text-on-gold disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Submit
+        </button>
+        <p className="text-center text-xs text-ink-muted">
+          {is_deposit ? "Deposits" : "Withdrawals"} are handled by your agent.{" "}
+          <Link to="/upline-whatsapp" className="font-semibold text-gold">
+            Contact your agent
+          </Link>
+        </p>
+      </div>
+    </>
+  );
+}
+
+export default function Banking() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const [active_tab, set_active_tab] = useState("P2P");
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -98,6 +229,7 @@ export default function P2p() {
   const [p2p, setP2p] = useState({ recipient: "", amount: "", note: "" });
   const [walletIdCopied, setWalletIdCopied] = useState(false);
   const [p2pConfig, setP2pConfig] = useState(null);
+  const [wallet_number, set_wallet_number] = useState("");
 
   const loadP2pConfig = async () => {
     try {
@@ -110,8 +242,7 @@ export default function P2p() {
     }
   };
 
-  const load = async () => {
-    setLoading(true);
+  const fetchFunds = async () => {
     try {
       const [fundsResponse] = await Promise.all([
         api.get("/api/wallet/funds-config"),
@@ -126,7 +257,9 @@ export default function P2p() {
   };
 
   useEffect(() => {
-    load();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- state is only set after the requests resolve
+    fetchFunds();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- first load only
   }, []);
   useEffect(() => {
     document.body.classList.add("dark-banking-backdrop");
@@ -140,8 +273,14 @@ export default function P2p() {
   };
 
   const refreshFunds = async () => {
+    setLoading(true);
     await refreshUser();
-    await load();
+    await fetchFunds();
+  };
+
+  const methods_for = (flag) => {
+    const methods = (config?.payment_methods || []).filter((method) => method[flag]);
+    return methods.length ? methods : FALLBACK_METHODS;
   };
 
   const limits = p2pConfig?.limits;
@@ -150,6 +289,7 @@ export default function P2p() {
   const hasValue = (value) => value !== null && value !== undefined;
   const dailyCountReached =
     hasValue(today?.remaining_count) && today.remaining_count <= 0;
+  const wallet_id = String(user?.id || user?.username || "");
 
   // Mirrors the server rules so the player sees the problem before sending.
   const limitError = (value) => {
@@ -213,268 +353,249 @@ export default function P2p() {
     }
   };
 
+  const update_p2p = (name) => (event) =>
+    setP2p((current) => ({ ...current, [name]: event.target.value }));
+
   return (
-    <div className="flex min-h-dvh flex-col bg-page text-white">
-      <header className="sticky top-0 z-30 border-b border-line bg-bar">
-        <div className="relative flex h-[51px] items-center justify-center px-4">
-          <h1 className="font-poppins text-[15px] font-bold leading-7 tracking-tight text-ink">
-            P2P Transfer
+    <div className="banking-page flex min-h-dvh flex-col bg-page text-white">
+      <header className="sticky top-0 z-30 bg-gold">
+        <div className="relative flex h-[49px] items-center justify-center px-4">
+          <h1 className="font-poppins text-[16px] font-bold leading-7 text-white">
+            Banking
           </h1>
           <button
             type="button"
-            aria-label="Close P2P transfer"
+            aria-label="Close banking"
             onClick={() => navigate("/profile")}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-white"
           >
-            <X className="size-6" />
+            <X className="size-7" />
           </button>
+        </div>
+        <div role="tablist" aria-label="Banking" className="grid grid-cols-3">
+          {TABS.map((tab) => {
+            const active = tab === active_tab;
+            return (
+              <button
+                key={tab}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => set_active_tab(tab)}
+                className={`h-[37px] border-b-2 font-poppins text-[13px] font-semibold ${active ? "border-white text-white" : "border-transparent text-white/55"}`}
+              >
+                {tab}
+              </button>
+            );
+          })}
         </div>
       </header>
 
-      <main className="flex min-h-0 flex-1 overflow-y-auto">
-        <form
-          onSubmit={submitP2p}
-          className="flex min-h-full w-full flex-1 flex-col gap-4 px-[13px] pt-3.5"
-        >
-          <div className="flex items-center overflow-hidden rounded-md bg-linear-to-r from-(--menu-banner-from) via-(--menu-banner-via) to-(--menu-banner-to)">
-            <div className="flex min-w-0 flex-1 flex-col gap-1 px-4 py-3.5">
-              <span className="font-poppins text-xs text-(--menu-banner-sub)">
-                Available Balance
+      <main className="flex min-h-0 flex-1 flex-col">
+        {active_tab === "Deposit" && (
+          <div className="flex flex-col gap-4 px-2 pt-3.5">
+            <div className="flex h-[32px] items-center justify-between rounded-md border border-gold/70 bg-surface px-3 text-white">
+              <span className="flex items-center gap-1.5 text-[11.5px] font-medium">
+                <Gift className="size-4" />
+                <span className="grid size-3.5 place-items-center rounded-[2px] bg-[#2EAF5D]">
+                  <Check className="size-2.5" strokeWidth={4} />
+                </span>
+                NO BONUS
+                <span className="grid size-3.5 place-items-center rounded-[2px] bg-[#2EAF5D]">
+                  <Check className="size-2.5" strokeWidth={4} />
+                </span>
+                NO TO
               </span>
-              <strong className="truncate font-poppins text-xl font-bold leading-tight text-white">
-                {CURRENCY_CODE}{" "}
-                {Number(config?.wallet?.available || 0).toFixed(2)}
-              </strong>
+              <ChevronDown className="size-4 text-ink-muted" />
             </div>
-            <button
-              type="button"
-              aria-label="Refresh balance"
-              onClick={refreshFunds}
-              disabled={loading}
-              className="mr-3 grid size-9 shrink-0 place-items-center rounded-full bg-[#1E1606]/40 text-white disabled:opacity-50"
+            <FundsForm
+              flow="deposit"
+              methods={methods_for("deposit_enabled")}
+              network_title="Choose Network"
             >
-              <RefreshCw
-                className={`size-4.5 ${loading ? "animate-spin" : ""}`}
-              />
-            </button>
+              <Reminder>
+                Deposits are handled by your agent. Contact your agent to add
+                balance to your account.
+              </Reminder>
+            </FundsForm>
           </div>
+        )}
 
-          <section>
-            <SectionTitle>My Username</SectionTitle>
-            <div className="flex items-center gap-3 rounded-md border border-line bg-surface px-3 py-2.5">
-              <span className="grid size-7.5 shrink-0 place-items-center rounded-[5px] bg-linear-to-b from-gold-light to-gold-dark text-on-gold">
-                <Wallet className="size-4.5" />
-              </span>
-              <span className="min-w-0 flex-1 truncate font-poppins text-[13px] font-semibold tracking-wide text-ink">
-                {user?.username || "—"}
-              </span>
+        {active_tab === "Withdraw" && (
+          <div className="flex flex-col gap-4 px-2 pt-3.5">
+            <div className="flex items-center rounded-md border border-line bg-surface">
+              <div className="min-w-0 flex-1 px-4 py-3.5">
+                <p className="font-poppins text-[17px] font-semibold leading-tight text-white">
+                  Withdrawable Amount
+                </p>
+                <strong className="mt-1 block truncate font-poppins text-[15px] font-medium text-white">
+                  {CURRENCY_CODE}{" "}
+                  {Number(config?.wallet?.available || 0).toFixed(2)}
+                </strong>
+              </div>
               <button
                 type="button"
-                onClick={() => {
-                  navigator.clipboard?.writeText(String(user?.username || ""));
-                  setWalletIdCopied(true);
-                  setTimeout(() => setWalletIdCopied(false), 1500);
-                }}
-                aria-label="Copy username"
-                className={`flex h-8 shrink-0 items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold transition-colors ${walletIdCopied ? "border-gold text-gold" : "border-line bg-page text-ink-soft hover:border-gold"}`}
+                aria-label="Refresh balance"
+                onClick={refreshFunds}
+                disabled={loading}
+                className="my-3 grid w-[58px] flex-none place-items-center self-stretch border-l border-line-strong text-white disabled:opacity-50"
               >
-                {walletIdCopied ? (
-                  <Check className="size-3.5" />
-                ) : (
-                  <Copy className="size-3.5 -scale-x-100" />
-                )}
-                {walletIdCopied ? "Copied" : "Copy"}
+                <RefreshCw className={`size-5 ${loading ? "animate-spin" : ""}`} />
               </button>
             </div>
-          </section>
-
-          {limits && (
-            <section>
-              <SectionTitle>Transfer Limits</SectionTitle>
-              {!p2pAllowed ? (
-                <div className="rounded-md border border-[#772C2C] bg-[#C52B2B]/10 px-3 py-2.5 text-xs text-[#FF7A84]">
-                  P2P transfer is currently disabled for your account.
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-2">
-                  <LimitTile
-                    label="Per Transfer"
-                    value={`${formatAmount(limits.min_amount)} – ${limits.max_per_transfer > 0 ? formatAmount(limits.max_per_transfer) : "No limit"}`}
-                  />
-                  <LimitTile
-                    label="Transfers Today"
-                    value={
-                      limits.daily_count_limit > 0
-                        ? `${today?.count ?? 0} / ${limits.daily_count_limit}`
-                        : `${today?.count ?? 0}`
-                    }
-                    warn={dailyCountReached}
-                  />
-                  <LimitTile
-                    label="Sent Today"
-                    value={
-                      limits.daily_amount_limit > 0
-                        ? `${formatAmount(today?.amount)} / ${formatAmount(limits.daily_amount_limit)}`
-                        : formatAmount(today?.amount)
-                    }
-                  />
-                  <LimitTile
-                    label="Left Today"
-                    value={
-                      hasValue(today?.remaining_amount)
-                        ? formatAmount(today.remaining_amount)
-                        : "No limit"
-                    }
-                    warn={today?.remaining_amount === 0}
-                  />
-                </div>
-              )}
-            </section>
-          )}
-
-          <section>
-            <SectionTitle>Transfer To</SectionTitle>
-            <div className="flex flex-col gap-3 rounded-md border border-line bg-surface px-3 py-3.5">
-              <label className="flex flex-col gap-1.5">
-                <span className="font-poppins text-[11px] font-medium text-ink-muted">
-                  Recipient Username
-                </span>
-                <span className="flex h-[42px] items-center rounded-md border border-line bg-page focus-within:border-gold">
-                  <UserRound className="ml-3 size-4 shrink-0 text-gold" />
-                  <input
-                    required
-                    value={p2p.recipient}
-                    onChange={(event) =>
-                      setP2p((current) => ({
-                        ...current,
-                        recipient: event.target.value,
-                      }))
-                    }
-                    placeholder="Enter recipient username"
-                    autoComplete="off"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    className="h-full min-w-0 flex-1 border-0 bg-transparent px-2.5 text-[13px] text-ink outline-none placeholder:text-ink-muted"
-                  />
-                </span>
-              </label>
-              <label className="flex flex-col gap-1.5">
-                <span className="font-poppins text-[11px] font-medium text-ink-muted">
-                  Amount
-                </span>
-                <span className="flex h-[42px] items-center rounded-md border border-line bg-page focus-within:border-gold">
-                  <span className="flex h-5 items-center border-r border-line px-2.5">
-                    <CurrencyBadge />
-                  </span>
-                  <input
-                    required
-                    type="number"
-                    inputMode="decimal"
-                    min="1"
-                    step="0.01"
-                    value={p2p.amount}
-                    onChange={(event) =>
-                      setP2p((current) => ({
-                        ...current,
-                        amount: event.target.value,
-                      }))
-                    }
-                    placeholder="0.00"
-                    className="h-full min-w-0 flex-1 border-0 bg-transparent px-2.5 text-right text-[13px] text-ink outline-none placeholder:text-ink-muted"
-                  />
-                </span>
-                {amountError && (
-                  <span className="text-[11px] text-[#FF7A84]">
-                    {amountError}
-                  </span>
-                )}
-              </label>
-              <label className="flex flex-col gap-1.5">
-                <span className="font-poppins text-[11px] font-medium text-ink-muted">
-                  Remark <span className="text-ink-dim">(optional)</span>
-                </span>
+            <FundsForm flow="withdrawal" methods={methods_for("withdrawal_enabled")}>
+              <section>
+                <SectionTitle>Your Wallet Number</SectionTitle>
                 <input
-                  value={p2p.note}
+                  type="tel"
+                  inputMode="numeric"
+                  value={wallet_number}
                   onChange={(event) =>
-                    setP2p((current) => ({
-                      ...current,
-                      note: event.target.value,
-                    }))
+                    set_wallet_number(event.target.value.replace(/\D/g, "").slice(0, 11))
                   }
-                  placeholder="Add a note"
-                  className={`${fieldClass} h-[42px]! px-3`}
+                  placeholder="0"
+                  aria-label="Your wallet number"
+                  className={`${fieldClass} placeholder:text-ink-muted`}
                 />
-              </label>
-            </div>
-          </section>
+              </section>
+            </FundsForm>
+          </div>
+        )}
 
-          <Reminder>
-            Transfers move balance instantly to another player&apos;s wallet.
-            You can only send to players under your own agent.
-            {limits?.daily_count_limit > 0 &&
-              ` Up to ${limits.daily_count_limit} transfers per day.`}
-            {limits?.daily_amount_limit > 0 &&
-              ` Maximum ${CURRENCY_CODE} ${formatAmount(limits.daily_amount_limit)} per day.`}{" "}
-            Daily limits reset at 12:00 AM (Bangladesh time). Double-check the
-            recipient username before submitting.
-          </Reminder>
-
-          <div className="min-h-2 flex-1" />
-          <div className="sticky bottom-0 z-10 -mx-[13px] border-t border-line bg-bar px-[13px] pb-[max(12px,env(safe-area-inset-bottom))] pt-2.5">
-            {loading && (
-              <div className="mb-2 text-center text-xs text-ink-muted">
-                Loading…
-              </div>
-            )}
-            {error && (
-              <div
-                role="alert"
-                className="mb-2 flex min-h-9 items-center justify-between gap-2 rounded-md border border-[#772C2C] bg-[#C52B2B]/10 px-3 py-2.5 text-xs text-[#FF7A84]"
-              >
-                <span>{error}</span>
+        {active_tab === "P2P" && (
+          <form
+            onSubmit={submitP2p}
+            className="flex min-h-full flex-1 flex-col gap-4 px-2.5 pt-3.5"
+          >
+            <section>
+              <SectionTitle>My Wallet ID</SectionTitle>
+              <div className="flex items-stretch gap-2">
+                <span className="flex h-[40px] min-w-0 flex-1 items-center rounded-md border border-line bg-surface px-2.5 font-poppins text-[11px] font-medium text-ink-muted">
+                  <span className="truncate">{wallet_id || "—"}</span>
+                </span>
                 <button
                   type="button"
-                  onClick={() => setError("")}
-                  aria-label="Dismiss error"
-                  className="shrink-0 text-[#FF7A84]/70"
+                  onClick={() => {
+                    navigator.clipboard?.writeText(wallet_id);
+                    setWalletIdCopied(true);
+                    setTimeout(() => setWalletIdCopied(false), 1500);
+                  }}
+                  aria-label={walletIdCopied ? "Wallet ID copied" : "Copy wallet ID"}
+                  className="grid h-[40px] w-11 flex-none place-items-center rounded-md bg-gold text-white"
                 >
-                  <X className="size-3.5" />
+                  {walletIdCopied ? (
+                    <Check className="size-4.5" />
+                  ) : (
+                    <Copy className="size-4.5 -scale-x-100" />
+                  )}
                 </button>
               </div>
-            )}
-            {message && (
-              <div
-                role="status"
-                className="mb-2 rounded-md border border-[#16833B]/50 bg-[#16833B]/15 px-3 py-2.5 text-xs text-[#5BD69E]"
-              >
-                {message}
+            </section>
+
+            <section>
+              <SectionTitle>Transfer To</SectionTitle>
+              <div className="flex flex-col gap-3.5">
+                <input
+                  required
+                  value={p2p.recipient}
+                  onChange={update_p2p("recipient")}
+                  placeholder="Recipient Wallet ID"
+                  aria-label="Recipient Wallet ID"
+                  autoComplete="off"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  className={`${fieldClass} placeholder:text-white`}
+                />
+                <div>
+                  <label className="flex h-[42px] items-center rounded-md border border-line bg-surface focus-within:border-gold">
+                    <span className="flex h-5 items-center border-r border-line-strong px-2">
+                      <CurrencyBadge />
+                    </span>
+                    <input
+                      required
+                      type="number"
+                      inputMode="decimal"
+                      min="1"
+                      step="0.01"
+                      value={p2p.amount}
+                      onChange={update_p2p("amount")}
+                      placeholder="Transfer Amount"
+                      aria-label="Transfer Amount"
+                      className="h-full min-w-0 flex-1 border-0 bg-transparent px-3 font-poppins text-[13px] font-medium text-white outline-none placeholder:text-white"
+                    />
+                  </label>
+                  {amountError && (
+                    <span className="mt-1 block text-[11px] text-[#FF7A84]">
+                      {amountError}
+                    </span>
+                  )}
+                </div>
+                <input
+                  value={p2p.note}
+                  onChange={update_p2p("note")}
+                  placeholder="Remark"
+                  aria-label="Remark"
+                  className={`${fieldClass} placeholder:text-white`}
+                />
               </div>
-            )}
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="h-10 rounded-md border border-line bg-page text-[13px] font-semibold text-ink-soft hover:border-gold"
-              >
-                Cancel
-              </button>
-              <button
-                disabled={
-                  submitting ||
-                  !p2pAllowed ||
-                  !p2p.recipient.trim() ||
-                  !p2p.amount ||
-                  !!amountError
-                }
-                className="flex h-10 items-center justify-center gap-2 rounded-md bg-linear-to-b from-gold-light to-gold-dark text-[13px] font-semibold text-on-gold disabled:opacity-50"
-              >
-                <SendHorizontal className="size-4" />
-                {submitting ? "Transferring…" : "Transfer"}
-              </button>
+            </section>
+
+            <div className="min-h-2 flex-1" />
+            <div className="sticky bottom-0 z-10 -mx-2.5 bg-page px-2.5 pb-[max(14px,env(safe-area-inset-bottom))] pt-2.5">
+              {!p2pAllowed && (
+                <div className="mb-2 rounded-md border border-[#772C2C] bg-[#C52B2B]/10 px-3 py-2.5 text-xs text-[#FF7A84]">
+                  P2P transfer is currently disabled for your account.
+                </div>
+              )}
+              {error && (
+                <div
+                  role="alert"
+                  className="mb-2 flex min-h-9 items-center justify-between gap-2 rounded-md border border-[#772C2C] bg-[#C52B2B]/10 px-3 py-2.5 text-xs text-[#FF7A84]"
+                >
+                  <span>{error}</span>
+                  <button
+                    type="button"
+                    onClick={() => setError("")}
+                    aria-label="Dismiss error"
+                    className="shrink-0 text-[#FF7A84]/70"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+              )}
+              {message && (
+                <div
+                  role="status"
+                  className="mb-2 rounded-md border border-[#16833B]/50 bg-[#16833B]/15 px-3 py-2.5 text-xs text-[#5BD69E]"
+                >
+                  {message}
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="h-10 rounded-md border border-line-strong bg-transparent text-[13px] font-semibold text-white hover:border-gold"
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={
+                    submitting ||
+                    !p2pAllowed ||
+                    !p2p.recipient.trim() ||
+                    !p2p.amount ||
+                    !!amountError
+                  }
+                  className="h-10 rounded-md bg-gold text-[13px] font-semibold text-on-gold disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {submitting ? "Transferring…" : "Submit"}
+                </button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        )}
       </main>
     </div>
   );

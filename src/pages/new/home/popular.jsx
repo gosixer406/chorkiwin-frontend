@@ -13,19 +13,19 @@ export default function Popular() {
         {
             img: cate_1,
             name: 'HOT GAME',
-            bg: 'linear-gradient(270deg, color-mix(in srgb, var(--c-gold-dark) 55%, var(--c-surface)) 0%, var(--c-surface) 100%)',
+            bg: 'linear-gradient(90deg, #3A3A3A 0%, #5A7242 100%)',
             component: <Hot />
         },
         {
             img: cate_2,
             name: 'FAVOURITE',
-            bg: 'linear-gradient(270deg, color-mix(in srgb, var(--c-gold-dark) 40%, var(--c-surface)) 0%, var(--c-surface) 100%)',
+            bg: 'linear-gradient(90deg, #353430 0%, #615034 100%)',
             component: <Favorite />
         },
         {
             img: cate_3,
             name: 'PROMOTION',
-            bg: 'linear-gradient(270deg, color-mix(in srgb, var(--c-gold-dark) 28%, var(--c-surface)) 0%, var(--c-surface) 100%)',
+            bg: 'linear-gradient(90deg, #343436 0%, #514668 100%)',
             component: <Promotion />
         },
     ]

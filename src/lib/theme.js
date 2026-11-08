@@ -15,8 +15,6 @@ function subscribe(listener) {
 export function toggle_theme() {
   const next = get_theme() === "dark" ? "light" : "dark";
   document.documentElement.classList.toggle("dark", next === "dark");
-  // Keep the mobile browser bar in step with the header colour.
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", next === "dark" ? "#131A20" : "#032125");
   try {
     localStorage.setItem(STORAGE_KEY, next);
   } catch {

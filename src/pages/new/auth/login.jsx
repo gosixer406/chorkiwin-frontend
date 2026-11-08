@@ -5,7 +5,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { api, LOGOUT_REASON_KEY, writeSession } from "@/lib/api";
 import { setSession } from "@/lib/auth";
 import { requestAccountRefresh } from "@/lib/refresh-account";
-import { SIGNUP_URL } from "@/lib/links";
 import SocialButtons from "@/components/social-buttons";
 
 function createValidationCode() {
@@ -120,7 +119,7 @@ function ChevronDownIcon({ open }) {
 function Field({ icon, children, className = "" }) {
   return (
     <div
-      className={`flex h-[52px] items-center gap-3 rounded-md border border-gold bg-page px-4 ${className}`}
+      className={`flex h-[52px] items-center gap-3 rounded-md border border-gold bg-[#181818] px-4 ${className}`}
     >
       {icon}
       {children}
@@ -197,7 +196,7 @@ function CheckBox({
 }
 
 const inputClassName =
-  "min-w-0 flex-1 border-0 bg-transparent font-poppins text-[13px] leading-[18px] text-white caret-gold outline-none placeholder:text-ink-muted autofill:shadow-[inset_0_0_0_1000px_var(--c-page)] autofill:[-webkit-text-fill-color:#fff] autofill:[transition:background-color_9999s]";
+  "min-w-0 flex-1 border-0 bg-transparent font-poppins text-[13px] leading-[18px] text-white caret-gold outline-none placeholder:text-ink-muted autofill:shadow-[inset_0_0_0_1000px_#181818] autofill:[-webkit-text-fill-color:#fff] autofill:[transition:background-color_9999s]";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -246,8 +245,8 @@ export default function Login() {
   // Every login lands on the home page.
   useEffect(() => {
     if (isLoggedIn) navigate("/", { replace: true });
-    else if (location.search) navigate("/login", { replace: true });
-  }, [isLoggedIn, location.search, navigate]);
+    else if (location.search && mode === "login") navigate("/login", { replace: true });
+  }, [isLoggedIn, location.search, mode, navigate]);
 
   const update = (name) => (event) =>
     setForm((current) => ({ ...current, [name]: event.target.value }));
@@ -463,7 +462,7 @@ export default function Login() {
             checked={remember}
             onChange={setRemember}
             className="mt-3 items-center text-[14px] leading-[21px] tracking-[-0.28px]"
-            boxClassName="border border-line-strong bg-page"
+            boxClassName="bg-white"
           >
             <span>Remember me</span>
           </CheckBox>
@@ -493,7 +492,7 @@ export default function Login() {
               checked={agreed}
               onChange={setAgreed}
               className="mt-4 items-start text-[13px] leading-[19px]"
-              boxClassName="mt-0.5 border border-line-strong"
+              boxClassName="mt-0.5 bg-white"
             >
               <span>
                 I agree to the User Agreement &amp; confirm I am at least 18
@@ -506,7 +505,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={!canSubmit}
-          className={`${mode === "login" ? "mt-10" : "mt-6"} flex h-[52px] w-full items-center justify-center rounded-md bg-linear-to-b from-gold-light to-gold-dark font-poppins text-[14px] font-semibold tracking-[-0.14px] text-on-gold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50`}
+          className={`${mode === "login" ? "mt-10" : "mt-6"} flex h-[52px] w-full items-center justify-center rounded-md bg-gold font-poppins text-[14px] font-semibold tracking-[-0.14px] text-on-gold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50`}
         >
           {loading ? "Please wait…" : mode === "login" ? "Login" : "Sign Up"}
         </button>
@@ -516,23 +515,17 @@ export default function Login() {
         <div className="mt-8 flex flex-col items-center gap-4">
           <div className="flex w-full items-center gap-4">
             <span className="h-px flex-1 bg-gold/40" />
-            <span className="whitespace-nowrap font-poppins text-[14px] font-semibold text-gold">
-              {" "}
-              About Chorkiwala{" "}
+            <span className="whitespace-nowrap font-poppins text-[15px] font-semibold text-gold">
+              Contact Admin
             </span>
             <span className="h-px flex-1 bg-gold/40" />
           </div>
           <SocialButtons />
           <p className="font-poppins text-[13px] text-ink-soft">
             Don&apos;t have an account?{" "}
-            <a
-              href={SIGNUP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-gold"
-            >
+            <Link to="/signup" className="font-semibold text-gold">
               Sign Up
-            </a>
+            </Link>
           </p>
         </div>
       ) : (

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import PageTitle from "@/components/dashboard/page-title";
@@ -6,24 +6,36 @@ import Reload from "@/components/reload";
 import UplineAgentCard from "@/components/upline-agent-card";
 import {
   ArrowLeftRight,
-  BadgePercent,
+  ChartNoAxesColumn,
   ChevronRight,
+  CircleDollarSign,
   Copy,
-  FileClock,
-  History,
-  KeyRound,
-  ListChecks,
-  LockKeyhole,
   ScrollText,
-  SquareUser,
-  TrendingUp,
+  Trophy,
+  UserCog,
   Users,
-  Wallet,
+  Waypoints,
 } from "lucide-react";
 import customers_support_whatsapp from "@/assets/img/customers Support_whatsapp.png";
 import { api } from "@/lib/api";
 import { logout, setUser } from "@/lib/auth";
 import { fetchFreshAccount } from "@/lib/refresh-account";
+
+// Brushed-gold face of the balance cards.
+const metal_card = {
+  background:
+    "linear-gradient(105deg, #B98413 0%, #ECCC77 28%, #F0D27F 48%, #CD9B31 66%, #A97E1B 100%)",
+};
+
+const menu_links = [
+  { icon: <Waypoints />, name: "P2P Transfer", path: "/dashboard/p2p" },
+  { icon: <ArrowLeftRight />, name: "Transaction", path: "/dashboard/transaction" },
+  { icon: <ScrollText />, name: "Bet History", path: "/dashboard/bet-history" },
+  { icon: <CircleDollarSign />, name: "Profit/Loss", path: "/dashboard/profit-loss" },
+  { icon: <ChartNoAxesColumn />, name: "Turnover", path: "/dashboard/turnover" },
+  { icon: <Users />, name: "Referral", path: "/dashboard/referral" },
+  { icon: <UserCog />, name: "Profile & Settings", path: "/dashboard/settings" },
+];
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -61,102 +73,34 @@ export default function Profile() {
     navigate("/login", { replace: true });
   };
 
-  const user_level = [
-    {
-      name: "Player",
-      experience: "5.00",
-      bouns: "4.00%",
-    },
-    {
-      name: "Bronze",
-      experience: "500.00",
-      bouns: "4.00%",
-    },
-    {
-      name: "Silver",
-      experience: "5.00",
-      bouns: "44.00%",
-    },
-    {
-      name: "Gold",
-      experience: "521.00",
-      bouns: "4.00%",
-    },
-    {
-      name: "Platinum",
-      experience: "53.00",
-      bouns: "14.00%",
-    },
-    {
-      name: "Diamond",
-      experience: "5.00",
-      bouns: "4.00%",
-    },
-    {
-      name: "Star VIP",
-      experience: "55.00",
-      bouns: "4.00%",
-    },
-  ];
-  const current_level_index = Math.max(
-    0,
-    user_level.findIndex(
-      (level) =>
-        level.name.toLowerCase() ===
-        String(user.vip_level || "Gold").toLowerCase(),
-    ),
-  );
-  const current_level = user_level[current_level_index];
-  const next_level = user_level[current_level_index + 1];
-  const [show_level, set_show_level] = useState(null);
-
-  // Menu sections, styled like the Menu modal.
-  const menu_groups = [
-    {
-      title: "Wallet",
-      links: [
-        { icon: <Wallet />, name: "Balance Overview", hint: "See all your balances", path: "/dashboard/balance-overview" },
-        { icon: <ArrowLeftRight />, name: "P2P Transfer", hint: "Send balance to another player", path: "/dashboard/p2p" },
-        { icon: <ScrollText />, name: "P2P Transfer Log", hint: "Your past transfers", path: "/dashboard/transaction" },
-      ],
-    },
-    {
-      title: "Betting",
-      links: [
-        { icon: <ListChecks />, name: "Current Bets", hint: "Bets still running", path: "/dashboard/current-bets" },
-        { icon: <History />, name: "Bets History", hint: "Settled bets", path: "/dashboard/bet-history" },
-        { icon: <TrendingUp />, name: "Profit & Loss", hint: "Your wins and losses", path: "/dashboard/profit-loss" },
-      ],
-    },
-    {
-      title: "Rewards",
-      links: [
-        { icon: <Users />, name: "Referral", hint: "Invite friends and earn", path: "/dashboard/referral" },
-      ],
-    },
-    {
-      title: "Account & Security",
-      links: [
-        { icon: <SquareUser />, name: "My Profile", hint: "Name, email and password", path: "/dashboard/settings" },
-        { icon: <KeyRound />, name: "Password Change Lock", hint: "Stop upline changing your password", path: "/dashboard/settings#password-lock" },
-        { icon: <LockKeyhole />, name: "Withdraw Lock", hint: "Block withdrawals from this account", path: "/dashboard/settings#withdraw-lock" },
-        { icon: <FileClock />, name: "Activity Log", hint: "Logins and devices", path: "/dashboard/activity-log" },
-      ],
-    },
-  ];
+  // The level strip stays hidden until the real VIP status has loaded.
+  const [vip, set_vip] = useState(null);
+  useEffect(() => {
+    let active = true;
+    api
+      .get("/api/vip/status")
+      .then((response) => {
+        if (active) set_vip(response.data || null);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+  const level_progress = Math.min(100, Number(vip?.progress_pct || 0));
 
   return (
     <>
-      <header className="sticky top-0 z-20 bg-bar pt-[env(safe-area-inset-top)]">
+      <header className="sticky top-0 z-20 bg-gold pt-[env(safe-area-inset-top)]">
         <PageTitle
           title="Profile"
           titleClass="font-poppins text-[15px] font-bold tracking-tight"
-          className="min-h-[51px]! bg-bar px-3! text-ink"
+          className="min-h-[51px]! bg-gold px-3! text-white [&_svg]:size-7"
           onClick={() => navigate("/")}
         />
       </header>
-      <div className="mt-1 px-[13px] py-2">
-        <div className="mb-2 flex items-center justify-between gap-x-2 rounded-md border border-line bg-surface px-1 py-1.5">
+      <div className="px-2.5 py-2">
+        <div className="mb-1 flex items-center justify-between gap-x-2 px-1 py-1.5">
           <div className="flex min-w-0 items-center gap-x-2 py-1 pl-2">
             <div className="flex-none">
               <svg
@@ -187,7 +131,7 @@ export default function Profile() {
               type="button"
               onClick={() => copyText(displayName)}
               aria-label={`Copy ${displayName} user name`}
-              className="ml-1 flex size-9 flex-none items-center justify-center rounded-[5px] border border-line bg-page"
+              className="ml-1 flex size-9 flex-none items-center justify-center rounded-lg bg-surface"
             >
               <Copy className="size-3.5 -scale-x-100 text-ink-soft" />
             </button>
@@ -208,19 +152,19 @@ export default function Profile() {
               type="button"
               onClick={() => copyText(username)}
               aria-label={`Copy ${username} user name`}
-              className="flex size-9 flex-none items-center justify-center rounded-[5px] border border-line bg-page"
+              className="flex size-9 flex-none items-center justify-center rounded-lg bg-surface"
             >
               <Copy className="size-3.5 -scale-x-100 text-ink-soft" />
             </button>
           </div>
         </div>
 
-        <div className="mt-2 rounded-md bg-linear-to-r from-(--menu-banner-from) via-(--menu-banner-via) to-(--menu-banner-to) px-3 py-3.5">
-          <h6 className="mb-2.5 text-[16px] font-semibold leading-tight text-white">
+        <div className="rounded-md px-3 py-3" style={metal_card}>
+          <h6 className="mb-2 font-inter text-[14px] font-semibold leading-tight text-black">
             Main Balance
           </h6>
           <div className="flex items-center justify-between gap-x-3">
-            <div className="flex h-8.5 items-center gap-x-1 rounded-full bg-[#1E1606]/85 px-2.5 [&>svg:first-child]:size-4">
+            <div className="flex h-8.5 items-center gap-x-1 rounded-full bg-[#111111] px-2.5 [&>svg:first-child]:size-4">
               <svg
                 width="22"
                 height="22"
@@ -244,44 +188,89 @@ export default function Profile() {
             </div>
             <Link
               to="/dashboard/balance-overview"
-              className="flex items-center gap-x-0.5 text-[13px] font-medium leading-tight text-(--menu-banner-sub)"
+              className="flex items-center gap-x-0.5 text-[13px] font-semibold leading-tight text-black"
             >
               Balance Overview <ChevronRight className="size-4" />
             </Link>
           </div>
         </div>
 
+        <section className="mt-2 overflow-hidden rounded-md bg-[#111111]">
+          <div className="rounded-md px-3 py-3" style={metal_card}>
+            <h6 className="mb-2 font-inter text-[14px] font-semibold leading-tight text-black">
+              Cash Back Balance
+            </h6>
+            <div className="flex items-center justify-between gap-x-3">
+              <div className="flex h-8.5 items-center gap-x-1.5 rounded-full bg-[#111111] px-2.5">
+                <Trophy className="size-4 text-white" />
+                <span className="text-sm font-semibold text-white">
+                  {cashBackBalance}
+                </span>
+                <Reload
+                  className="ml-1 text-white"
+                  onClick={refreshBalance}
+                  label="Refresh cash back balance"
+                />
+              </div>
+              <Link
+                to="/dashboard/cashback"
+                className="flex items-center gap-x-0.5 text-[13px] font-semibold leading-tight text-black"
+              >
+                Details <ChevronRight className="size-4" />
+              </Link>
+            </div>
+          </div>
+          {vip && (
+            <Link
+              to="/dashboard/vip-club"
+              aria-label="Open VIP Club"
+              className="block px-3 pb-2.5 pt-3"
+            >
+              <div className="flex items-center">
+                <span className="grid size-9 flex-none place-items-center rounded-lg border-2 border-[#FFD700] bg-[#D4A017] text-white">
+                  <Trophy className="size-4.5" />
+                </span>
+                <span className="h-px flex-1 bg-[#3A3A3A]">
+                  <span
+                    className="block h-full bg-[#FFD700]"
+                    style={{ width: `${level_progress}%` }}
+                  />
+                </span>
+                {vip.next_level && (
+                  <span className="grid size-9 flex-none place-items-center rounded-lg border-2 border-[#555555] bg-[#383838] text-ink-dim">
+                    <Trophy className="size-4.5" />
+                  </span>
+                )}
+              </div>
+              <div className="mt-1.5 flex items-center justify-between font-inter text-[10px] font-semibold uppercase leading-none">
+                <span className="text-[#EA870F]">{vip.name}</span>
+                {vip.next_level && (
+                  <span className="text-ink-muted">{vip.next_level.name}</span>
+                )}
+              </div>
+            </Link>
+          )}
+        </section>
+
+        <nav aria-label="Account" className="mt-2 flex flex-col">
+          {menu_links.map((item) => (
+            <Link
+              key={item.name}
+              to={item.path}
+              className="flex min-h-[37px] items-center gap-x-2.5 rounded-md px-2 text-ink-soft hover:bg-surface [&>svg:first-child]:size-4.5"
+            >
+              {item.icon}
+              <span className="truncate font-inter text-[14px] font-medium">
+                {item.name}
+              </span>
+              <ChevronRight className="ml-auto size-4 flex-none text-ink-muted" />
+            </Link>
+          ))}
+        </nav>
+
         <UplineAgentCard className="mt-4" />
 
-        <div className="mt-4 flex flex-col gap-y-4">
-          {menu_groups.map((group) => (
-            <section key={group.title}>
-              <h2 className="mb-2 flex items-center gap-x-2 px-1 font-poppins text-[13px] font-bold uppercase tracking-wider text-gold">
-                <span className="h-3.5 w-1 rounded-[1px] bg-ink" />
-                {group.title}
-              </h2>
-              <div className="flex flex-col gap-y-px">
-                {group.links.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    className="flex min-h-12 items-center gap-x-3 rounded-md border border-line bg-surface px-3 py-2 text-ink hover:bg-surface-2"
-                  >
-                    <span className="grid size-7.5 flex-none place-items-center rounded-[5px] bg-linear-to-b from-gold-light to-gold-dark text-on-gold [&_svg]:size-4.5">
-                      {item.icon}
-                    </span>
-                    <span className="flex min-w-0 flex-col">
-                      <span className="truncate font-poppins text-[15px] font-semibold leading-tight text-ink">{item.name}</span>
-                      <span className="mt-0.5 truncate text-[11px] leading-tight text-ink-muted">{item.hint}</span>
-                    </span>
-                    <ChevronRight className="ml-auto size-4 flex-none text-ink-muted" />
-                  </Link>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-        <div className="mb-4 mt-6 flex flex-col gap-y-3 pb-[max(12px,env(safe-area-inset-bottom))]">
+        <div className="mb-4 mt-4 flex flex-col gap-y-3 pb-[max(12px,env(safe-area-inset-bottom))]">
           <Link
             to="/upline-whatsapp"
             className="block transition-opacity hover:opacity-90"

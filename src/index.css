@@ -24,8 +24,7 @@
   --font-roboto: "Roboto", "Inter", ui-sans-serif, sans-serif;
   --font-bangla: "Hind Siliguri", "Inter", ui-sans-serif, sans-serif;
 }
-/* Site palette, sampled from the reference screenshots.
-   Light (default) is deep teal + gold; `.dark` on <html> switches to charcoal + gold.
+/* Site palette, sampled from the reference screenshots: charcoal + sky blue, one theme.
    Components use the Tailwind names (bg-page, bg-surface, border-line, text-ink-soft, text-gold …). */
 @theme inline {
   --color-page: var(--c-page);
@@ -44,47 +43,28 @@
   --color-gold-active: var(--c-gold-active);
   --color-on-gold: var(--c-on-gold);
 }
-:root {
-  --c-page: #011B1F;
-  --c-bar: #032125;
-  --c-surface: #06262B;
-  --c-surface-2: #0A2C30;
-  --c-line: #17353A;
-  --c-line-strong: #2C4A4E;
-  --c-ink: #FFFFFF;
-  --c-ink-soft: #D5E0E0;
-  --c-ink-muted: #93AAAB;
-  --c-ink-dim: #5F7A7C;
-  --c-gold: #DBC481;
-  --c-gold-light: #DDB566;
-  --c-gold-dark: #CFA552;
-  --c-gold-active: #E9D594;
-  --c-on-gold: #1E1606;
-  --menu-banner-sub: #F2E1BA;
-  --menu-banner-from: #D2B266;
-  --menu-banner-via: #897136;
-  --menu-banner-to: #2F2F1C;
-}
+/* The --c-gold* names are the accent slots used across the site; the accent is now sky blue. */
+:root,
 .dark {
-  --c-page: #0D141A;
-  --c-bar: #131A20;
-  --c-surface: #131C21;
-  --c-surface-2: #19242A;
-  --c-line: #1E262B;
-  --c-line-strong: #2A3238;
+  --c-page: #1C1C1C;
+  --c-bar: #202020;
+  --c-surface: #333333;
+  --c-surface-2: #3E3E3E;
+  --c-line: #3B3B3B;
+  --c-line-strong: #555555;
   --c-ink: #FFFFFF;
-  --c-ink-soft: #D3D6DA;
-  --c-ink-muted: #9AA1A7;
-  --c-ink-dim: #5D666D;
-  --c-gold: #D4BA88;
-  --c-gold-light: #EDC57F;
-  --c-gold-dark: #B98A45;
-  --c-gold-active: #A08C66;
-  --c-on-gold: #2B1D0F;
-  --menu-banner-from: #62686F;
-  --menu-banner-via: #31373F;
-  --menu-banner-to: #161A1F;
-  --menu-banner-sub: #D3D6DA;
+  --c-ink-soft: #D4D5D8;
+  --c-ink-muted: #A0A1A6;
+  --c-ink-dim: #6B6C70;
+  --c-gold: #6EBEF9;
+  --c-gold-light: #8FCEFB;
+  --c-gold-dark: #4A9BD8;
+  --c-gold-active: #6EBEF9;
+  --c-on-gold: #0D2436;
+  --menu-banner-sub: #DCEFFD;
+  --menu-banner-from: #6EBEF3;
+  --menu-banner-via: #537692;
+  --menu-banner-to: #333436;
 }
 
 @layer base {
@@ -205,6 +185,17 @@
 /* The light header is viewport-fixed, so it needs the install-bar offset. */
 body.pwa-install-visible .velki-site-header-light {
   top: 56px;
+}
+
+/* The menu drawer is viewport-fixed too; keep its title and close button below the bar. */
+body.pwa-install-visible .new-menu-drawer {
+  top: 56px;
+  height: calc(100dvh - 56px);
+}
+
+/* Keeps the P2P buttons on screen when the install bar pushes the page down. */
+body.pwa-install-visible .banking-page {
+  min-height: calc(100dvh - 56px);
 }
 
 /* The dark shell already moves with the body's install-bar padding. Adding the

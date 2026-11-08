@@ -6,34 +6,28 @@ import { Link, useLocation } from "react-router-dom";
 import PageTitle from "@/components/dashboard/page-title";
 import {
   ArrowLeftRight,
-  Moon,
-  Sun,
   ChevronRight,
   Crown,
+  ExternalLink,
   FileClock,
   History,
   KeyRound,
   ListChecks,
   LockKeyhole,
-  LogIn,
   ScrollText,
   SquareUser,
   TrendingUp,
-  UserPlus,
   Wallet,
 } from "lucide-react";
 
 import btn_img_1 from "@/assets/img/new/menu/btn/1.png";
 import btn_img_2 from "@/assets/img/new/menu/btn/2.png";
 import banner from "@/assets/img/new/menu/app-banner-reference.png";
-import { useTheme } from "@/lib/theme";
-import { SIGNUP_URL } from "@/lib/links";
 
 export default function Nav({ className = "" }) {
   const router = useLocation();
   const is_login = useSelector((state) => state.auth.isLoggedIn);
   const [is_menu, set_is_menu] = useState(false);
-  const { theme, toggle_theme } = useTheme();
 
   const menus = [
     {
@@ -211,7 +205,6 @@ export default function Nav({ className = "" }) {
   const offcanves_menu = [
     {
       title: "Games",
-      grid: true,
       links: [
         {
           icon: <Crown className="size-5" strokeWidth={1.5} />,
@@ -608,6 +601,12 @@ export default function Nav({ className = "" }) {
           path: "/promotions",
         },
         {
+          icon: <Crown className="size-5" strokeWidth={1.5} />,
+          name: "VIP Club",
+          is_svg: true,
+          path: "/dashboard/vip-club",
+        },
+        {
           icon: (
             <svg
               width="20"
@@ -701,7 +700,7 @@ export default function Nav({ className = "" }) {
     },
   ];
 
-  // Account shortcuts: reports and profile pages once signed in, otherwise how to get in.
+  // Account shortcuts, for signed-in players only.
   const accountIcon = (Icon) => <Icon className="size-5" strokeWidth={1.5} />;
   // Referral already sits under Promotions & Rewards, so it is not repeated here.
   const account_menu = is_login
@@ -732,15 +731,7 @@ export default function Nav({ className = "" }) {
           ],
         },
       ]
-    : [
-        {
-          title: "Account",
-          links: [
-            { icon: accountIcon(LogIn), is_svg: true, name: "Log In", path: "/login" },
-            { icon: accountIcon(UserPlus), is_svg: true, name: "Sign Up", path: SIGNUP_URL, external: true },
-          ],
-        },
-      ];
+    : [];
 
   const extra_btn = [
     {
@@ -772,102 +763,15 @@ export default function Nav({ className = "" }) {
       ),
       name: "Responsible Gambling",
       path: "/static/responsible-gaming",
-    },
-    {
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g clipPath="url(#clip0_172_4425)">
-            <path
-              d="M17.5116 17.1282C17.3236 17.2902 16.8853 17.8118 16.6223 17.5504C16.4546 17.3846 16.3072 17.1947 16.151 17.0188C15.5806 16.374 15.0089 15.7306 14.4385 15.0858C14.3051 14.935 14.0535 14.7565 14.1387 14.5316C14.206 14.3531 14.4232 14.2161 14.5629 14.0942C14.7028 13.9723 14.9352 13.7335 15.1372 13.8818C15.1842 13.9157 15.2223 13.9748 15.2604 14.0175L15.545 14.3381L16.4051 15.3095C16.7214 15.6665 17.0377 16.0234 17.3541 16.3816C17.4379 16.477 17.5256 16.5701 17.6069 16.6669C17.7365 16.8215 17.6514 16.9986 17.5116 17.1282C17.3325 17.2941 17.6018 17.5605 17.781 17.3946C18.0491 17.1458 18.1659 16.7436 17.9144 16.4432C17.8711 16.3916 17.8254 16.3426 17.781 16.2936L16.9641 15.3712L15.963 14.24C15.7877 14.0427 15.6212 13.834 15.4358 13.6455C15.1918 13.3967 14.8069 13.4306 14.5376 13.6229C14.3685 13.7435 14.2174 13.8944 14.0611 14.0301C13.8363 14.2249 13.6699 14.5115 13.7587 14.8144C13.7943 14.935 13.8769 15.0229 13.9582 15.1134C14.5465 15.7771 15.1346 16.442 15.7229 17.1055C15.9338 17.343 16.1344 17.5957 16.3581 17.8219C16.6363 18.1046 17.0568 18.0142 17.335 17.7829C17.4863 17.6559 17.6336 17.524 17.7823 17.3958C17.9665 17.2362 17.6971 16.9697 17.513 17.1294L17.5116 17.1282Z"
-              fill="currentColor"
-            />
-            <path
-              d="M2.77567 14.0367C3.75634 14.0367 4.55134 13.2502 4.55134 12.2801C4.55134 11.3099 3.75634 10.5234 2.77567 10.5234C1.79499 10.5234 1 11.3099 1 12.2801C1 13.2502 1.79499 14.0367 2.77567 14.0367Z"
-              fill="currentColor"
-            />
-            <path
-              d="M6.01991 9.47362C5.22335 9.31778 4.69232 8.53604 4.91083 7.74552C5.13823 6.92608 6.04405 6.53772 6.82282 6.84941C7.05023 6.9399 7.14932 6.57542 6.92445 6.48619C6.16473 6.18204 5.29323 6.44094 4.813 7.09197C4.33278 7.743 4.3836 8.58883 4.85746 9.19209C5.12045 9.52641 5.49903 9.7564 5.91954 9.83809C6.15966 9.88459 6.26129 9.52138 6.02118 9.47487L6.01991 9.47362Z"
-              fill="currentColor"
-            />
-            <path
-              d="M17.2288 6.51327C18.2095 6.51327 19.0045 5.7268 19.0045 4.75663C19.0045 3.78647 18.2095 3 17.2288 3C16.2481 3 15.4531 3.78647 15.4531 4.75663C15.4531 5.7268 16.2481 6.51327 17.2288 6.51327Z"
-              fill="currentColor"
-            />
-            <path
-              d="M5.68634 9.61678C5.26964 10.1962 4.85167 10.7743 4.43497 11.3537C4.37526 11.4366 4.31555 11.5196 4.25457 11.6025C4.19359 11.6855 4.23932 11.8124 4.32317 11.8602C4.41845 11.9155 4.5239 11.8753 4.58361 11.7923C5.0003 11.2129 5.41827 10.6348 5.83498 10.0554C5.89469 9.97246 5.9544 9.88951 6.01538 9.80656C6.07636 9.72361 6.03063 9.59667 5.94678 9.54892C5.8515 9.49361 5.74605 9.53383 5.68634 9.61678Z"
-              fill="currentColor"
-            />
-            <path
-              d="M3.46642 11.0111C3.88313 10.4317 4.3011 9.85355 4.71779 9.27415C4.7775 9.19121 4.83722 9.10826 4.8982 9.02531C4.95918 8.94236 4.91344 8.81542 4.82959 8.76767C4.73431 8.71236 4.62886 8.75258 4.56916 8.83553C4.15245 9.41492 3.73448 9.99305 3.31778 10.5724C3.25808 10.6554 3.19836 10.7383 3.13738 10.8213C3.0764 10.9042 3.12214 11.0312 3.20598 11.0789C3.30126 11.1342 3.40671 11.094 3.46642 11.0111Z"
-              fill="currentColor"
-            />
-            <path
-              d="M7.45683 7.70703L6.98438 8.97601L11.6742 10.6849L12.1467 9.41591L7.45683 7.70703Z"
-              fill="currentColor"
-            />
-            <path
-              d="M13.8782 10.2733L12.8047 9.43756L14.789 6.94531L15.5297 8.23605L13.8782 10.2733Z"
-              fill="currentColor"
-            />
-            <path
-              d="M15.0103 7.00946C15.3102 6.63492 15.6112 6.25914 15.9111 5.88461C15.953 5.83182 15.9949 5.7803 16.0368 5.72751C16.1003 5.64834 16.1156 5.53899 16.0368 5.46107C15.9708 5.39571 15.831 5.38063 15.7675 5.46107C15.4677 5.83559 15.1666 6.21138 14.8668 6.58591C14.8248 6.63869 14.783 6.69023 14.741 6.74301C14.6775 6.82219 14.6623 6.93154 14.741 7.00946C14.807 7.07481 14.9468 7.08989 15.0103 7.00946Z"
-              fill="currentColor"
-            />
-            <path
-              d="M16.8392 6.30091C16.4175 6.82751 15.9956 7.35411 15.5738 7.88071C15.5154 7.95486 15.4558 8.02776 15.3972 8.10191C15.3337 8.1811 15.3185 8.29043 15.3972 8.36835C15.4634 8.43371 15.6031 8.44879 15.6666 8.36835C16.0884 7.84176 16.5102 7.31515 16.9319 6.78855C16.9904 6.7144 17.0501 6.6415 17.1085 6.56735C17.172 6.48818 17.1873 6.37883 17.1085 6.30091C17.0425 6.23556 16.9027 6.22047 16.8392 6.30091Z"
-              fill="currentColor"
-            />
-            <path
-              d="M12.9917 11.8245C13.8674 11.8245 14.5773 11.1223 14.5773 10.256C14.5773 9.38974 13.8674 8.6875 12.9917 8.6875C12.1161 8.6875 11.4062 9.38974 11.4062 10.256C11.4062 11.1223 12.1161 11.8245 12.9917 11.8245Z"
-              fill="currentColor"
-            />
-            <path
-              d="M6.0342 9.77762C6.146 9.80025 6.26161 9.81155 6.37976 9.81155C7.32876 9.81155 8.09738 9.05119 8.09738 8.11235C8.09738 7.48394 7.75182 6.93472 7.23857 6.64062C6.98829 6.86936 6.53095 7.35073 6.2489 8.10858C5.98466 8.82245 6.00118 9.44457 6.03294 9.77637L6.0342 9.77762Z"
-              fill="currentColor"
-            />
-            <path
-              d="M15.6478 8.02703C15.2159 6.94492 14.4345 6.03122 13.4093 5.4556C12.5517 4.97425 11.5532 4.7455 10.5686 4.81211C8.4178 4.95791 6.54392 6.4623 5.98239 8.52975C5.41833 10.6085 6.29237 12.8657 8.10654 14.0471C9.69967 15.0839 11.8035 15.1394 13.4525 14.1954C15.3366 13.1171 16.3211 10.9051 15.879 8.79996C15.8231 8.53604 15.7444 8.27839 15.6478 8.02577C15.5614 7.80206 15.1917 7.89883 15.2807 8.12632C15.6567 9.09783 15.7152 10.1661 15.4153 11.1653C15.1383 12.0878 14.5666 12.916 13.8019 13.5092C12.4451 14.5611 10.5343 14.795 8.96409 14.0848C7.17279 13.2755 6.06116 11.4254 6.20345 9.48241C6.34574 7.53939 7.89693 5.71702 9.90293 5.28216C11.9089 4.84731 13.8717 5.72581 14.9071 7.38732C15.0532 7.62234 15.1791 7.86867 15.2807 8.12505C15.3696 8.34752 15.738 8.25074 15.6478 8.02451V8.02703Z"
-              fill="currentColor"
-            />
-          </g>
-          <defs>
-            <linearGradient
-              id="paint0_linear_172_4425"
-              x1="6.01562"
-              y1="8.22609"
-              x2="8.09738"
-              y2="8.22609"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop stopColor="#2DED86" />
-              <stop offset="1" stopColor="#92E873" />
-            </linearGradient>
-            <clipPath id="clip0_172_4425">
-              <rect
-                width="18"
-                height="15"
-                fill="currentColor"
-                transform="translate(1 3)"
-              />
-            </clipPath>
-          </defs>
-        </svg>
-      ),
-      name: "Sport Betting Insights",
-      path: "/sports",
+      new_page_icon: true,
     },
   ];
 
+  const [games_group, rewards_group] = offcanves_menu;
   const displayedOffcanvasMenu = [
-    ...offcanves_menu,
+    games_group,
+    { ...rewards_group, links: [...rewards_group.links, ...extra_btn.map((item) => ({ ...item, is_svg: true }))] },
     ...account_menu,
-    { title: "More", links: extra_btn.map((item) => ({ ...item, is_svg: typeof item.icon !== "string" })) },
   ];
 
   const menuIcon = (item, size) =>
@@ -971,24 +875,26 @@ export default function Nav({ className = "" }) {
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="fixed left-1/2 top-0 z-[70] flex h-dvh w-full max-w-[430px] -translate-x-1/2 flex-col overflow-hidden bg-page"
+            className="new-menu-drawer fixed left-1/2 top-0 z-[70] flex h-dvh w-full max-w-[430px] -translate-x-1/2 flex-col overflow-hidden bg-page"
           >
             <PageTitle
               title="Menu"
-              className="new-menu-title min-h-[51px]! bg-bar px-3! text-ink"
+              className="new-menu-title min-h-[49px]! bg-gold px-3! text-white [&_svg]:size-8"
               titleClass="font-poppins text-[15px] font-bold tracking-tight"
               onClick={() => set_is_menu(false)}
             />
 
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[max(16px,env(safe-area-inset-bottom))]">
               <div>
-                <div className="relative mx-[13px] mb-4 mt-[13px] flex h-[89px] w-[404px] max-w-[calc(100vw-26px)] items-center justify-between overflow-hidden rounded-lg border border-line bg-linear-to-r from-(--menu-banner-from) via-(--menu-banner-via) to-(--menu-banner-to) px-4 py-1.5">
+                <div className="relative mx-[11px] mb-1 mt-[14px] flex h-[91px] w-[408px] max-w-[calc(100vw-22px)] items-center justify-between overflow-hidden rounded-lg bg-linear-to-r from-(--menu-banner-from) via-(--menu-banner-via) to-(--menu-banner-to) px-4 py-1.5">
                   <div className="relative z-10 flex max-w-45 flex-col gap-y-1">
                     <h6 className="font-roboto text-sm font-semibold leading-none text-white">
                       Application
                     </h6>
                     <p className="font-roboto text-xs font-normal leading-4 tracking-wide text-(--menu-banner-sub)">
-                      Unlock Fun with Exclusive Features
+                      Unlock Fun with
+                      <br />
+                      Exclusive Features
                     </p>
                   </div>
                   <img
@@ -998,94 +904,46 @@ export default function Nav({ className = "" }) {
                   />
                 </div>
 
-                <div className="flex flex-col gap-y-4">
+                {/* One flat list, with a divider between groups. */}
+                <div className="mx-[13px] flex w-[404px] max-w-[calc(100vw-26px)] flex-col divide-y divide-line">
                   {displayedOffcanvasMenu.map((group) => (
-                    <section
-                      key={group.title}
-                      className="mx-[13px] w-[404px] max-w-[calc(100vw-26px)]"
-                    >
-                      <h2 className="mb-2 flex items-center gap-x-2 px-1 font-poppins text-[13px] font-bold uppercase tracking-wider text-gold">
-                        <span className="h-3.5 w-1 rounded-[1px] bg-ink" />
-                        {group.title}
-                      </h2>
-                      {group.grid ? (
-                        // Games read faster as a tile grid than as a long list.
-                        <div className="grid grid-cols-3 gap-2">
-                          {group.links.map((item) => {
-                            const active = router.pathname === item.path;
-                            return (
-                              <Link
-                                key={item.name}
-                                onClick={() => set_is_menu(false)}
-                                to={item.path}
-                                target={item.external ? "_blank" : undefined}
-                                rel={item.external ? "noopener noreferrer" : undefined}
-                                aria-current={active ? "page" : undefined}
-                                className={`flex flex-col items-center justify-center gap-y-1.5 rounded-md border py-3 text-ink [&_svg]:size-6.5 [&_svg]:text-gold ${active ? "border-gold-active bg-surface" : "border-line bg-surface hover:bg-surface-2"}`}
-                              >
-                                {menuIcon(item, "size-6")}
-                                <span className="font-poppins text-[13px] font-semibold leading-none">{item.name}</span>
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <div className="flex flex-col gap-y-px">
-                          {group.links.map((item) => {
-                            const active = router.pathname === item.path;
-                            return (
-                              <Link
-                                key={item.name}
-                                onClick={() => set_is_menu(false)}
-                                to={item.path}
-                                target={item.external ? "_blank" : undefined}
-                                rel={item.external ? "noopener noreferrer" : undefined}
-                                aria-current={active ? "page" : undefined}
-                                className={`flex min-h-12 w-full items-center justify-between gap-x-3 rounded-md border px-3 text-left text-ink hover:bg-surface-2 [&_svg]:size-5 ${active ? "border-gold-active bg-surface" : "border-line bg-surface"}`}
-                              >
-                                <span className="flex min-w-0 items-center gap-3">
-                                  <span className="grid size-7.5 flex-none place-items-center rounded-[5px] bg-linear-to-b from-gold-light to-gold-dark text-[#1E1606] shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]">
-                                    {menuIcon(item, "size-5 brightness-0 opacity-85")}
-                                  </span>
-                                  <span className="truncate font-poppins text-[15px] font-semibold tracking-tight">
-                                    {item.name}
-                                  </span>
-                                </span>
-                                {!item.no_arrow && (
-                                  <ChevronRight className="size-4! flex-none text-ink-soft" />
+                    <section key={group.title} aria-label={group.title} className="py-1">
+                      {group.links.map((item) => {
+                        const active = router.pathname === item.path;
+                        return (
+                          <Link
+                            key={item.name}
+                            onClick={() => set_is_menu(false)}
+                            to={item.path}
+                            target={item.external ? "_blank" : undefined}
+                            rel={item.external ? "noopener noreferrer" : undefined}
+                            aria-current={active ? "page" : undefined}
+                            className={`flex min-h-[46px] w-full items-center justify-between gap-x-3 rounded-md px-1.5 text-left hover:bg-surface [&_svg]:size-5 ${active ? "text-gold" : "text-ink-soft"}`}
+                          >
+                            <span className="flex min-w-0 items-center gap-2.5">
+                              {menuIcon(item, "size-5 opacity-85")}
+                              <span className="truncate font-poppins text-[15px] font-medium">
+                                {item.name === "VIP Club" ? (
+                                  <>
+                                    <span className="text-gold">VIP</span> Club
+                                  </>
+                                ) : (
+                                  item.name
                                 )}
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      )}
+                              </span>
+                            </span>
+                            {item.new_page_icon ? (
+                              <ExternalLink className="size-4! flex-none text-ink-soft" />
+                            ) : (
+                              !item.no_arrow && <ChevronRight className="size-4! flex-none text-ink-muted" />
+                            )}
+                          </Link>
+                        );
+                      })}
                     </section>
                   ))}
                 </div>
               </div>
-              <section className="mx-[13px] mt-4 w-[404px] max-w-[calc(100vw-26px)]">
-                <h2 className="mb-2 flex items-center gap-x-2 px-1 font-poppins text-[13px] font-bold uppercase tracking-wider text-gold">
-                  <span className="h-3.5 w-1 rounded-[1px] bg-ink" />
-                  Appearance
-                </h2>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={theme === "dark"}
-                  onClick={toggle_theme}
-                  className="flex min-h-12 w-full items-center justify-between gap-x-3 rounded-md border border-line bg-surface px-3 text-left text-ink hover:bg-surface-2"
-                >
-                  <span className="flex min-w-0 items-center gap-3">
-                    <span className="grid size-7.5 flex-none place-items-center rounded-[5px] bg-linear-to-b from-gold-light to-gold-dark text-[#1E1606] shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]">
-                      {theme === "dark" ? <Moon className="size-5" /> : <Sun className="size-5" />}
-                    </span>
-                    <span className="truncate font-poppins text-[15px] font-semibold tracking-tight">Dark Mode</span>
-                  </span>
-                  <span className={`relative h-6 w-11 flex-none rounded-full border border-line transition-colors ${theme === "dark" ? "bg-gold" : "bg-bar"}`}>
-                    <span className={`absolute left-0.5 top-1/2 size-4.5 -translate-y-1/2 rounded-full bg-white shadow transition-transform ${theme === "dark" ? "translate-x-5" : ""}`} />
-                  </span>
-                </button>
-              </section>
               <div className="mx-[13px] mb-4 mt-5 grid w-[404px] max-w-[calc(100vw-26px)] grid-cols-2 gap-4 border-t border-solid border-line pt-4">
                 {support_btn.map((item, idx) => {
                   // Live Support opens the chat in place instead of linking to #support.

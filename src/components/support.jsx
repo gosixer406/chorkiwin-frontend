@@ -11,9 +11,7 @@ import {
   House,
   MessageSquareText,
   Mic,
-  Moon,
   Paperclip,
-  Sun,
   Users,
   X,
 } from "lucide-react";
@@ -21,7 +19,6 @@ import { useSelector } from "react-redux";
 import { api } from "@/lib/api";
 import GameHall from "@/components/game-hall";
 import brandLogo from "@/assets/img/new/chorkiwala-logo.png";
-import { useTheme } from "@/lib/theme";
 import SpinWheel from "@/components/spin-wheel";
 import launcherGif from "@/assets/img/new/three-logo-animation-images.gif";
 import luckySpinWheel from "@/assets/img/lucky-spin-wheel.svg";
@@ -406,7 +403,6 @@ function AvatarStack({
 }
 
 function BottomBar({ view, onChange }) {
-  const { theme, toggle_theme } = useTheme();
   return (
     <div
       className="shrink-0 pb-[env(safe-area-inset-bottom)]"
@@ -439,35 +435,6 @@ function BottomBar({ view, onChange }) {
           );
         })}
       </nav>
-      <div
-        className="flex items-center justify-center gap-2 border-t py-1.5"
-        style={{ borderColor: t.border }}
-      >
-        {[
-          ["light", "Light", Sun],
-          ["dark", "Dark", Moon],
-        ].map(([value, label, Icon]) => {
-          const active = theme === value;
-          return (
-            <button
-              key={value}
-              type="button"
-              onClick={() => {
-                if (!active) toggle_theme();
-              }}
-              aria-pressed={active}
-              className={`flex h-9 items-center gap-2 rounded-lg px-4 text-[14px] ${active ? "font-semibold" : ""}`}
-              style={{
-                backgroundColor: active ? t.pill : "transparent",
-                color: active ? t.text : t.muted,
-              }}
-            >
-              <Icon className="size-4" />
-              {label}
-            </button>
-          );
-        })}
-      </div>
       {SUPPORT_POWERED_BY && (
         <p
           className="py-2 text-center text-[11px]"

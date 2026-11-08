@@ -150,8 +150,6 @@ export default function App() {
     { path: '/legacy/promotions', element: <DarkRedirect to="/promotions" />, errorElement: <Error /> },
     { path: '/legacy/promotions/:promotionId', element: <DarkRedirect to={({ promotionId }) => `/promotions/${promotionId}`} />, errorElement: <Error /> },
     { path: '/9wickets', element: <Navigate to="/sports" replace />, errorElement: <Error /> },
-    // Self signup is closed: new players contact an agent from the agent list.
-    { path: '/signup', element: <Navigate to="/agent-list" replace />, errorElement: <Error /> },
     { path: '/dashboard/:page', element: <DarkRedirect to={darkDashboardPath} />, errorElement: <Error /> },
     { path: '/casino/:category', element: <DarkRedirect to={darkCasinoPath} />, errorElement: <Error /> },
     { path: '/games/sports', element: <Navigate to="/sports" replace />, errorElement: <Error /> },
@@ -200,14 +198,18 @@ export default function App() {
       children: [
         {
           path: '/login',
-          element: <NewLogin />
+          element: <NewLogin key="login" />
+        },
+        {
+          path: '/signup',
+          element: <NewLogin key="signup" />
         },
       ]
     },
     // Old /auth/* links: keep any ?returnTo= so the login page can pick it up.
     { path: '/auth', element: <DarkRedirect to="/login" />, errorElement: <Error /> },
     { path: '/auth/login', element: <DarkRedirect to="/login" />, errorElement: <Error /> },
-    { path: '/auth/signup', element: <Navigate to="/agent-list" replace />, errorElement: <Error /> },
+    { path: '/auth/signup', element: <DarkRedirect to="/signup" />, errorElement: <Error /> },
     {
       path: '/dashboard',
       element: <ProtectedRoute><NewDashboardIndex /></ProtectedRoute>,

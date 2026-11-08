@@ -30,8 +30,8 @@ import icon_6 from "@/assets/img/new/category-hd/cat-nav-icon-crash-gold.png";
 import icon_7 from "@/assets/img/new/category-hd/cat-nav-icon-fishing-gold.png";
 import icon_8 from "@/assets/img/new/category-hd/cat-nav-icon-arcade-gold.png";
 import icon_9 from "@/assets/img/new/category-hd/cat-nav-icon-lottery-gold.png";
-import category_pod_bg from "@/assets/img/new/category-hd/cat-nav-pod-bg-gold.svg";
-import category_pod_bar from "@/assets/img/new/category-hd/cat-nav-bar-pod-gold.svg";
+import category_pod_bg from "@/assets/img/new/category-hd/cat-nav-pod-bg-blue.svg";
+import category_pod_bar from "@/assets/img/new/category-hd/cat-nav-bar-pod-blue.svg";
 import { api, apiAssetUrl, readSession } from "@/lib/api";
 import { formatAnnouncementTime } from "@/lib/announcements";
 
@@ -347,7 +347,8 @@ const tab_icon_shape = (
 function CategoryIcon({ name }) {
   return (
     <div
-      className="absolute inset-0 translate-y-0 transition-transform duration-500 group-data-[selected=true]:-translate-y-2"
+      // The icon PNGs are gold artwork; this shifts them onto the sky-blue accent.
+      className="absolute inset-0 translate-y-0 transition-transform duration-500 [filter:hue-rotate(165deg)_saturate(1.15)] group-data-[selected=true]:-translate-y-2"
       aria-hidden="true"
     >
       {name === "popular" && (
@@ -500,14 +501,14 @@ export default function Popular() {
 
   const tabs = [
     {
-      name: "sports",
-      icon: icon_2,
-      component: <Sports />,
-    },
-    {
       name: "popular",
       icon: icon_1,
       component: <PopularComponent />,
+    },
+    {
+      name: "sports",
+      icon: icon_2,
+      component: <Sports />,
     },
     {
       name: "Casino",
