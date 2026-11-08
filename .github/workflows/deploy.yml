@@ -1,0 +1,69 @@
+name: Deploy b2b-frontend
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-b2b-frontend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: deploy
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          command_timeout: 30m
+
+          script: |
+            set -e
+
+            APP_DIR=/var/www/chorki-projects/b2b-frontend
+
+            echo "🚀 Starting deployment..."
+            echo "📂 Project directory: $APP_DIR"
+
+            cd "$APP_DIR"
+
+            echo "🔄 Syncing latest code..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            APP_PORT=$(grep -E '^APP_PORT=' .env 2>/dev/null | cut -d= -f2 | tr -d '\r' || true)
+            APP_PORT=${APP_PORT:-8011}
+
+            docker network inspect b2b-net > /dev/null 2>&1 || docker network create b2b-net
+
+            echo "🐳 Building image & restarting container..."
+            docker compose up -d --build --remove-orphans
+
+            echo "🩺 Health check..."
+
+            for i in $(seq 1 20); do
+              if curl -fsS "http://127.0.0.1:${APP_PORT}/healthz" > /dev/null; then
+                echo "✅ App is up on port ${APP_PORT}"
+                break
+              fi
+
+              if [ "$i" -eq 20 ]; then
+                echo "❌ App did not respond. Last logs:"
+                docker compose logs --tail=80 web
+                exit 1
+              fi
+
+              sleep 3
+            done
+
+            echo "📌 Current commit:"
+            git log -1 --oneline
+
+            echo "📦 Container:"
+            docker compose ps

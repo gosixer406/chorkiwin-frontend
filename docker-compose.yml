@@ -1,0 +1,20 @@
+name: b2b-frontend
+
+services:
+  web:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+        VITE_CLOUDINARY_CLOUD_NAME: ${VITE_CLOUDINARY_CLOUD_NAME:-}
+    image: b2b-frontend:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${APP_PORT:-8011}:80"
+    volumes:
+      - ${SHELL_HOST_DIR:-/var/www/chorki-projects/b2b-shell}/site:/shell
+
+networks:
+  default:
+    name: b2b-net
+    external: true

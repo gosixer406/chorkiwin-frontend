@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-150 -150 300 300">
+<style><![CDATA[
+/* Animated like a GIF, also when used as an img: the face spins up, slows and settles,
+   then spins again (1080deg = 3 full turns, so the loop is seamless); rim bulbs twinkle
+   in two alternating sets with a glow. */
+.face{transform-box:fill-box;transform-origin:center;animation:spin 4.5s cubic-bezier(.2,.75,.25,1) infinite}
+@keyframes spin{0%{transform:rotate(0)}78%,100%{transform:rotate(1080deg)}}
+.bulb{fill:#FFF6C2;filter:drop-shadow(0 0 6px #FFCB07);animation:blink .5s linear infinite}
+.bulb.alt{animation-delay:-.25s}
+@keyframes blink{0%,49%{fill:#FFF6C2;filter:drop-shadow(0 0 6px #FFCB07)}50%,100%{fill:#5A4300;filter:none}}
+@media (prefers-reduced-motion:reduce){.face,.bulb{animation:none}}
+]]></style>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF2B0"/><stop offset="0.45" stop-color="#FFCB07"/><stop offset="1" stop-color="#9A6B00"/></linearGradient>
+<linearGradient id="rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A4A4A"/><stop offset="1" stop-color="#151515"/></linearGradient>
+<radialGradient id="shade" r="0.5" cx="0.5" cy="0.5"><stop offset="0.2" stop-color="#000" stop-opacity="0.18"/><stop offset="0.75" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.12"/></radialGradient>
+<radialGradient id="hub" cx="0.35" cy="0.3" r="0.7"><stop offset="0" stop-color="#FFF2B0"/><stop offset="0.5" stop-color="#FFCB07"/><stop offset="1" stop-color="#9A6B00"/></radialGradient>
+</defs>
+<circle r="149" fill="url(#g)"/>
+<circle r="146" fill="url(#rim)"/>
+<circle r="131" fill="#111"/>
+<circle class="bulb" cx="0.00" cy="-140.00" r="5"/>
+<circle class="bulb alt" cx="47.88" cy="-131.56" r="5"/>
+<circle class="bulb" cx="89.99" cy="-107.25" r="5"/>
+<circle class="bulb alt" cx="121.24" cy="-70.00" r="5"/>
+<circle class="bulb" cx="137.87" cy="-24.31" r="5"/>
+<circle class="bulb alt" cx="137.87" cy="24.31" r="5"/>
+<circle class="bulb" cx="121.24" cy="70.00" r="5"/>
+<circle class="bulb alt" cx="89.99" cy="107.25" r="5"/>
+<circle class="bulb" cx="47.88" cy="131.56" r="5"/>
+<circle class="bulb alt" cx="0.00" cy="140.00" r="5"/>
+<circle class="bulb" cx="-47.88" cy="131.56" r="5"/>
+<circle class="bulb alt" cx="-89.99" cy="107.25" r="5"/>
+<circle class="bulb" cx="-121.24" cy="70.00" r="5"/>
+<circle class="bulb alt" cx="-137.87" cy="24.31" r="5"/>
+<circle class="bulb" cx="-137.87" cy="-24.31" r="5"/>
+<circle class="bulb alt" cx="-121.24" cy="-70.00" r="5"/>
+<circle class="bulb" cx="-89.99" cy="-107.25" r="5"/>
+<circle class="bulb alt" cx="-47.88" cy="-131.56" r="5"/>
+<g class="face">
+<path d="M0 0 L-20.617 -110.290 A112.200 112.200 0 0 1 20.617 -110.290 Z" fill="#FFFFFF"/>
+<path d="M0 0 L-20.617 -110.290 A112.200 112.200 0 0 1 20.617 -110.290 Z" fill="url(#shade)"/>
+<g transform="rotate(0.000)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#1C1C1C">$100</text></g>
+<path d="M0 0 L20.617 -110.290 A112.200 112.200 0 0 1 59.066 -95.394 Z" fill="#F2545B"/>
+<path d="M0 0 L20.617 -110.290 A112.200 112.200 0 0 1 59.066 -95.394 Z" fill="url(#shade)"/>
+<g transform="rotate(21.176)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$5,000</text></g>
+<path d="M0 0 L59.066 -95.394 A112.200 112.200 0 0 1 89.538 -67.616 Z" fill="#F7A928"/>
+<path d="M0 0 L59.066 -95.394 A112.200 112.200 0 0 1 89.538 -67.616 Z" fill="url(#shade)"/>
+<g transform="rotate(42.353)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$300</text></g>
+<path d="M0 0 L89.538 -67.616 A112.200 112.200 0 0 1 107.917 -30.705 Z" fill="#2E86DE"/>
+<path d="M0 0 L89.538 -67.616 A112.200 112.200 0 0 1 107.917 -30.705 Z" fill="url(#shade)"/>
+<g transform="rotate(63.529)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$1,000</text></g>
+<path d="M0 0 L107.917 -30.705 A112.200 112.200 0 0 1 111.721 10.353 Z" fill="#E84393"/>
+<path d="M0 0 L107.917 -30.705 A112.200 112.200 0 0 1 111.721 10.353 Z" fill="url(#shade)"/>
+<g transform="rotate(84.706)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$600</text></g>
+<path d="M0 0 L111.721 10.353 A112.200 112.200 0 0 1 100.437 50.012 Z" fill="#10AC84"/>
+<path d="M0 0 L111.721 10.353 A112.200 112.200 0 0 1 100.437 50.012 Z" fill="url(#shade)"/>
+<g transform="rotate(105.882)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$10,000</text></g>
+<path d="M0 0 L100.437 50.012 A112.200 112.200 0 0 1 75.589 82.917 Z" fill="#FFFFFF"/>
+<path d="M0 0 L100.437 50.012 A112.200 112.200 0 0 1 75.589 82.917 Z" fill="url(#shade)"/>
+<g transform="rotate(127.059)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#1C1C1C">$200</text></g>
+<path d="M0 0 L75.589 82.917 A112.200 112.200 0 0 1 40.531 104.623 Z" fill="#F2545B"/>
+<path d="M0 0 L75.589 82.917 A112.200 112.200 0 0 1 40.531 104.623 Z" fill="url(#shade)"/>
+<g transform="rotate(148.235)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$2,000</text></g>
+<path d="M0 0 L40.531 104.623 A112.200 112.200 0 0 1 0.000 112.200 Z" fill="#F7A928"/>
+<path d="M0 0 L40.531 104.623 A112.200 112.200 0 0 1 0.000 112.200 Z" fill="url(#shade)"/>
+<g transform="rotate(169.412)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$800</text></g>
+<path d="M0 0 L0.000 112.200 A112.200 112.200 0 0 1 -40.531 104.623 Z" fill="#2E86DE"/>
+<path d="M0 0 L0.000 112.200 A112.200 112.200 0 0 1 -40.531 104.623 Z" fill="url(#shade)"/>
+<g transform="rotate(190.588)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$4,000</text></g>
+<path d="M0 0 L-40.531 104.623 A112.200 112.200 0 0 1 -75.589 82.917 Z" fill="#E84393"/>
+<path d="M0 0 L-40.531 104.623 A112.200 112.200 0 0 1 -75.589 82.917 Z" fill="url(#shade)"/>
+<g transform="rotate(211.765)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$400</text></g>
+<path d="M0 0 L-75.589 82.917 A112.200 112.200 0 0 1 -100.437 50.012 Z" fill="#10AC84"/>
+<path d="M0 0 L-75.589 82.917 A112.200 112.200 0 0 1 -100.437 50.012 Z" fill="url(#shade)"/>
+<g transform="rotate(232.941)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$8,000</text></g>
+<path d="M0 0 L-100.437 50.012 A112.200 112.200 0 0 1 -111.721 10.353 Z" fill="#FFFFFF"/>
+<path d="M0 0 L-100.437 50.012 A112.200 112.200 0 0 1 -111.721 10.353 Z" fill="url(#shade)"/>
+<g transform="rotate(254.118)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#1C1C1C">$700</text></g>
+<path d="M0 0 L-111.721 10.353 A112.200 112.200 0 0 1 -107.917 -30.705 Z" fill="#F2545B"/>
+<path d="M0 0 L-111.721 10.353 A112.200 112.200 0 0 1 -107.917 -30.705 Z" fill="url(#shade)"/>
+<g transform="rotate(275.294)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$3,000</text></g>
+<path d="M0 0 L-107.917 -30.705 A112.200 112.200 0 0 1 -89.538 -67.616 Z" fill="#F7A928"/>
+<path d="M0 0 L-107.917 -30.705 A112.200 112.200 0 0 1 -89.538 -67.616 Z" fill="url(#shade)"/>
+<g transform="rotate(296.471)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$500</text></g>
+<path d="M0 0 L-89.538 -67.616 A112.200 112.200 0 0 1 -59.066 -95.394 Z" fill="#2E86DE"/>
+<path d="M0 0 L-89.538 -67.616 A112.200 112.200 0 0 1 -59.066 -95.394 Z" fill="url(#shade)"/>
+<g transform="rotate(317.647)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$6,000</text></g>
+<path d="M0 0 L-59.066 -95.394 A112.200 112.200 0 0 1 -20.617 -110.290 Z" fill="#E84393"/>
+<path d="M0 0 L-59.066 -95.394 A112.200 112.200 0 0 1 -20.617 -110.290 Z" fill="url(#shade)"/>
+<g transform="rotate(338.824)"><text transform="translate(0 -78) rotate(90)" letter-spacing="-0.34" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#FFFFFF">$900</text></g>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(-10.588)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(10.588)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(31.765)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(52.941)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(74.118)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(95.294)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(116.471)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(137.647)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(158.824)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(180.000)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(201.176)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(222.353)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(243.529)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(264.706)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(285.882)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(307.059)" stroke="#F5D06F" stroke-width="1.5"/>
+<line x1="0" y1="0" x2="0" y2="-112.20" transform="rotate(328.235)" stroke="#F5D06F" stroke-width="1.5"/>
+<circle r="111.20" fill="none" stroke="#F5D06F" stroke-width="2.2"/>
+</g>
+<g transform="translate(-13 -149) scale(0.9)"><path d="M2 2 H28 V26 L15 48 L2 26 Z" fill="url(#g)" stroke="#7A5A00" stroke-width="2" stroke-linejoin="round"/></g>
+<circle r="40" fill="#F5D06F"/>
+<circle r="36" fill="url(#hub)" stroke="#B88700" stroke-width="3"/>
+<text y="1" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" font-family="Poppins, Inter, sans-serif" fill="#3A2A00">SPIN</text>
+</svg>

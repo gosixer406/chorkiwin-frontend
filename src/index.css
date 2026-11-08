@@ -1,0 +1,481 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"); */
+
+@import "tailwindcss";
+
+@custom-variant hover (&:hover);
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: var(--c-gold-light);
+  --color-primary2: var(--c-gold);
+  --color-background: #f5f8f9;
+  --color-heading: #00121e;
+  --color-para: #3b6c88;
+  --color-stroke: #647d8d;
+  --breakpoint-xs: 390px;
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1240px;
+  --breakpoint-2xl: 1432px;
+  --font-ubuntu: "Ubuntu", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-poppins: "Poppins", "Inter", ui-sans-serif, sans-serif;
+  --font-roboto: "Roboto", "Inter", ui-sans-serif, sans-serif;
+  --font-bangla: "Hind Siliguri", "Inter", ui-sans-serif, sans-serif;
+}
+/* Site palette, sampled from the reference screenshots.
+   Light (default) is deep teal + gold; `.dark` on <html> switches to charcoal + gold.
+   Components use the Tailwind names (bg-page, bg-surface, border-line, text-ink-soft, text-gold …). */
+@theme inline {
+  --color-page: var(--c-page);
+  --color-bar: var(--c-bar);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-ink: var(--c-ink);
+  --color-ink-soft: var(--c-ink-soft);
+  --color-ink-muted: var(--c-ink-muted);
+  --color-ink-dim: var(--c-ink-dim);
+  --color-gold: var(--c-gold);
+  --color-gold-light: var(--c-gold-light);
+  --color-gold-dark: var(--c-gold-dark);
+  --color-gold-active: var(--c-gold-active);
+  --color-on-gold: var(--c-on-gold);
+}
+:root {
+  --c-page: #011B1F;
+  --c-bar: #032125;
+  --c-surface: #06262B;
+  --c-surface-2: #0A2C30;
+  --c-line: #17353A;
+  --c-line-strong: #2C4A4E;
+  --c-ink: #FFFFFF;
+  --c-ink-soft: #D5E0E0;
+  --c-ink-muted: #93AAAB;
+  --c-ink-dim: #5F7A7C;
+  --c-gold: #DBC481;
+  --c-gold-light: #DDB566;
+  --c-gold-dark: #CFA552;
+  --c-gold-active: #E9D594;
+  --c-on-gold: #1E1606;
+  --menu-banner-sub: #F2E1BA;
+  --menu-banner-from: #D2B266;
+  --menu-banner-via: #897136;
+  --menu-banner-to: #2F2F1C;
+}
+.dark {
+  --c-page: #0D141A;
+  --c-bar: #131A20;
+  --c-surface: #131C21;
+  --c-surface-2: #19242A;
+  --c-line: #1E262B;
+  --c-line-strong: #2A3238;
+  --c-ink: #FFFFFF;
+  --c-ink-soft: #D3D6DA;
+  --c-ink-muted: #9AA1A7;
+  --c-ink-dim: #5D666D;
+  --c-gold: #D4BA88;
+  --c-gold-light: #EDC57F;
+  --c-gold-dark: #B98A45;
+  --c-gold-active: #A08C66;
+  --c-on-gold: #2B1D0F;
+  --menu-banner-from: #62686F;
+  --menu-banner-via: #31373F;
+  --menu-banner-to: #161A1F;
+  --menu-banner-sub: #D3D6DA;
+}
+
+@layer base {
+  html {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    touch-action: pan-x pan-y pinch-zoom;
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--c-line-strong) transparent;
+    scrollbar-width: thin;
+  }
+  body,
+  #root {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+  body::-webkit-scrollbar {
+    width: 4px;
+  }
+  body::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: var(--c-line-strong);
+  }
+  body {
+    @apply text-base leading-normal font-normal text-para bg-cover bg-center bg-fixed;
+    margin: 0;
+    overscroll-behavior-x: none;
+    background-color: var(--c-page);
+    color-scheme: dark;
+    transition: background-color 0.2s ease;
+  }
+
+  /* Banking keeps the plain page tone so it matches every other screen. */
+  body.dark-banking-backdrop {
+    background-color: var(--c-page);
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-medium font-ubuntu text-heading;
+  }
+  img {
+    @apply max-w-full;
+  }
+  a {
+    @apply no-underline transition-all duration-300;
+  }
+  input,
+  textarea,
+  button {
+    @apply outline-0 transition-all duration-300;
+  }
+  button {
+    @apply cursor-pointer;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration {
+    display: none;
+  }
+}
+
+/* Swiper ships an unlayered `.swiper-horizontal { touch-action: pan-y; }`
+   rule. Keep this override outside Tailwind's base layer so mobile browsers
+   are allowed to start native pinch zoom directly over every banner. */
+.velki-zoomable-banner,
+.velki-zoomable-banner .swiper,
+.velki-zoomable-banner .swiper-wrapper,
+.velki-zoomable-banner .swiper-slide,
+.velki-zoomable-banner a,
+.velki-zoomable-banner img {
+  touch-action: pan-y pinch-zoom !important;
+}
+
+.new-version-shell .page-title {
+  min-height: 44px;
+}
+
+.new-version-shell .new-menu-title {
+  min-height: 48px;
+}
+
+.new-version-shell {
+  scrollbar-color: var(--c-line-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.new-version-shell *::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.new-version-shell *::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--c-line-strong);
+}
+
+.casino-provider-pill-active {
+  background-image: linear-gradient(181deg, transparent 2%, color-mix(in srgb, var(--c-gold) 25%, transparent) 44%, transparent 97%);
+}
+
+/* The light header is viewport-fixed, so it needs the install-bar offset. */
+body.pwa-install-visible .velki-site-header-light {
+  top: 56px;
+}
+
+/* The dark shell already moves with the body's install-bar padding. Adding the
+   same offset to its sticky header would create a second 56px gap. */
+body.pwa-install-visible .velki-site-header-dark {
+  top: 0;
+}
+
+/* Match the reference 9Wickets launch indicator. */
+.loading-spinner {
+  position: relative;
+  display: block;
+  width: 60px;
+  height: 20px;
+}
+
+.loading-spinner::before,
+.loading-spinner::after {
+  position: absolute;
+  top: 0;
+  left: 75%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffc800;
+  content: '';
+  animation: spinnerLeftRight 0.6s ease-in-out infinite;
+}
+
+.loading-spinner::before {
+  animation-delay: 0.095s;
+}
+
+.loading-spinner::after {
+  border-radius: 100%;
+}
+
+@keyframes spinnerLeftRight {
+  0%,
+  100% {
+    left: 75%;
+  }
+
+  50% {
+    left: -15%;
+  }
+}
+
+@keyframes preloader-progress {
+  0% {
+    width: 8%;
+  }
+
+  50% {
+    width: 68%;
+  }
+
+  100% {
+    width: 92%;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-x-3 rounded-lg text-base font-medium leading-normal px-4 min-h-9 bg-black hover:bg-primary hover:text-heading text-white hover:[&_svg]:translate-x-1 active:scale-97;
+  }
+  .btn svg {
+    @apply transition-all duration-300;
+  }
+  .btn-new {
+    @apply inline-flex items-center justify-center gap-x-3 rounded-lg text-base font-bold leading-normal px-4 min-h-9 bg-primary2 hover:bg-primary hover:text-heading text-on-gold hover:[&_svg]:translate-x-1 active:scale-97;
+  }
+}
+
+@layer utilities {
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes legal-drawer-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes velki-hall-in {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .game-hall-enter {
+    animation: velki-hall-in 500ms ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .game-hall-enter {
+      animation: none;
+    }
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .reference-search-scroll::-webkit-scrollbar {
+    width: 16px;
+  }
+
+  .reference-search-scroll::-webkit-scrollbar-thumb {
+    border: 5px solid transparent;
+    border-radius: 999px;
+    background: var(--c-ink-muted);
+    background-clip: padding-box;
+  }
+}
+
+/* Admin-authored promotion details often carry inline colours; keep them on the active theme. */
+.promotion-content,
+.promotion-content * {
+  background-color: transparent !important;
+  color: var(--c-ink-soft) !important;
+  border-color: var(--c-line) !important;
+}
+
+.promotion-content :is(h1, h2, h3, h4, h5, h6, strong, b, th) {
+  color: var(--c-ink) !important;
+}
+
+.promotion-content a {
+  color: var(--c-gold) !important;
+  text-decoration: underline;
+}
+
+.promotion-content :is(h1, h2, h3, h4, h5, h6) {
+  margin: 1rem 0 0.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.promotion-content p {
+  margin: 0 0 0.6rem;
+}
+
+.promotion-content :is(ul, ol) {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.promotion-content ul {
+  list-style: disc;
+}
+
+.promotion-content ol {
+  list-style: decimal;
+}
+
+.promotion-content li {
+  margin-bottom: 0.25rem;
+}
+
+.promotion-content table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+  border-collapse: collapse;
+}
+
+.promotion-content :is(th, td) {
+  border: 1px solid var(--c-line);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+
+.promotion-content th,
+.promotion-content thead td {
+  background-color: var(--c-surface) !important;
+}
+
+.promotion-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+/* Spin & Win */
+.spin-title {
+  background: linear-gradient(180deg, #fff6c2 0%, #ffcb07 55%, #b88700 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 3px 0 #5a4100);
+}
+.spin-bulb {
+  fill: #fff6c2;
+  animation: spin-bulb-blink 1s steps(1) infinite;
+}
+.spin-bulb-alt {
+  animation-delay: 0.5s;
+}
+.spin-bulb-fast {
+  animation-duration: 0.3s;
+}
+.spin-bulb-alt.spin-bulb-fast {
+  animation-delay: 0.15s;
+}
+@keyframes spin-bulb-blink {
+  0% { fill: #fff6c2; filter: drop-shadow(0 0 4px #ffcb07); }
+  50% { fill: #7a5a00; filter: none; }
+}
+.spin-winners-scroll {
+  animation: spin-winners-scroll linear infinite;
+}
+.spin-winners-scroll:hover {
+  animation-play-state: paused;
+}
+@keyframes spin-winners-scroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+.spin-mini-face {
+  animation: spin-float-rotate 6s linear infinite;
+}
+@keyframes spin-float-rotate {
+  to { transform: rotate(360deg); }
+}
+/* Same heartbeat pulse and timing as the floating Games icon (public/game.svg). */
+.spin-float-pulse {
+  animation: spin-float-pulse 4.43s linear infinite;
+}
+@keyframes spin-float-pulse {
+  0%, 3.16% { transform: scale(1); }
+  8.13% { transform: scale(0.94); }
+  13.54% { transform: scale(1); }
+  19.41% { transform: scale(1.06); }
+  25.28%, 88.04% { transform: scale(1); }
+  93.91% { transform: scale(1.06); }
+  99.77%, 100% { transform: scale(1); }
+}
+.spin-result-pop {
+  animation: spin-result-pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+@keyframes spin-result-pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spin-winners-scroll,
+  .spin-mini-face,
+  .spin-float-pulse,
+  .spin-bulb { animation: none; }
+}
