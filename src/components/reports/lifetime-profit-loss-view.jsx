@@ -64,7 +64,7 @@ export default function LifetimeProfitLossView({ dark = false, title = 'Life Tim
     }
 
     return <div className={`min-h-full ${shell}`}>
-        <PageTitle title={title} titleClass="font-poppins text-[15px] font-bold tracking-tight" className={dark ? 'min-h-[51px]! bg-bar px-3! text-ink' : ''} />
+        <PageTitle title={title} titleClass="font-poppins text-[15px] font-bold tracking-tight" className={dark ? 'min-h-[51px]! bg-account-header px-3! text-white' : ''} />
         <div className="space-y-4 p-3">
             {daily && <label className={`block rounded-xl border p-3 text-xs ${panel}`}>
                 <span className={`mb-1 block font-semibold ${dark ? 'text-white' : 'text-black'}`}>Profit/loss date</span>

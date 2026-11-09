@@ -159,9 +159,9 @@ export default function HistoryView({ profitLoss = false }) {
 
     return (
         <div className="flex min-h-dvh flex-col bg-page">
-            <header className="sticky top-0 z-20 bg-bar">
-                <PageTitle title={profitLoss ? 'Profit & Loss' : 'Bets History'} titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-bar px-3! text-ink" />
-                <div className="no-scrollbar flex overflow-x-auto border-b border-line" role="tablist" aria-label="History source tabs">
+            <header className="sticky top-0 z-20 bg-account-header">
+                <PageTitle title={profitLoss ? 'Profit & Loss' : 'Bets History'} titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
+                <div className="no-scrollbar flex overflow-x-auto" role="tablist" aria-label="History source tabs">
                     {sources.map((item) => (
                         <button
                             type="button"
@@ -169,7 +169,7 @@ export default function HistoryView({ profitLoss = false }) {
                             aria-selected={activeSource === item}
                             key={`${item.value}-${item.category || item.label}`}
                             onClick={() => chooseSource(item)}
-                            className={`h-[38px] min-w-[92px] shrink-0 whitespace-nowrap border-b-[3px] px-4 text-[14px] font-medium transition-colors ${activeSource === item ? 'border-gold text-gold' : 'border-transparent text-ink-soft hover:text-ink'}`}
+                            className={`h-[38px] min-w-[92px] shrink-0 whitespace-nowrap border-b-[3px] px-4 text-[14px] font-medium transition-colors ${activeSource === item ? 'border-white text-white' : 'border-transparent text-white/70 hover:text-white'}`}
                         >
                             {item.label}
                         </button>

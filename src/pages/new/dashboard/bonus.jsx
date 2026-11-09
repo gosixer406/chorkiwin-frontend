@@ -42,7 +42,7 @@ export default function Bonus() {
     }
 
     return <>
-        <PageTitle title="Bonus" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-bar px-3! text-ink" />
+        <PageTitle title="Bonus" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
         <div className="space-y-3 p-3 text-white">
             {message && <div className="rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-300">{message}</div>}
             {error && <div className="rounded-lg bg-red-500/10 p-3 text-sm text-red-300">{error}</div>}

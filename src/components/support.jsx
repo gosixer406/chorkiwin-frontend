@@ -8,7 +8,6 @@ import {
   ChevronRight,
   ExternalLink,
   Globe,
-  Headphones,
   House,
   MessageSquareText,
   Mic,
@@ -149,7 +148,7 @@ function CountBadge({ count }) {
   );
 }
 
-// One draggable launcher; tapping it fans the spin, support and games buttons out in three directions.
+// One draggable launcher; tapping it fans the spin and games buttons out in two directions.
 function FloatingLauncher({ hidden, actions }) {
   const [expanded, setExpanded] = useState(false);
   const toggle = useCallback(() => setExpanded((value) => !value), []);
@@ -173,7 +172,6 @@ function FloatingLauncher({ hidden, actions }) {
   const dy = fanDown ? 1 : -1;
   const offsets = [
     [0, dy * LAUNCHER_RADIUS],
-    [dx * LAUNCHER_RADIUS * 0.72, dy * LAUNCHER_RADIUS * 0.72],
     [dx * LAUNCHER_RADIUS, 0],
   ];
 
@@ -1049,7 +1047,6 @@ export default function Support() {
     }
   }
 
-  const openSupport = useCallback(() => setOpen(true), []);
   const [spinCount, setSpinCount] = useState(0);
 
   const launcherActions = [
@@ -1065,11 +1062,6 @@ export default function Support() {
       label: "Games",
       onClick: () => setHallOpen(true),
       icon: <img src="/game.svg" alt="" className="size-full object-contain" />,
-    }, 
-    {
-      label: "Support",
-      onClick: openSupport,
-      icon: <Headphones className="size-6" />,
     },
   ];
 

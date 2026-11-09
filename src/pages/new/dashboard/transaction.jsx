@@ -30,9 +30,9 @@ export default function Transaction() {
     })
 
     return <>
-        <PageTitle title="Payment Transfer Log" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-bar px-3! text-ink" />
-        <div className="grid grid-cols-2 border-b border-line bg-bar" role="tablist" aria-label="Transaction log tabs">
-            {[['payments', 'Payment Transfer Log'], ['p2p', 'P2p Log']].map(([value, label]) => <button role="tab" aria-selected={tab === value} key={value} onClick={() => setTab(value)} className={`h-10 border-b-2 py-2.5 text-sm font-medium ${tab === value ? 'border-gold text-gold' : 'border-transparent text-ink-soft hover:text-ink'}`}>{label}</button>)}
+        <PageTitle title="Payment Transfer Log" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
+        <div className="grid grid-cols-2 bg-account-header" role="tablist" aria-label="Transaction log tabs">
+            {[['payments', 'Payment Transfer Log'], ['p2p', 'P2p Log']].map(([value, label]) => <button role="tab" aria-selected={tab === value} key={value} onClick={() => setTab(value)} className={`h-10 border-b-2 py-2.5 text-sm font-medium ${tab === value ? 'border-white text-white' : 'border-transparent text-white/70 hover:text-white'}`}>{label}</button>)}
         </div>
         <div className="space-y-2 px-2 py-4 text-white">
             {loading && <Loader />}

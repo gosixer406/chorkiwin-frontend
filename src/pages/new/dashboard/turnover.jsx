@@ -22,8 +22,8 @@ export default function Turnover() {
 
     return (
         <div className="flex min-h-dvh flex-col bg-page">
-            <header className="sticky top-0 z-20 bg-bar">
-                <PageTitle title="Turnover" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-bar px-3! text-ink" />
+            <header className="sticky top-0 z-20 bg-account-header">
+                <PageTitle title="Turnover" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
                 <div className="grid grid-cols-2" role="tablist" aria-label="Turnover tabs">
                     {['active', 'completed'].map((value) => (
                         <button

@@ -10,6 +10,7 @@ import {
   ChevronRight,
   CircleDollarSign,
   Copy,
+  HandCoins,
   ScrollText,
   Trophy,
   UserCog,
@@ -33,6 +34,7 @@ const menu_links = [
   { icon: <ScrollText />, name: "Bet History", path: "/dashboard/bet-history" },
   { icon: <CircleDollarSign />, name: "Profit/Loss", path: "/dashboard/profit-loss" },
   { icon: <ChartNoAxesColumn />, name: "Turnover", path: "/dashboard/turnover" },
+  { icon: <HandCoins />, name: "Loss Back", path: "/dashboard/loss-back" },
   { icon: <Users />, name: "Referral", path: "/dashboard/referral" },
   { icon: <UserCog />, name: "Profile & Settings", path: "/dashboard/settings" },
 ];
@@ -91,11 +93,11 @@ export default function Profile() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 bg-gold pt-[env(safe-area-inset-top)]">
+      <header className="sticky top-0 z-20 bg-account-header pt-[env(safe-area-inset-top)]">
         <PageTitle
           title="Profile"
           titleClass="font-poppins text-[15px] font-bold tracking-tight"
-          className="min-h-[51px]! bg-gold px-3! text-white [&_svg]:size-7"
+          className="min-h-[51px]! bg-account-header px-3! text-white [&_svg]:size-7"
           onClick={() => navigate("/")}
         />
       </header>

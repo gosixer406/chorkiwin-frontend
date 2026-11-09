@@ -14,7 +14,7 @@ export default function BalanceOverview() {
     ]
 
     return <>
-        <PageTitle title="Balance Overview" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-bar px-3! text-ink" />
+        <PageTitle title="Balance Overview" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
         <section className="space-y-2 px-[13px] py-3" aria-label="Balance overview">
             <div className="rounded-md bg-linear-to-r from-(--menu-banner-from) via-(--menu-banner-via) to-(--menu-banner-to) p-4 text-white">
                 <p className="text-xs font-medium text-(--menu-banner-sub)">Total Balance</p>

@@ -10,6 +10,7 @@ import {
   Crown,
   ExternalLink,
   FileClock,
+  HandCoins,
   History,
   KeyRound,
   ListChecks,
@@ -711,6 +712,7 @@ export default function Nav({ className = "" }) {
             { icon: accountIcon(Wallet), is_svg: true, name: "Balance Overview", path: "/dashboard/balance-overview" },
             { icon: accountIcon(ArrowLeftRight), is_svg: true, name: "P2P Transfer", path: "/dashboard/p2p" },
             { icon: accountIcon(ScrollText), is_svg: true, name: "P2P Transfer Log", path: "/dashboard/transaction" },
+            { icon: accountIcon(HandCoins), is_svg: true, name: "Loss Back", path: "/dashboard/loss-back" },
           ],
         },
         {

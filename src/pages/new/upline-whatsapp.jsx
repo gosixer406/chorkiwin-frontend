@@ -105,11 +105,11 @@ export default function UplineWhatsapp() {
 
   return (
     <div className="flex flex-1 flex-col bg-page pb-16">
-      <header className="sticky top-0 z-20 bg-bar">
+      <header className="sticky top-0 z-20 bg-account-header">
         <PageTitle
           title="Customer Care What's App Number"
           titleClass="font-poppins text-[15px] font-bold tracking-tight"
-          className="min-h-[51px]! bg-bar px-3! text-ink"
+          className="min-h-[51px]! bg-account-header px-3! text-white"
           onClick={() => navigate("/profile")}
         />
       </header>
