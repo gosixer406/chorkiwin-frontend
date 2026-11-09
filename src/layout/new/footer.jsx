@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import logo from "@/assets/img/new/chorkiwala-logo.png";
+import logo from "@/assets/img/logo/short_logo_3d.png";
 import adult_1 from "@/assets/img/new/adult/1.png";
 import adult_2 from "@/assets/img/new/adult/2.png";
 import adult_3 from "@/assets/img/new/adult/3.png";

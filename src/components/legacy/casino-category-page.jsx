@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ChevronRight, Search, X } from 'lucide-react'
@@ -264,11 +265,9 @@ export default function CasinoCategoryPage({ category }) {
         return [...groups.entries()]
     }, [category, displayedGames])
 
-    const statusMessage = loading
-        ? 'Loading games…'
-        : error
-            ? 'Games are temporarily unavailable.'
-            : 'No games from this category are available in the API.'
+    const statusMessage = error
+        ? 'Games are temporarily unavailable.'
+        : 'No games from this category are available in the API.'
 
     return (
         <>
@@ -343,7 +342,7 @@ export default function CasinoCategoryPage({ category }) {
 
             {displayedGames.length === 0 ? (
                 <div className="min-h-52 bg-white p-8 text-center text-sm text-[#657583]">
-                    {statusMessage}
+                    {loading ? <Loader className="py-2" /> : statusMessage}
                 </div>
             ) : category === 'live' ? (
                 <div className="space-y-6 px-4 py-4">

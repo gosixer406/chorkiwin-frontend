@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { createPortal } from 'react-dom'
-import logo from '@/assets/img/new/logo.png'
+import logo from '@/assets/img/logo/short_logo_3d.png'
 
 export default function LegacyDesktopSidebar() {
     return createPortal(

@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 import NotAvailable from '@/utilities/icons/not-available'
@@ -82,7 +83,7 @@ export default function TransactionList({ p2pOnly = false }) {
         return () => { active = false }
     }, [p2pOnly])
 
-    if (loading) return <p className="py-18 text-center text-sm text-[#657583]">Loading transactions…</p>
+    if (loading) return <Loader />
     if (error) return <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
     if (!rows.length) return (
         <div className="mx-auto mt-18 flex w-full max-w-36 flex-col items-center justify-center gap-y-2 rounded-xl bg-white p-4">

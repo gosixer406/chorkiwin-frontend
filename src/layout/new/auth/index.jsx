@@ -1,69 +1,9 @@
-import { useEffect, useState } from 'react'
 import { Link, Outlet } from 'react-router-dom'
 
-import logo from '@/assets/img/new/chorkiwala-logo.png'
-import { api, apiAssetUrl } from '@/lib/api'
-import { useTheme } from '@/lib/theme'
-
-// Banner set by the White Label in admin (CMS > Login Banner), one image per
-// theme (light is the default). Only the API banner is shown — no bundled
-// fallback — and the response is cached for 5 minutes.
-const BANNER_CACHE_KEY = 'velki_login_banner_v3'
-const BANNER_CACHE_TTL = 5 * 60 * 1000
-
-function readCachedEntry() {
-    try {
-        const entry = JSON.parse(localStorage.getItem(BANNER_CACHE_KEY) || 'null')
-        return entry && typeof entry.at === 'number' ? entry : null
-    } catch {
-        return null
-    }
-}
-
-function useLoginBanner() {
-    const [banner, setBanner] = useState(() => readCachedEntry()?.banner ?? null)
-    useEffect(() => {
-        const cached = readCachedEntry()
-        if (cached && Date.now() - cached.at < BANNER_CACHE_TTL) return
-        let alive = true
-        api.get('/api/site/login-banner', { auth: false })
-            .then((response) => {
-                const data = response?.data
-                const light = data?.light_image_url || data?.image_url
-                const dark = data?.dark_image_url || light
-                const next = data?.show && light
-                    ? { light: apiAssetUrl(light), dark: apiAssetUrl(dark), link: data.link_url || '' }
-                    : null
-                if (!alive) return
-                setBanner(next)
-                try {
-                    localStorage.setItem(BANNER_CACHE_KEY, JSON.stringify({ banner: next, at: Date.now() }))
-                } catch {
-                    // storage unavailable: the banner just reloads next time
-                }
-            })
-            .catch(() => {})
-        return () => {
-            alive = false
-        }
-    }, [])
-    return banner
-}
-
-function BannerLink({ link, children }) {
-    if (!link) return children
-    if (link.startsWith('/')) return <Link to={link} className="block">{children}</Link>
-    return <a href={link} target="_blank" rel="noopener noreferrer" className="block">{children}</a>
-}
+import banner from '@/assets/img/logo/login-banner.png'
+import logo from '@/assets/img/logo/short_logo_3d.png'
 
 export default function Index() {
-    const banner = useLoginBanner()
-    const { theme } = useTheme()
-    const [failed, setFailed] = useState('')
-    const themed = banner ? (theme === 'dark' ? banner.dark : banner.light) : ''
-    const src = themed && failed !== themed ? themed : ''
-    const link = src ? banner.link : ''
-
     return (
         <div className="app-shell new-version-shell mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-[#272727] pb-[66px] font-inter text-sm leading-[21px] text-white">
             <div className="relative shrink-0 overflow-hidden">
@@ -79,19 +19,8 @@ export default function Index() {
                         </svg>
                     </Link>
                 </div>
-                {src && (
-                    <>
-                        <BannerLink link={link}>
-                            <img
-                                src={src}
-                                onError={() => setFailed(themed)}
-                                className={`block h-auto w-full ${link ? '' : 'pointer-events-none'}`}
-                                alt=""
-                            />
-                        </BannerLink>
-                        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-linear-to-t from-[#272727] to-transparent" />
-                    </>
-                )}
+                <img src={banner} className="pointer-events-none block h-auto w-full" alt="" />
+                <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-[#272727] to-transparent" />
             </div>
             <Outlet />
         </div>

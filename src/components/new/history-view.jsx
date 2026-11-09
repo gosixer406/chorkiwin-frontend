@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useMemo, useState } from 'react'
 import { CalendarDays, ChevronDown, MoveRight } from 'lucide-react'
 import PageTitle from '@/components/dashboard/page-title'
@@ -245,7 +246,7 @@ export default function HistoryView({ profitLoss = false }) {
                     </div>
                 )}
 
-                {loading && <p className="py-16 text-center text-[13px] text-ink-muted">Loading records…</p>}
+                {loading && <Loader />}
                 {error && <div className="rounded-lg bg-red-500/10 p-3 text-sm text-red-300">{error}</div>}
                 {!loading && !error && rows.length === 0 && (
                     <div className="flex flex-col items-center gap-2 py-16 text-center">

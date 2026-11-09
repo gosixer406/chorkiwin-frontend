@@ -3,12 +3,12 @@
 
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png?v=2" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png?v=3" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="preconnect" href="%VITE_API_BASE_URL%" crossorigin />
     <link rel="preconnect" href="https://res.cloudinary.com" />
     <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3" />
     <meta name="description" content="Chorkiwala gaming application" />
     <!-- Link preview when the site is shared (Facebook, WhatsApp, Messenger, Telegram, X) -->
     <meta property="og:type" content="website" />
@@ -16,7 +16,7 @@
     <meta property="og:title" content="Chorkiwala" />
     <meta property="og:description" content="Chorkiwala gaming application" />
     <meta property="og:url" content="https://chorkix.com/" />
-    <meta property="og:image" content="https://chorkix.com/og-image.png" />
+    <meta property="og:image" content="https://chorkix.com/og-image.png?v=3" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -24,8 +24,8 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Chorkiwala" />
     <meta name="twitter:description" content="Chorkiwala gaming application" />
-    <meta name="twitter:image" content="https://chorkix.com/og-image.png" />
-    <link rel="preload" href="/loading-video/main-loading-poster.jpg" as="image" />
+    <meta name="twitter:image" content="https://chorkix.com/og-image.png?v=3" />
+    <link rel="preload" href="/preloader-logo.png" as="image" />
     <meta name="theme-color" content="#202020" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes, viewport-fit=cover" />
     <title>Chorkiwala</title>
@@ -38,41 +38,110 @@
         } catch (e) {}
     </script>
     <style>
-        /* First-load splash: the poster shows at once, the video fades in over it once it plays. */
+        /* First-load splash: paints before any JS or Tailwind. Keep it matching
+           the Preloader in src/components/preloader.jsx. */
         #splash {
             position: fixed;
             inset: 0;
             z-index: 9999;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #000;
+            background: #1C1C1C;
             transition: opacity .45s ease;
         }
         #splash.is-done { opacity: 0; pointer-events: none; }
-        #splash img,
-        #splash video {
+        #splash .mark { position: relative; z-index: 1; }
+        #splash .mark svg {
             position: absolute;
-            width: 100%;
-            max-width: 480px;
-            height: 100%;
-            object-fit: contain;
+            top: 50%;
+            left: 50%;
+            z-index: -20;
+            transform: translate(-50%, -50%);
         }
-        #splash video { opacity: 0; transition: opacity .3s ease; }
-        #splash.is-playing video { opacity: 1; }
+        #splash .mark svg.cw { animation: splash-spin 2s linear infinite; }
+        #splash .mark svg.ccw { animation: splash-spin 2s linear infinite reverse; }
+        #splash .mark img {
+            display: block;
+            height: 36px;
+            animation: splash-ping 1s cubic-bezier(0, 0, .2, 1) infinite;
+        }
+        #splash .status {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            width: 100%;
+            max-width: 324px;
+            margin-top: 100px;
+            color: #A0A1A6;
+            font: 500 16px/1.5 Poppins, Inter, ui-sans-serif, system-ui, sans-serif;
+            letter-spacing: 5px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        #splash .track { position: relative; height: 4px; background: #333; }
+        #splash .fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 8%;
+            height: 100%;
+            background: linear-gradient(90deg, #D7B514 0%, #08B173 100%);
+            animation: splash-progress 1.4s ease-in-out infinite;
+        }
+        @keyframes splash-spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @keyframes splash-ping {
+            75%, 100% { transform: scale(2); opacity: 0; }
+        }
+        @keyframes splash-progress {
+            0% { width: 8%; }
+            50% { width: 68%; }
+            100% { width: 92%; }
+        }
     </style>
 </head>
 
 <body style="background:#1C1C1C">
     <div id="splash" aria-hidden="true">
-        <img src="/loading-video/main-loading-poster.jpg" alt="" />
-        <video src="/loading-video/main-loading-video-web.mp4" muted playsinline autoplay preload="auto"></video>
+        <div class="mark">
+            <svg class="cw" width="146" height="146" viewBox="0 0 146 146" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M146 73C146 113.317 113.317 146 73 146C32.6832 146 0 113.317 0 73C0 32.6832 32.6832 0 73 0C113.317 0 146 32.6832 146 73ZM3.24776 73C3.24776 111.523 34.4769 142.752 73 142.752C111.523 142.752 142.752 111.523 142.752 73C142.752 34.4769 111.523 3.24776 73 3.24776C34.4769 3.24776 3.24776 34.4769 3.24776 73Z" fill="#3E3E3E" />
+                <path d="M145 73C145.552 73 146.001 72.5522 145.993 72C145.866 62.7539 143.984 53.6128 140.443 45.0641C136.775 36.2073 131.397 28.1599 124.619 21.3812C117.84 14.6025 109.793 9.22539 100.936 5.55679C92.3872 2.01581 83.2461 0.133511 74 0.00684906C73.4478 -0.000715945 73 0.447715 73 1L73 2.24776C73 2.80004 73.4478 3.24701 74 3.25493C82.8196 3.38137 91.5384 5.17956 99.693 8.55733C108.156 12.0627 115.845 17.2006 122.322 23.6777C128.799 30.1548 133.937 37.8442 137.443 46.307C140.82 54.4616 142.619 63.1804 142.745 72C142.753 72.5522 143.2 73 143.752 73H145Z" fill="#08AF72" />
+            </svg>
+            <svg class="ccw" width="102" height="102" viewBox="0 0 102 102" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M102 51C102 79.1665 79.1665 102 51 102C22.8335 102 0 79.1665 0 51C0 22.8335 22.8335 0 51 0C79.1665 0 102 22.8335 102 51ZM3.11451 51C3.11451 77.4464 24.5536 98.8855 51 98.8855C77.4464 98.8855 98.8855 77.4464 98.8855 51C98.8855 24.5536 77.4464 3.11451 51 3.11451C24.5536 3.11451 3.11451 24.5536 3.11451 51Z" fill="#3E3E3E" />
+                <path d="M76.904 93.7666C77.1902 94.239 77.8058 94.3907 78.2725 94.0954C88.6622 87.5206 96.3376 77.4051 99.8646 65.6031C103.392 53.8011 102.525 41.1329 97.4466 29.9354C97.2184 29.4324 96.6205 29.2215 96.1221 29.4594L95.1163 29.9396C94.6179 30.1775 94.4078 30.7741 94.6353 31.2774C99.3814 41.7773 100.186 53.6495 96.8805 64.7113C93.5747 75.773 86.3876 85.2568 76.6585 91.4309C76.1922 91.7269 76.0405 92.3409 76.3266 92.8133L76.904 93.7666Z" fill="#F4B105" />
+            </svg>
+            <svg width="55" height="55" viewBox="0 0 55 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="27.5" cy="27.5" r="27.5" fill="#3E3E3E" />
+            </svg>
+            <svg width="199" height="119" viewBox="0 0 199 119" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g filter="url(#splash-glow)">
+                    <rect x="44" y="44" width="111" height="31" fill="#00D285" />
+                </g>
+                <defs>
+                    <filter id="splash-glow" x="0" y="0" width="199" height="119" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                        <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                        <feGaussianBlur stdDeviation="22" />
+                    </filter>
+                </defs>
+            </svg>
+            <img src="/preloader-logo.png" alt="" />
+        </div>
+        <div class="status">
+            <div class="track"><div class="fill"></div></div>
+            <span>loading</span>
+        </div>
     </div>
     <div id="root"></div>
     <script>
         (function () {
             var splash = document.getElementById('splash');
-            var video = splash.querySelector('video');
             var closed = false;
             function close() {
                 if (closed) return;
@@ -83,15 +152,8 @@
                     window.dispatchEvent(new Event('splash:closed'));
                 }, 500);
             }
-            // The app closes the splash as soon as its first screen is ready; the
-            // video never holds it back.
+            // The app closes the splash as soon as its first screen is ready.
             window.__closeSplash = close;
-            video.addEventListener('playing', function () { splash.classList.add('is-playing'); });
-            video.addEventListener('ended', close);
-            video.addEventListener('error', function () { setTimeout(close, 1200); });
-            // Autoplay can be refused (e.g. data saver); keep the poster up briefly instead.
-            var attempt = video.play && video.play();
-            if (attempt && attempt.catch) attempt.catch(function () { setTimeout(close, 1200); });
             // Fallback if the app script is slow or fails to start.
             setTimeout(close, 4000);
         })();

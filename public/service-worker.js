@@ -1,4 +1,4 @@
-const CACHE_NAME = 'velki-pwa-shell-v3'
+const CACHE_NAME = 'velki-pwa-shell-v4'
 const APP_SHELL = ['/', '/favicon.png', '/manifest.json']
 
 self.addEventListener('install', (event) => {

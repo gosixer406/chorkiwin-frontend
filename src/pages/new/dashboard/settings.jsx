@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
@@ -286,7 +287,7 @@ export default function Settings() {
 
                     <div className="flex flex-col gap-4 rounded-md border border-line bg-surface px-3.5 py-4">
                         <div className="flex rounded-md border border-line bg-page p-1"><button type="button" onClick={() => changeLogTab('activity')} className={`flex-1 rounded-[3px] py-1.5 font-poppins text-[11px] tracking-tight ${activeTab === 'activity' ? 'bg-linear-to-b from-gold-light to-gold-dark font-semibold text-on-gold' : 'text-ink-muted hover:text-ink'}`}>Activity Log</button><button type="button" onClick={() => changeLogTab('password')} className={`flex-1 rounded-[3px] py-1.5 font-poppins text-[11px] tracking-tight ${activeTab === 'password' ? 'bg-linear-to-b from-gold-light to-gold-dark font-semibold text-on-gold' : 'text-ink-muted hover:text-ink'}`}>Password Log</button></div>
-                        <div><h2 className="font-poppins text-[14px] font-semibold text-ink">{activeTab === 'activity' ? 'Activity Log' : 'Password Log'}</h2><div className="mt-3 h-px bg-line" /><div className="mt-3 flex items-center justify-between rounded-md border border-line bg-page px-2.5 py-2.5 font-poppins text-[10px] text-ink-soft"><span>Device</span><span>Action</span></div>{loadingLogs && <p className="py-10 text-center text-xs text-ink-muted">Loading…</p>}{!loadingLogs && logs.map((row) => <LogRow key={row.id} row={row} passwordLog={activeTab === 'password'} />)}{!loadingLogs && logs.length === 0 && <p className="py-12 text-center font-poppins text-xs text-ink-muted">No Data Found!</p>}{!loadingLogs && <Pagination meta={logMeta} page={logPage} onChange={changeLogPage} />}</div>
+                        <div><h2 className="font-poppins text-[14px] font-semibold text-ink">{activeTab === 'activity' ? 'Activity Log' : 'Password Log'}</h2><div className="mt-3 h-px bg-line" /><div className="mt-3 flex items-center justify-between rounded-md border border-line bg-page px-2.5 py-2.5 font-poppins text-[10px] text-ink-soft"><span>Device</span><span>Action</span></div>{loadingLogs && <Loader />}{!loadingLogs && logs.map((row) => <LogRow key={row.id} row={row} passwordLog={activeTab === 'password'} />)}{!loadingLogs && logs.length === 0 && <p className="py-12 text-center font-poppins text-xs text-ink-muted">No Data Found!</p>}{!loadingLogs && <Pagination meta={logMeta} page={logPage} onChange={changeLogPage} />}</div>
                     </div>
                 </div>
             </section>

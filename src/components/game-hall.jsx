@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -27,7 +28,7 @@ import { readFavorites, toggleFavorite } from '@/lib/favorites'
 import { validatedGameLaunchUrl } from '@/lib/game-launch-url'
 import useMobileGameImmersion from '@/hooks/use-mobile-game-immersion'
 import fallbackGame from '@/assets/img/game-img.png'
-import velkiLogo from '@/assets/img/new/chorkiwala-logo.png'
+import velkiLogo from '@/assets/img/logo/short_logo_3d.png'
 
 const AWC = 'https://fsagh.velkigames365.cc'
 const RECENT_KEY = 'velki_recent_games'
@@ -228,7 +229,7 @@ function HotPage({ query, category, menuOpen, setMenuOpen, onCategory, onLaunch,
 }
 
 function GameGrid({ games, favoriteIds = new Set(), onFavorite, onLaunch, loading = false }) {
-    if (loading) return <div className="grid grid-cols-3 gap-x-2 gap-y-4 p-2">{Array.from({ length: 12 }, (_, index) => <span key={index} className="h-[170px] animate-pulse rounded bg-white/10" />)}</div>
+    if (loading) return <Loader />
     if (!games.length) return <div className="grid min-h-[430px] place-items-center text-center text-ink-muted"><div><Search className="mx-auto mb-3 size-16 opacity-40" /><p>No games found</p></div></div>
     return <div className="grid grid-cols-3 gap-x-2 gap-y-3 p-2 pb-24">{games.map((game, index) => <article key={game.uid} className="relative min-w-0 pb-9 text-white"><button type="button" onClick={() => onLaunch?.(game)} className="relative mx-auto block aspect-square w-[94%] overflow-hidden rounded-lg border border-line bg-surface"><span className="absolute inset-x-0 top-0 z-10 h-4 truncate bg-black/70 px-1 text-left text-[8px] leading-4 text-white">{game.provider}</span><GameImage src={game.img} fallback={game.fallbackImg} placeholder={fallbackGame} alt={game.name} priority={index < 9} className="size-full object-cover" /></button><strong className="mt-1 block truncate px-1 text-[12px] font-semibold">{game.name}</strong><button type="button" onClick={() => onFavorite?.(game)} aria-label={`${favoriteIds.has(game.uid) ? 'Remove' : 'Add'} favorite`} className="absolute -right-2 bottom-3 grid size-14 place-items-center"><Star className={`size-9 stroke-gold stroke-[2] ${favoriteIds.has(game.uid) ? 'fill-gold' : 'fill-page'}`} /></button></article>)}</div>
 }
@@ -498,7 +499,7 @@ export default function GameHall({ open, onClose }) {
                         <HallHeader user={user} onMenu={() => setMenuOpen(true)} query={query} onQuery={changeQuery} showSearch={showSearch} />
                         <main ref={contentRef} className="absolute inset-x-0 overflow-y-auto" style={{ top: showSearch ? 114 : 60, bottom: 65 }}>{body}</main>
                         {error && <div role="alert" className="absolute inset-x-3 top-[122px] z-40 rounded bg-red-950/95 p-3 text-xs text-white shadow">{error}<button type="button" onClick={() => setError('')} className="float-right"><X className="size-4" /></button></div>}
-                        {launching && <div className="absolute inset-0 z-40 grid place-items-center bg-black/45"><div className="rounded bg-black/85 px-5 py-3 text-sm text-white">Opening game…</div></div>}
+                        {launching && <div className="absolute inset-0 z-40 grid place-items-center bg-black/45"><Loader label="Opening game…" className="text-white" /></div>}
                         <BottomNavigation active={section} onChange={changeSection} />
                         {menuOpen && <HallMenu language={language} onLanguage={setLanguage} onPage={(nextPage) => { setPage(nextPage); setMenuOpen(false) }} onQuit={closeHall} onClose={() => setMenuOpen(false)} />}
                     </div>

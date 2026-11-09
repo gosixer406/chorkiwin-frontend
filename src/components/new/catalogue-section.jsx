@@ -1,3 +1,4 @@
+import Loader from "@/components/loader";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { ChevronLeft, Search } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -539,14 +540,7 @@ export default function CatalogueSection({
       )}
 
       {loading ? (
-        <div className="grid grid-cols-3 gap-1" aria-label="Loading games">
-          {Array.from({ length: 9 }).map((_, index) => (
-            <div
-              key={index}
-              className="aspect-square animate-pulse rounded bg-surface"
-            />
-          ))}
-        </div>
+        <Loader />
       ) : visibleGames.length ? (
         <div className="grid grid-cols-3 gap-1">
           {renderedGames.map((game, index) => (

@@ -100,7 +100,7 @@ export default function App() {
 
   useEffect(() => {
     const hideLaunchLoader = () => {
-      document.querySelectorAll('button .loading-spinner').forEach((spinner) => {
+      document.querySelectorAll('button [data-launch-loader]').forEach((spinner) => {
         const overlay = spinner.closest('[role="status"]')
         if (overlay) overlay.style.display = 'none'
       })

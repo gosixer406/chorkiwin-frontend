@@ -1,3 +1,4 @@
+import Loader from '@/components/loader';
 import { lazy, Suspense, useState } from 'react';
 
 import cate_1 from '@/assets/img/new/quick-nav-hd/quick-nav-hot-game.png'
@@ -50,7 +51,7 @@ export default function Popular() {
                 ))}
             </div>
             <div key={active_cate.name} className="min-h-[96px]">
-                <Suspense fallback={<div className="min-h-48 rounded-lg border border-line bg-surface p-6 text-center text-sm text-ink-muted">Preparing games…</div>}>
+                <Suspense fallback={<Loader />}>
                     {active_cate.component}
                 </Suspense>
             </div>

@@ -1,6 +1,6 @@
 import { ChevronLeft } from 'lucide-react'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
-import logo from '@/assets/img/auth/logo.png'
+import logo from '@/assets/img/logo/short_logo_3d.png'
 import loginBanner from '@/assets/img/auth/custom-login-banner.png'
 import authImage from '@/assets/img/auth/auth-bg.png'
 import desktopBackground from '@/assets/img/bg.png'

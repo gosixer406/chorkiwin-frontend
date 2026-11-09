@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useCallback, useEffect, useState } from 'react'
 import { requestAccountRefresh } from '@/lib/refresh-account'
 import { Crown, Trophy } from 'lucide-react'
@@ -52,7 +53,7 @@ export default function VipClub() {
             <div className="flex flex-col gap-4 px-2.5 py-3 text-white">
                 {error && <div className="rounded-lg bg-red-500/10 p-3 text-sm text-red-300">{error}</div>}
                 {message && <div className="rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-300">{message}</div>}
-                {!vip && !error && <p className="py-16 text-center text-[13px] text-ink-muted">Loading VIP status…</p>}
+                {!vip && !error && <Loader />}
 
                 {vip && <>
                     <section className="overflow-hidden rounded-md border border-line">

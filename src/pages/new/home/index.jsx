@@ -1,3 +1,4 @@
+import Loader from "@/components/loader";
 import { lazy, startTransition, Suspense, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -762,9 +763,7 @@ export default function Popular() {
               {index === activeIndex || (settledIndex !== null && Math.abs(index - settledIndex) <= 1) ? (
                 <Suspense
                   fallback={
-                    <div className="min-h-48 rounded-lg border border-line bg-surface p-6 text-center text-sm text-ink-muted">
-                      Preparing games…
-                    </div>
+                    <Loader />
                   }
                 >
                   {tab.component}

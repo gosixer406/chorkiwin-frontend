@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
@@ -26,7 +27,7 @@ export default function LegacyPromotions() {
         return () => { active = false }
     }, [promotionId])
 
-    if (loading) return <div className="grid min-h-70 place-items-center text-[#8B6A07]">Loading promotions…</div>
+    if (loading) return <Loader className="min-h-70" />
     if (error) return <div className="p-4"><div role="alert" className="rounded-lg bg-red-50 p-4 text-sm text-red-700">{error}</div></div>
 
     if (!promotionId) {

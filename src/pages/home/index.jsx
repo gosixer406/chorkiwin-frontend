@@ -1,3 +1,4 @@
+import Loader from '@/components/loader';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { lazy, Suspense, useEffect, useState } from 'react';
@@ -252,7 +253,7 @@ export default function Home() {
           transition={{ duration: .4, delay: 0.05 }}
           viewport={{ once: false, amount: 0.2 }}
         >
-          <Suspense fallback={<div className="min-h-48 rounded-lg bg-white p-6 text-center text-sm text-[#657583]">Preparing games…</div>}>
+          <Suspense fallback={<Loader />}>
             {active_tab.component}
           </Suspense>
         </motion.div>

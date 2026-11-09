@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Send } from 'lucide-react'
@@ -62,7 +63,7 @@ export default function AgentList() {
                     To open an account, contact any of the agents below on WhatsApp.
                 </p>
                 {loading
-                    ? <div className="grid h-[60px] place-items-center rounded-md border border-line bg-surface font-inter text-[14px] text-ink-soft">Loading…</div>
+                    ? <Loader />
                     : error
                         ? <div role="alert" className="rounded-md border border-red-500/50 bg-red-500/10 px-3 py-2 font-inter text-xs text-red-200">{error}</div>
                         : agents.length > 0

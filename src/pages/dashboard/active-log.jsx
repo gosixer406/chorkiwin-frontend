@@ -1,3 +1,4 @@
+import Loader from "@/components/loader";
 import PageTitle from "../../components/dashboard/page-title";
 import CommonInner from "../../layout/dashboard/common-inner";
 import { useEffect, useState } from 'react';
@@ -23,7 +24,7 @@ export default function ActiveLog() {
                 title="Active Log"
             />
             <CommonInner>
-                {loading && <p className="py-18 text-center text-sm text-[#657583]">Loading activity…</p>}
+                {loading && <Loader />}
                 {error && <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}
                 {!loading && !error && items.length === 0 && <p className="py-18 text-center text-sm text-[#657583]">No activity recorded.</p>}
                 <div className="flex flex-col gap-y-4">

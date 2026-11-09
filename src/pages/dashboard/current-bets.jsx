@@ -1,3 +1,4 @@
+import Loader from "@/components/loader";
 import { useEffect, useState } from "react";
 import { CURRENT_BETS_POLL_MS, startPolling } from "@/lib/polling";
 import PageTitle from "../../components/dashboard/page-title";
@@ -344,11 +345,7 @@ export default function CurrentBets({ history = false, dark = false }) {
           </button>
         </div>
         {recordsState.loading && (
-          <p
-            className={`mt-18 text-center ${dark ? "text-ink-soft" : "text-ink-dim"}`}
-          >
-            Loading {history ? "bet history" : "current bets"}...
-          </p>
+          <Loader />
         )}
         {!recordsState.loading && recordsState.error && (
           <p

@@ -8,7 +8,7 @@ import {
   fetchFreshAccount,
   requestAccountRefresh,
 } from "@/lib/refresh-account";
-import logo from "@/assets/img/new/chorkiwala-logo.png";
+import logo from "@/assets/img/logo/short_logo_3d.png";
 
 export default function Header() {
   const dispatch = useDispatch();

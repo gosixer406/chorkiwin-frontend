@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useMemo, useState } from 'react'
 import GameCard from '@/components/game-card'
 import useGameLauncher from '@/hooks/use-game-launcher'
@@ -170,7 +171,7 @@ export default function LegacyGameGrid({
                 </label>
             )}
             {(launcher.error || (error && cards.length === 0)) && <div role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{launcher.error || error}</div>}
-            {loading && cards.length === 0 && <div className="rounded-lg bg-white p-6 text-center text-sm text-[#657583]">Loading games…</div>}
+            {loading && cards.length === 0 && <Loader />}
             {!loading && visibleGames.length === 0 && !error && <div className="rounded-lg bg-white p-6 text-center text-sm text-[#657583]">No games match this selection.</div>}
             <div className={className}>
                 {cards.map((item, index) => (

@@ -1,3 +1,4 @@
+import Loader from "@/components/loader";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -115,10 +116,7 @@ export default function UplineWhatsapp() {
 
       <div className="flex flex-col gap-2.5 px-2.5 py-4 text-white">
         {loading ? (
-          <div
-            className="h-[50px] animate-pulse rounded-md border border-line bg-surface"
-            aria-label="Loading number"
-          />
+          <Loader className="py-3" />
         ) : (
           managerRows.map((row) => <ContactRow key={row.label} {...row} />)
         )}
@@ -147,10 +145,7 @@ export default function UplineWhatsapp() {
         {supportOpen && (
           <div id="customer-support-list" className="flex flex-col gap-2.5">
             {loading ? (
-              <div
-                className="h-[50px] animate-pulse rounded-md border border-line bg-surface"
-                aria-label="Loading number"
-              />
+              <Loader className="py-3" />
             ) : supportRows.length > 0 ? (
               supportRows.map((row) => <ContactRow key={row.label} {...row} />)
             ) : (

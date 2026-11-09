@@ -1,3 +1,4 @@
+import Loader from "@/components/loader";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -71,13 +72,7 @@ function AgentContactModal({ onClose, onNoAgent }) {
 
         <div className="flex flex-col gap-2.5 px-4 pb-4">
           {loading ? (
-            <>
-              <div className="h-[58px] animate-pulse rounded-lg border border-line bg-page" />
-              <div
-                className="h-[58px] animate-pulse rounded-lg border border-line bg-page"
-                aria-label="Loading agent details"
-              />
-            </>
+            <Loader className="py-6" />
           ) : (
             <>
               <div className="flex items-center gap-3 rounded-lg border border-line bg-page px-3 py-2.5">
@@ -172,9 +167,7 @@ export default function Promotions() {
 
   if (loading)
     return (
-      <div className="grid min-h-70 place-items-center bg-page text-[13px] text-ink-muted">
-        Loading promotions…
-      </div>
+      <Loader className="min-h-70 bg-page" />
     );
 
   if (error) {
