@@ -101,10 +101,8 @@ export default function useGameLauncher() {
             { title: game.name || 'Casino Game' },
         ),
         launchSportsbook: (provider, title = `${String(provider).toUpperCase()} Sports`) => provider === '9w'
-            ? runLaunch('sports-9w', '/api/sports/exchange', {
-                provider_code: '9w',
-                wallet_mode: 'both',
-                top_level: true,
+            ? runLaunch('sports-9w', '/api/9wicket/launch', {
+                page: 'highlight',
                 return_path: `${location.pathname}${location.search}${location.hash}`,
             }, { collectOnReturn: true, topLevel: true, title: '9Wickets' })
             : runLaunch(`sports-${provider}`, '/api/9w/launch-sportsbook', {

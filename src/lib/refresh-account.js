@@ -142,7 +142,10 @@ export async function collectActiveExchange({ attempts = 3, force = false, trans
                 if (targetTransferId && localStorage.getItem(EXCHANGE_TRANSFER_KEY) !== targetTransferId) {
                     return { active: false, settled: true, stale: true }
                 }
-                const response = await api.post('/api/sports/collect', targetTransferId ? { transfer_id: targetTransferId } : {})
+                // A session opened before the Merchant API switch still has its
+                // balance with the old provider, so it must collect from there.
+                const collectPath = targetTransferId.startsWith('NWD-') ? '/api/9wicket/collect' : '/api/sports/collect'
+                const response = await api.post(collectPath, targetTransferId ? { transfer_id: targetTransferId } : {})
                 const note = String(response.data?.note || response.message || '').toLowerCase()
                 if (note.includes('already in progress')) continue
                 if (response.data?.stale_session) return { active: false, settled: true, stale: true }
