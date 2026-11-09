@@ -27,8 +27,7 @@ export function featuredGameArtwork(value) {
 
 export function normalizeGame(game) {
     const uid = String(game.game_uid || game.game_code || game.game_id || game.id || '')
-    const rawProvider = game.provider_name || game.provider || game.provider_code || game.brand || '9W'
-    const provider = /\b(?:huidu|huido)\b/i.test(String(rawProvider)) ? '9W' : rawProvider
+    const provider = game.provider_name || game.provider || game.provider_code || game.brand || '9W'
     const name = game.game_name || game.locale_name || game.name || 'Casino game'
     const providerArtwork = apiAssetUrl(
         game.img_url || game.game_image_narrow || game.game_image ||

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { X } from 'lucide-react'
 import velkiLogo from '@/assets/img/logo/short_logo_3d.png'
+import { api } from '@/lib/api'
 import { setUser } from '@/lib/auth'
 import { fetchFreshAccount, requestAccountRefresh } from '@/lib/refresh-account'
 import useMobileGameImmersion from '@/hooks/use-mobile-game-immersion'
@@ -57,6 +58,7 @@ export default function GameSession() {
         leaveImmersive()
         clearActiveEmbeddedGame()
         setSession(null)
+        api.post('/api/9w/close', {}).catch(() => {})
         if (refresh) refreshWalletAfterExit()
         if (navigateBack && historyPushed.current && window.history.state?.velkiEmbeddedGame) {
             historyPushed.current = false
@@ -84,15 +86,22 @@ export default function GameSession() {
             historyPushed.current = false
             leaveImmersive()
             setSession(null)
+            api.post('/api/9w/close', {}).catch(() => {})
             refreshWalletAfterExit()
+        }
+        // The provider's own exit button lands on /game-return.html inside the frame.
+        const closeOnProviderExit = (event) => {
+            if (event.origin === window.location.origin && event.data === 'velki:game-exit') finishSession()
         }
         window.addEventListener(OPEN_GAME_EVENT, openGame)
         window.addEventListener(CLOSE_GAME_EVENT, cancelGame)
         window.addEventListener('popstate', closeOnBack)
+        window.addEventListener('message', closeOnProviderExit)
         return () => {
             window.removeEventListener(OPEN_GAME_EVENT, openGame)
             window.removeEventListener(CLOSE_GAME_EVENT, cancelGame)
             window.removeEventListener('popstate', closeOnBack)
+            window.removeEventListener('message', closeOnProviderExit)
         }
     }, [finishSession, leaveImmersive, refreshWalletAfterExit])
 
