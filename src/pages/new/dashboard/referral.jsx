@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import { QRCodeSVG } from 'qrcode.react'
 import { Copy } from 'lucide-react'
 import PageTitle from '@/components/dashboard/page-title'
-import poster from '@/assets/img/new/referrar-pages.png'
+import poster from '@/assets/img/logo/referral-banner.png'
 import { api } from '@/lib/api'
 import { SIGNUP_URL } from '@/lib/links'
 
@@ -60,8 +60,8 @@ export default function Referral() {
 
     return (
         <div className="flex min-h-dvh flex-col bg-page">
-            <header className="sticky top-0 z-20 bg-bar">
-                <PageTitle title="Referral" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-bar px-3! text-ink" />
+            <header className="sticky top-0 z-20 bg-account-header">
+                <PageTitle title="Referral" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
                 <div className="grid grid-cols-2" role="tablist" aria-label="Referral tabs">
                     {['invite', 'details'].map((value) => (
                         <button

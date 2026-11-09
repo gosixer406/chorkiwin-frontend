@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Check,
   ChevronDown,
@@ -220,14 +220,28 @@ export default function Banking() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const [active_tab, set_active_tab] = useState("P2P");
+  const location = useLocation();
+  const requested_tab = TABS.find(
+    (tab) =>
+      tab.toLowerCase() === new URLSearchParams(location.search).get("tab"),
+  );
+  const [active_tab, set_active_tab] = useState(requested_tab || "P2P");
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [p2p, setP2p] = useState({ recipient: "", amount: "", note: "" });
-  const [walletIdCopied, setWalletIdCopied] = useState(false);
+
+  // location.key changes on every click, so the header's Deposit button still
+  // switches tabs when this page is already open on the same URL.
+  const [seen_location_key, set_seen_location_key] = useState(location.key);
+  if (seen_location_key !== location.key) {
+    set_seen_location_key(location.key);
+    if (requested_tab) set_active_tab(requested_tab);
+  }
+
+  const [usernameCopied, setUsernameCopied] = useState(false);
   const [p2pConfig, setP2pConfig] = useState(null);
   const [wallet_number, set_wallet_number] = useState("");
 
@@ -289,7 +303,7 @@ export default function Banking() {
   const hasValue = (value) => value !== null && value !== undefined;
   const dailyCountReached =
     hasValue(today?.remaining_count) && today.remaining_count <= 0;
-  const wallet_id = String(user?.id || user?.username || "");
+  const username = String(user?.username || "");
 
   // Mirrors the server rules so the player sees the problem before sending.
   const limitError = (value) => {
@@ -358,7 +372,7 @@ export default function Banking() {
 
   return (
     <div className="banking-page flex min-h-dvh flex-col bg-page text-white">
-      <header className="sticky top-0 z-30 bg-gold">
+      <header className="sticky top-0 z-30 bg-account-header">
         <div className="relative flex h-[49px] items-center justify-center px-4">
           <h1 className="font-poppins text-[16px] font-bold leading-7 text-white">
             Banking
@@ -468,22 +482,22 @@ export default function Banking() {
             className="flex min-h-full flex-1 flex-col gap-4 px-2.5 pt-3.5"
           >
             <section>
-              <SectionTitle>My Wallet ID</SectionTitle>
+              <SectionTitle>My Username</SectionTitle>
               <div className="flex items-stretch gap-2">
                 <span className="flex h-[40px] min-w-0 flex-1 items-center rounded-md border border-line bg-surface px-2.5 font-poppins text-[11px] font-medium text-ink-muted">
-                  <span className="truncate">{wallet_id || "—"}</span>
+                  <span className="truncate">{username || "—"}</span>
                 </span>
                 <button
                   type="button"
                   onClick={() => {
-                    navigator.clipboard?.writeText(wallet_id);
-                    setWalletIdCopied(true);
-                    setTimeout(() => setWalletIdCopied(false), 1500);
+                    navigator.clipboard?.writeText(username);
+                    setUsernameCopied(true);
+                    setTimeout(() => setUsernameCopied(false), 1500);
                   }}
-                  aria-label={walletIdCopied ? "Wallet ID copied" : "Copy wallet ID"}
+                  aria-label={usernameCopied ? "Username copied" : "Copy username"}
                   className="grid h-[40px] w-11 flex-none place-items-center rounded-md bg-gold text-white"
                 >
-                  {walletIdCopied ? (
+                  {usernameCopied ? (
                     <Check className="size-4.5" />
                   ) : (
                     <Copy className="size-4.5 -scale-x-100" />
@@ -499,8 +513,8 @@ export default function Banking() {
                   required
                   value={p2p.recipient}
                   onChange={update_p2p("recipient")}
-                  placeholder="Recipient Wallet ID"
-                  aria-label="Recipient Wallet ID"
+                  placeholder="Recipient Username"
+                  aria-label="Recipient Username"
                   autoComplete="off"
                   autoCapitalize="none"
                   autoCorrect="off"

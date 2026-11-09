@@ -32,8 +32,8 @@ export default function ActivityLog() {
     }
 
     return <div className="min-h-dvh bg-page text-white">
-        <header className="sticky top-0 z-20 bg-bar">
-            <PageTitle title="Activity Log" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-bar px-3! text-ink" />
+        <header className="sticky top-0 z-20 bg-account-header">
+            <PageTitle title="Activity Log" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
         </header>
         <main className="px-2.5 pb-8 pt-3">
             <div className="rounded-md border border-line bg-surface px-3.5 py-4">

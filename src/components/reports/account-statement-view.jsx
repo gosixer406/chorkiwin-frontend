@@ -65,7 +65,7 @@ export default function AccountStatementView({ dark = false }) {
         <PageTitle
             title="Account Statement"
             titleClass="font-poppins text-[15px] font-bold tracking-tight"
-            className={dark ? 'min-h-[51px]! bg-bar px-3! text-ink' : ''}
+            className={dark ? 'min-h-[51px]! bg-account-header px-3! text-white' : ''}
         />
         <div className="space-y-4 p-3">
             <div className={`grid grid-cols-2 gap-3 rounded-xl border p-3 text-center text-xs ${panel}`}>

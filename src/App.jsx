@@ -5,7 +5,6 @@ import { createBrowserRouter, Navigate, RouterProvider, useLocation, useParams }
 import Error from './pages/error'
 import AuthBootstrap from './components/auth-bootstrap';
 import ProtectedRoute from './components/protected-route';
-import PwaInstallBar from './components/pwa-install-bar';
 import GameSession from './components/game-session';
 import ExchangeReturn from './components/exchange-return';
 import { SplashCloser, StartupFallback } from './components/preloader';
@@ -43,6 +42,7 @@ const Promotions = lazy(() => import('./pages/new/promotions'))
 const NewStaticPage = lazy(() => import('./pages/new/static'))
 const BalanceOverview = lazy(() => import('./pages/new/dashboard/balance-overview'))
 const Cashback = lazy(() => import('./pages/new/dashboard/cashback'))
+const LossBack = lazy(() => import('./pages/new/dashboard/loss-back'))
 const ActivityLog = lazy(() => import('./pages/new/dashboard/activity-log'))
 
 // The light (legacy) experience has been retired. Its URLs stay valid and land on
@@ -279,6 +279,10 @@ export default function App() {
           path: 'cashback',
           element: <Cashback />
         },
+        {
+          path: 'loss-back',
+          element: <LossBack />
+        },
       ]
     },
     {
@@ -298,7 +302,6 @@ export default function App() {
           <RouterProvider key={routerKey} router={router} />
           <SplashCloser />
           <GameSession />
-          <PwaInstallBar />
         </Suspense>
       </AuthBootstrap>
     </div>

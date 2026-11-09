@@ -18,8 +18,8 @@ export default function StaticPage() {
 
     return (
         <div className="new-version-shell mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-page pb-[66px] font-inter text-sm text-white">
-            <header className="sticky top-0 z-20 bg-bar">
-                <PageTitle title={title || 'Information'} titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-bar px-3! text-ink" />
+            <header className="sticky top-0 z-20 bg-account-header">
+                <PageTitle title={title || 'Information'} titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
             </header>
             <main className="flex-1">
                 {content ? (

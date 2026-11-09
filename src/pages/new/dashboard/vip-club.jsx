@@ -46,8 +46,8 @@ export default function VipClub() {
 
     return (
         <div className="flex min-h-dvh flex-col bg-page">
-            <header className="sticky top-0 z-20 bg-bar">
-                <PageTitle title="VIP Club" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-bar px-3! text-ink" />
+            <header className="sticky top-0 z-20 bg-account-header">
+                <PageTitle title="VIP Club" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
             </header>
 
             <div className="flex flex-col gap-4 px-2.5 py-3 text-white">

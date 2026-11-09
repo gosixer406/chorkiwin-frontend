@@ -21,8 +21,7 @@ const splitName = (fullName, username) => {
 }
 
 function SectionTitle({ icon: Icon, children }) {
-    return <h2 className="flex items-center gap-x-2 px-1 pb-2 pt-4 font-poppins text-[13px] font-bold uppercase tracking-wider text-gold">
-        <span className="h-3.5 w-1 rounded-[1px] bg-ink" />
+    return <h2 className="flex items-center gap-x-2 px-1 pb-2 pt-4 font-poppins text-[14px] font-bold text-ink">
         <Icon className="size-4" strokeWidth={2} />
         {children}
     </h2>
@@ -70,7 +69,7 @@ function PasswordField({ label, value, onChange, autoComplete }) {
 
 function LockSwitch({ checked, disabled, label, onChange }) {
     return <button type="button" role="switch" aria-checked={checked} aria-label={label} disabled={disabled} onClick={() => onChange(!checked)} className={`relative h-[22px] w-[39px] shrink-0 rounded-full border transition-colors disabled:opacity-50 ${checked ? 'border-gold-dark bg-gold' : 'border-line bg-page'}`}>
-        <span className={`absolute top-1/2 size-4 -translate-y-1/2 rounded-full transition-all ${checked ? 'left-[19px] bg-on-gold' : 'left-[2px] bg-ink-muted'}`} />
+        <span className={`absolute top-1/2 size-4 -translate-y-1/2 rounded-full transition-all ${checked ? 'left-[19px] bg-on-gold' : 'left-[2px] bg-ink-soft'}`} />
     </button>
 }
 
@@ -228,9 +227,10 @@ export default function Settings() {
         setLogPage(page)
     }
 
-    return <div className="min-h-dvh bg-page text-white">
-        <header className="sticky top-0 z-20 bg-bar">
-            <PageTitle title="Profile & Settings" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-bar px-3! text-ink" />
+    // This page's accent only: every gold-* utility below, and the shared pagination, resolves to it.
+    return <div className="min-h-dvh bg-page text-white [--c-gold-dark:#4CC2FF] [--c-gold-light:#4CC2FF] [--c-gold:#4CC2FF]">
+        <header className="sticky top-0 z-20 bg-account-header">
+            <PageTitle title="Profile & Settings" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
         </header>
         <main className="space-y-1 px-[13px] pb-8 pt-1">
             {(error || message) && <div role={error ? 'alert' : 'status'} className={`mb-2 rounded p-3 text-xs ${error ? 'bg-red-500/15 text-red-300' : 'bg-emerald-500/15 text-emerald-300'}`}>{error || message}</div>}
@@ -242,7 +242,7 @@ export default function Settings() {
                         <CardTitle>Profile Info</CardTitle>
                         <div className="flex items-center justify-between gap-3">
                             <div className="flex min-w-0 items-center gap-2.5">
-                                <span className="grid size-[30px] shrink-0 place-items-center rounded-[5px] bg-linear-to-b from-gold-light to-gold-dark text-on-gold"><UserRound className="size-4" /></span>
+                                <span className="grid size-[30px] shrink-0 place-items-center rounded-full border-2 border-[#2FA37C] text-ink"><UserRound className="size-4" /></span>
                                 <span className="min-w-0 font-poppins">
                                     <strong className="block truncate text-[13px] font-semibold">{user.full_name || user.username || 'Player'}</strong>
                                     <span className="mt-0.5 flex items-center gap-2 text-[10px] text-ink-soft"><span className="truncate">{user.username || 'player'}</span><button type="button" aria-label="Copy username" onClick={copyUsername} className="text-ink-muted">{copied ? <Check className="size-3.5" /> : <Copy className="size-3.5 -scale-x-100" />}</button></span>

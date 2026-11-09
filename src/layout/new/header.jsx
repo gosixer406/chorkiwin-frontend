@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { LockKeyhole, SquarePen } from "lucide-react";
+import { LockKeyhole, SquarePen, SquarePlus } from "lucide-react";
 import Reload from "@/components/reload";
 import { setUser } from "@/lib/auth";
 import {
@@ -57,16 +57,14 @@ export default function Header() {
       </Link>
       {isLoggedIn ? (
         <div className="flex min-w-0 items-center gap-1 sm:gap-1.5">
-          <div className="flex h-8 min-w-0 items-center gap-1.5 overflow-hidden rounded-md border border-line bg-surface pl-2 sm:h-9 sm:gap-2.5 sm:pl-3">
-            <div className="flex shrink-0 items-center gap-1.5 whitespace-nowrap leading-none sm:gap-2.5">
-              <span className="text-[11px] font-bold text-gold sm:text-[13px]">
+          <div className="flex h-8 min-w-0 items-center gap-1.5 overflow-hidden rounded-none border border-line bg-[#1C1C1C] pl-2 sm:h-9 sm:gap-2.5 sm:pl-3">
+            <div className="flex shrink-0 items-center gap-1 whitespace-nowrap leading-none sm:gap-1.5">
+              <span className="text-[10px] font-bold text-gold sm:text-[11px]">
                 $ {balance}
               </span>
-              <span className="h-3 w-px bg-line sm:h-3.5" />
-              <span
-                className="text-[10px] font-semibold text-[#FF4D4F] sm:text-[12px]"
-              >
-                <span className="mr-0.5 text-[9px] font-medium uppercase text-[#FF4D4F] sm:mr-1 sm:text-[10px]">
+              <span className="h-2.5 w-px bg-line sm:h-3" />
+              <span className="text-[9px] font-semibold text-[#FF4D4F] sm:text-[10px]">
+                <span className="mr-0.5 text-[8px] font-medium uppercase sm:text-[9px]">
                   Exp
                 </span>
                 {exposure}
@@ -79,6 +77,16 @@ export default function Header() {
               label="Refresh balance"
             />
           </div>
+          <Link
+            to="/dashboard/p2p?tab=deposit"
+            aria-label="Deposit"
+            className="flex h-8 shrink-0 flex-col items-center justify-center gap-0.5 rounded-none bg-[#5EA500] px-2 text-white transition-opacity hover:opacity-90 sm:h-9 sm:px-4"
+          >
+            <SquarePlus className="size-3 sm:size-3.5" strokeWidth={2.5} />
+            <span className="whitespace-nowrap font-poppins text-[10px] font-semibold leading-none sm:text-[11px]">
+              Deposit
+            </span>
+          </Link>
         </div>
       ) : (
         <div className="flex items-center gap-2">

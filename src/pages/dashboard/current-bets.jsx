@@ -311,7 +311,7 @@ export default function CurrentBets({ history = false, dark = false }) {
             ? "font-poppins text-[15px] font-bold tracking-tight"
             : "text-lg font-[800]"
         }
-        className={dark ? "min-h-[51px]! bg-bar px-3! text-ink" : undefined}
+        className={dark ? "min-h-[51px]! bg-account-header px-3! text-white" : undefined}
       />
       <CommonInner
         className={`px-0! ${dark ? "rounded-none! bg-page! pt-0! text-ink" : ""}`}
