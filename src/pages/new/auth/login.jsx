@@ -523,7 +523,7 @@ export default function Login() {
           <SocialButtons />
           <p className="font-poppins text-[13px] text-ink-soft">
             Don&apos;t have an account?{" "}
-            <Link to="/signup" className="font-semibold text-gold">
+            <Link to="/login" className="font-semibold text-gold">
               Sign Up
             </Link>
           </p>

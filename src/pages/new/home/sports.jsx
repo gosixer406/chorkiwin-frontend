@@ -2,9 +2,9 @@ import GameTitle from "@/components/new/game-title";
 import CategoryTitleIcon from "@/components/new/category-title-icon";
 import SportsbookLaunchLoader from "@/components/sportsbook-launch-loader";
 import useGameLauncher from "@/hooks/use-game-launcher";
-import img9w from "@/assets/img/new/game/sports/9wickets.png";
-import imgSaba from "@/assets/img/new/game/sports/saba-2.png";
-import imgBti from "@/assets/img/new/game/sports/3.png";
+import img9w from "@/assets/img/new/game/sports/9wickets-chorkix.webp";
+import imgSaba from "@/assets/img/new/game/sports/saba-2-chorkix.webp";
+import imgBti from "@/assets/img/new/game/sports/3-chorkix.webp";
 
 const sportsbooks = [
   {

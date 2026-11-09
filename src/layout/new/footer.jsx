@@ -21,7 +21,7 @@ export default function Footer({ fullWidth = false }) {
         <Link to="/" aria-label="chorkix.com home">
           <img
             src={logo}
-            className="h-8 w-28 object-contain object-left"
+            className="h-8 w-28 object-contain object-center"
             alt="chorkix.com"
           />
         </Link>
