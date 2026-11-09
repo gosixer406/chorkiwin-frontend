@@ -1,7 +1,7 @@
 {
-  "name": "Chorkiwala App",
-  "short_name": "Chorkiwala",
-  "description": "Chorkiwala gaming application",
+  "name": "chorkix.com App",
+  "short_name": "chorkix.com",
+  "description": "chorkix.com gaming application",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

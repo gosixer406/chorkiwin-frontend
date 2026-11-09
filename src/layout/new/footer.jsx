@@ -18,11 +18,11 @@ export default function Footer({ fullWidth = false }) {
       className={`${fullWidth ? "px-2" : "mt-3"} flex flex-col gap-4 pt-5 pb-10`}
     >
       <div className="flex w-full flex-col items-center gap-2.5 rounded-lg px-3 py-2">
-        <Link to="/" aria-label="Chorkiwala home">
+        <Link to="/" aria-label="chorkix.com home">
           <img
             src={logo}
             className="h-8 w-28 object-contain object-left"
-            alt="Chorkiwala"
+            alt="chorkix.com"
           />
         </Link>
         <div className="font-inter text-center text-[8px] tracking-[0.16px] text-white">
@@ -84,7 +84,7 @@ export default function Footer({ fullWidth = false }) {
         <div className="flex w-full items-center gap-4">
           <span className="h-px flex-1 bg-line-strong" />
           <span className="whitespace-nowrap font-roboto text-sm font-medium tracking-[-0.14px] text-ink-muted">
-            About Chorkiwala
+            About chorkix.com
           </span>
           <span className="h-px flex-1 bg-line-strong" />
         </div>

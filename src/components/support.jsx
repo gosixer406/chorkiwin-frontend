@@ -261,7 +261,7 @@ function FloatingLauncher({ hidden, actions }) {
 }
 
 // Support panel branding. Leave a value empty ('') until the real asset or link is ready.
-const SUPPORT_BRAND_NAME = "Chorkiwala";
+const SUPPORT_BRAND_NAME = "chorkix.com";
 const SUPPORT_BRAND_LOGO = brandLogo;
 const SUPPORT_POWERED_BY = "";
 const SUPPORT_TEAM = [
@@ -313,14 +313,14 @@ function WhatsappLogo({ className }) {
 // Social links under the support team. Fill in each url; an empty url keeps the row visible but inactive.
 const SUPPORT_SOCIALS = [
   {
-    label: "Chorkiwala Facebook Page",
+    label: "chorkix.com Facebook Page",
     sub: "আমাদের পেজ ফলো করুন",
     url: "",
     Logo: FacebookLogo,
     color: "#1877F2",
   },
   {
-    label: "Chorkiwala Facebook Group",
+    label: "chorkix.com Facebook Group",
     sub: "গ্রুপে জয়েন করুন",
     url: "",
     Logo: Users,
@@ -525,7 +525,7 @@ function SupportPanel({
                 </span>
                 <span>
                   <span className="font-semibold" style={{ color: t.accent }}>
-                    Chorkiwala
+                    chorkix.com
                   </span>{" "}
                   লাইভ চ্যাটে আপনাকে স্বাগতম
                 </span>

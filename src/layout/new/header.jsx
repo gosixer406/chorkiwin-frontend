@@ -47,12 +47,12 @@ export default function Header() {
       <Link
         to="/"
         className="ml-1 mr-6 h-8 w-24 shrink-0 sm:ml-3 sm:mr-7 sm:w-28"
-        aria-label="Chorkiwala home"
+        aria-label="chorkix.com home"
       >
         <img
           src={logo}
           className="h-8 w-24 origin-left scale-125 object-contain object-left sm:w-28"
-          alt="Chorkiwala"
+          alt="chorkix.com"
         />
       </Link>
       {isLoggedIn ? (

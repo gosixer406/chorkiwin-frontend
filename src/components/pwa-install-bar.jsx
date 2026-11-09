@@ -85,7 +85,7 @@ export default function PwaInstallBar() {
 
     const install = async () => {
         if (!promptEvent) {
-            window.alert('To install Chorkiwala, open your browser menu and choose “Install app” or “Add to Home screen”.')
+            window.alert('To install chorkix.com, open your browser menu and choose “Install app” or “Add to Home screen”.')
             return
         }
 
@@ -102,13 +102,13 @@ export default function PwaInstallBar() {
 
     return (
         <aside
-            aria-label="Install Chorkiwala application"
+            aria-label="Install chorkix.com application"
             className="fixed inset-x-0 top-0 z-[99999] mx-auto flex h-14 w-full max-w-[430px] items-center border-b border-line bg-[linear-gradient(90deg,var(--c-page)_0%,var(--c-surface)_60%,var(--c-surface-2)_100%)] px-3 shadow-[0_2px_10px_rgba(0,0,0,0.35)] font-sans text-white"
         >
             <button type="button" onClick={close} aria-label="Close app install prompt" className="mr-3 shrink-0 border-0 bg-transparent p-0 text-[22px] font-normal leading-none text-white">✕</button>
-            <img src="/favicon.png" alt="Chorkiwala" width="28" height="28" className="mr-3 size-8 shrink-0 rounded-lg object-fill ring-1 ring-gold/40" />
+            <img src="/favicon.png" alt="chorkix.com" width="28" height="28" className="mr-3 size-8 shrink-0 rounded-lg object-fill ring-1 ring-gold/40" />
             <div className="min-w-0 flex-1 leading-[1.2]">
-                <strong className="block text-sm font-bold">Chorkiwala App</strong>
+                <strong className="block text-sm font-bold">chorkix.com App</strong>
                 <span className="block truncate text-xs text-ink-muted">Install our app for faster access!.</span>
             </div>
             <button type="button" onClick={install} className="ml-2 shrink-0 rounded-md border-0 bg-[linear-gradient(180deg,var(--c-gold-light)_0%,var(--c-gold)_45%,var(--c-gold-dark)_100%)] px-[18px] py-2 text-sm font-bold text-on-gold shadow-[0_0_10px_color-mix(in_srgb,var(--c-gold)_45%,transparent)]">Install</button>

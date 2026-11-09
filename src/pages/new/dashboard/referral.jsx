@@ -41,7 +41,7 @@ export default function Referral() {
 
     async function share() {
         try {
-            if (navigator.share) await navigator.share({ title: 'Join Chorkiwala', text: `Use my invitation code ${code}`, url: SIGNUP_URL })
+            if (navigator.share) await navigator.share({ title: 'Join chorkix.com', text: `Use my invitation code ${code}`, url: SIGNUP_URL })
             else await copy(code, 'Invitation code copied')
         } catch {
             // The user closed the share sheet.
