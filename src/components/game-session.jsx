@@ -124,7 +124,7 @@ export default function GameSession() {
                 <header className="flex min-h-11 shrink-0 items-center justify-between bg-page px-3 text-white shadow-md">
                     <img
                         src={velkiLogo}
-                        alt="Chorkiwala"
+                        alt="chorkix.com"
                         className="h-7 w-auto max-w-28 object-contain object-left"
                     />
                     <button
@@ -140,7 +140,7 @@ export default function GameSession() {
             {session.url ? (
                 <div className="relative min-h-0 flex-1 overflow-hidden bg-black">
                     <iframe
-                        title="Chorkiwala Game"
+                        title="chorkix.com Game"
                         src={session.url}
                         className="absolute inset-0 size-full border-0 bg-black"
                         allow="autoplay; fullscreen; payment; clipboard-read; clipboard-write"

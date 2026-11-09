@@ -162,7 +162,7 @@ function HallIcon({ name, className = 'size-7' }) {
 }
 
 function HallHeader({ user, onMenu, query, onQuery, showSearch }) {
-    const identity = user?.username || user?.email?.split('@')[0] || 'CHORKIWALA PLAYER'
+    const identity = user?.username || user?.email?.split('@')[0] || 'CHORKIX.COM PLAYER'
     return <>
         <header className="flex shrink-0 items-center border-b border-line bg-surface px-2 text-white" style={{ height: 60 }}>
             <img src={`${AWC}/assets/logo-AWC-CUc0ZF3S.webp`} alt="AWC" className="object-contain" style={{ width: 80, height: 37 }} />
@@ -476,7 +476,7 @@ export default function GameHall({ open, onClose }) {
             <section ref={gameContainerRef} role="dialog" aria-modal="true" aria-label="Game hall" className={`relative flex min-h-0 w-full flex-1 flex-col overflow-hidden bg-black ${immersive ? 'max-w-none' : 'max-w-[480px]'}`}>
                 {!immersive && (
                     <div className="flex h-12 shrink-0 items-center justify-between bg-black px-2">
-                        <img src={velkiLogo} alt="Chorkiwala" className="ml-2 h-7 w-auto max-w-28 object-contain object-left" />
+                        <img src={velkiLogo} alt="chorkix.com" className="ml-2 h-7 w-auto max-w-28 object-contain object-left" />
                         <button type="button" onClick={gameUrl ? closeGame : closeHall} aria-label={gameUrl ? 'Close game' : 'Close game hall'} className="grid size-10 place-items-center text-white">
                             <X className="size-6" />
                         </button>
@@ -484,7 +484,7 @@ export default function GameHall({ open, onClose }) {
                 )}
                 {gameUrl ? (
                     <div className="relative min-h-0 flex-1 overflow-hidden bg-black">
-                        <iframe title="Chorkiwala Game" src={gameUrl} className="absolute inset-0 size-full border-0 bg-black" allow="autoplay; fullscreen; payment" allowFullScreen />
+                        <iframe title="chorkix.com Game" src={gameUrl} className="absolute inset-0 size-full border-0 bg-black" allow="autoplay; fullscreen; payment" allowFullScreen />
                         {!immersive && (
                             <button type="button" onClick={enterImmersive} aria-label="Enter fullscreen game" className="absolute inset-0 z-10 block bg-transparent md:hidden" />
                         )}

@@ -8,7 +8,7 @@ export function VerifiedBadge({ className = "" }) {
     <span
       className={`inline-flex items-center gap-1 rounded-full border border-green-500/30 bg-green-500/10 px-2.5 py-1 font-inter text-[11px] font-semibold text-green-500 ${className}`}
     >
-      Chorkiwala Verified
+      chorkix.com Verified
       <BadgeCheck className="size-3.5" strokeWidth={2} />
     </span>
   );
@@ -151,7 +151,7 @@ function AgentBanner({ agentId, phone }) {
           <span className="sr-only">Open WhatsApp chat</span>
         </a>
         <p className="mt-1.5 truncate pl-[34px] font-inter text-[10px] leading-tight text-ink-muted min-[400px]:pl-10">
-          Chorkiwala verified Online Agent
+          chorkix.com verified Online Agent
         </p>
       </div>
     </div>

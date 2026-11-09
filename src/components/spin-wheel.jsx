@@ -432,7 +432,7 @@ function SpinPanel({ onClose, onCount }) {
 
                 <section className="mx-4 mb-10 mt-6 rounded-md border border-line bg-surface p-4 text-[13px] leading-relaxed text-white/85">
                     <h3 className="mb-1 text-[15px] font-semibold text-white">🎡 স্পিনের নিয়মাবলি (Spin Rules)</h3>
-                    <p className="text-white/70">Chorkiwala.com-এর পক্ষ থেকে আপনাকে স্বাগতম! আকর্ষণীয় চরকিওয়ালা স্পিন রিওয়ার্ড জিতে নিতে নিচের সহজ শর্তগুলো অনুসরণ করুন:</p>
+                    <p className="text-white/70">chorkix.com-এর পক্ষ থেকে আপনাকে স্বাগতম! আকর্ষণীয় chorkix.com স্পিন রিওয়ার্ড জিতে নিতে নিচের সহজ শর্তগুলো অনুসরণ করুন:</p>
                     <div className="my-4 border-t border-dashed border-white/20" />
                     <ol className="space-y-3">
                         {/* Built from Spin Management (loss bands, validity) as the server sends it. */}
@@ -456,7 +456,7 @@ function SpinPanel({ onClose, onCount }) {
                             <li><span className="font-semibold text-primary">{bands.length > 0 ? '৬' : '৫'}. মেয়াদ:</span> ২৪ ঘণ্টার সময়সীমা শেষ হওয়ার পর {status.rules.validity_days} দিনের মধ্যে স্পিনটি ব্যবহার করতে হবে, নইলে টোকেনটি বাতিল হয়ে যাবে।</li>
                         )}
                     </ol>
-                    <p className="mt-4 text-center text-white/70">Chorkiwala.com-এর সঙ্গেই থাকুন এবং উপভোগ করুন রোমাঞ্চকর সব রিওয়ার্ড! ❤️</p>
+                    <p className="mt-4 text-center text-white/70">chorkix.com-এর সঙ্গেই থাকুন এবং উপভোগ করুন রোমাঞ্চকর সব রিওয়ার্ড! ❤️</p>
                 </section>
             </motion.div>
 
