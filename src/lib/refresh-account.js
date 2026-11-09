@@ -7,6 +7,8 @@ const EXCHANGE_RELAUNCH_AFTER_KEY = "velki_exchange_relaunch_after";
 const EXCHANGE_RETURN_PATH_KEY = "velki_exchange_return_path";
 const EXCHANGE_TRANSFER_KEY = "velki_exchange_transfer_id";
 const EXCHANGE_TAB_TRANSFER_KEY = "velki_exchange_tab_transfer_id";
+const EXCHANGE_LEGACY_COLLECT_KEY = "velki_exchange_legacy_collect";
+const NINE_WICKET_TRANSFER_PREFIX = "NWD-";
 let exchangeCollectRequest = null;
 let exchangeGameTab = null;
 let exchangeTabWatcher = null;
@@ -143,6 +145,39 @@ export function isCurrentExchangeTransfer(transferId) {
   return transferId ? currentTransferId === transferId : !currentTransferId;
 }
 
+function clearExchangeMarkers() {
+  localStorage.removeItem(EXCHANGE_ACTIVE_KEY);
+  localStorage.removeItem(EXCHANGE_EXITED_KEY);
+  localStorage.removeItem(EXCHANGE_WALLET_SNAPSHOT_KEY);
+  localStorage.removeItem(EXCHANGE_TRANSFER_KEY);
+}
+
+// The server tracks 9Wicket money itself, but an old V3 session is retried only
+// from the browser, so its id is kept after it stops blocking new launches.
+function parkUnfinishedExchange() {
+  const transferId = localStorage.getItem(EXCHANGE_TRANSFER_KEY) || "";
+  if (!transferId.startsWith(NINE_WICKET_TRANSFER_PREFIX)) {
+    localStorage.setItem(EXCHANGE_LEGACY_COLLECT_KEY, transferId || "latest");
+  }
+  clearExchangeMarkers();
+}
+
+function retryParkedLegacyCollect() {
+  const saved = localStorage.getItem(EXCHANGE_LEGACY_COLLECT_KEY);
+  if (!saved) return;
+  api
+    .post("/api/sports/collect", saved === "latest" ? {} : { transfer_id: saved })
+    .then((response) => {
+      const note = String(response.data?.note || "").toLowerCase();
+      if (!note.includes("already in progress")) {
+        localStorage.removeItem(EXCHANGE_LEGACY_COLLECT_KEY);
+      }
+    })
+    .catch(() => {
+      /* Stays saved and is retried on the next launch. */
+    });
+}
+
 export async function collectActiveExchange({
   attempts = 3,
   force = false,
@@ -161,6 +196,7 @@ export async function collectActiveExchange({
     return { active: false, settled: true };
   }
   if (targetTransferId && localStorage.getItem(EXCHANGE_ACTIVE_KEY) !== "1") {
+    clearExchangeMarkers();
     return { active: false, settled: true, stale: true };
   }
   if (exchangeCollectRequest) return exchangeCollectRequest;
@@ -194,8 +230,10 @@ export async function collectActiveExchange({
           response.data?.note || response.message || "",
         ).toLowerCase();
         if (note.includes("already in progress")) continue;
-        if (response.data?.stale_session)
+        if (response.data?.stale_session) {
+          clearExchangeMarkers();
           return { active: false, settled: true, stale: true };
+        }
         const relaunchDelay = Math.max(
           0,
           Number(response.data?.relaunch_after_ms || 2500),
@@ -208,10 +246,7 @@ export async function collectActiveExchange({
             EXCHANGE_RELAUNCH_AFTER_KEY,
             String(Date.now() + relaunchDelay),
           );
-          localStorage.removeItem(EXCHANGE_ACTIVE_KEY);
-          localStorage.removeItem(EXCHANGE_EXITED_KEY);
-          localStorage.removeItem(EXCHANGE_WALLET_SNAPSHOT_KEY);
-          localStorage.removeItem(EXCHANGE_TRANSFER_KEY);
+          clearExchangeMarkers();
         }
         return { active: true, settled: true, response };
       } catch (error) {
@@ -227,6 +262,7 @@ export async function collectActiveExchange({
 }
 
 export async function waitForExchangeRelaunch() {
+  retryParkedLegacyCollect();
   // An explicit new launch first retrieves any previous transfer. Ordinary
   // site focus and refresh never do this while the provider tab is open.
   if (
@@ -239,15 +275,13 @@ export async function waitForExchangeRelaunch() {
   if (exchangeCollectRequest) {
     await exchangeCollectRequest;
   }
-  // A second launch invalidates the previous provider session. Never start it
-  // while the old transfer still has to be returned to the site wallet.
+  // A new 9Wicket launch only adds to the player's wallet there, so a collection
+  // that could not finish must not lock the player out.
   if (
     localStorage.getItem(EXCHANGE_ACTIVE_KEY) === "1" ||
     exchangeExitObserved()
   ) {
-    throw new Error(
-      "Your previous 9 Wickets balance is still syncing. Close the game tab and try again shortly.",
-    );
+    parkUnfinishedExchange();
   }
   const relaunchAfter = Number(
     localStorage.getItem(EXCHANGE_RELAUNCH_AFTER_KEY) || 0,
