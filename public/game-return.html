@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Returning…</title>
+</head>
+<body style="background:#1C1C1C">
+    <script>
+        // The game provider sends the player here on exit, usually inside the
+        // site's game frame. Hand control back to the page that opened it.
+        if (window.parent !== window) window.parent.postMessage('velki:game-exit', window.location.origin)
+        else window.location.replace('/')
+    </script>
+</body>
+</html>

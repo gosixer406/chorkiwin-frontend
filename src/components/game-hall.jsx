@@ -319,6 +319,7 @@ export default function GameHall({ open, onClose }) {
     const closeHall = useCallback(() => {
         leaveImmersive()
         setGameUrl('')
+        api.post('/api/9w/close', {}).catch(() => {})
         refreshWalletAfterExit()
         onClose()
         if (historyPushed.current && window.history.state?.velkiGameHall) window.history.back()
@@ -328,8 +329,19 @@ export default function GameHall({ open, onClose }) {
     const closeGame = useCallback(() => {
         leaveImmersive()
         setGameUrl('')
+        api.post('/api/9w/close', {}).catch(() => {})
         refreshWalletAfterExit()
     }, [leaveImmersive, refreshWalletAfterExit])
+
+    // The provider's own exit button lands on /game-return.html inside the frame.
+    useEffect(() => {
+        if (!gameUrl) return undefined
+        const closeOnProviderExit = (event) => {
+            if (event.origin === window.location.origin && event.data === 'velki:game-exit') closeGame()
+        }
+        window.addEventListener('message', closeOnProviderExit)
+        return () => window.removeEventListener('message', closeOnProviderExit)
+    }, [closeGame, gameUrl])
 
     useEffect(() => {
         if (!open) return undefined
