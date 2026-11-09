@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import logo from '../assets/img/new/chorkiwala-logo.png'
+import logo from '../assets/img/logo/short_logo_3d.png'
 
 const splashVisible = () => Boolean(document.getElementById('splash'))
 
-// While the index.html splash video is still up it is the only loader: show
-// nothing underneath it. Once it has gone, later loads use the normal Preloader.
+// While the index.html splash is still up it is the only loader: show nothing
+// underneath it. Once it has gone, later loads use the normal Preloader.
 export function StartupFallback() {
     const [splash, setSplash] = useState(splashVisible)
     useEffect(() => {
@@ -25,7 +25,7 @@ export function SplashCloser() {
     return null
 }
 
-export default function Preloader({ className = "bg-white" }) {
+export default function Preloader({ className = "bg-page" }) {
     return (
         <div className={`fixed top-0 left-0 z-160 size-full flex items-center justify-center ${className}`}>
             <div className="max-w-120 w-full mx-auto bg-page h-full flex flex-col items-center justify-center">

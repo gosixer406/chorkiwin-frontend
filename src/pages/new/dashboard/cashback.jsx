@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import PageTitle from '@/components/dashboard/page-title'
@@ -29,7 +30,7 @@ export default function Cashback() {
                 <p className="text-xs font-medium text-(--menu-banner-sub)">Cash Back Balance</p>
                 <strong className="mt-1 block text-2xl">{currency} {Number(wallet.cashback_balance ?? wallet.cash_back_balance ?? 0).toFixed(2)}</strong>
             </div>
-            {loading && <p className="py-12 text-center text-ink-muted">Loading cash back history…</p>}
+            {loading && <Loader />}
             {error && <div className="rounded-md border border-[#772C2C] bg-[#C52B2B]/10 p-3 text-sm text-[#FF7A84]">{error}</div>}
             {!loading && !error && rows.length === 0 && <p className="py-12 text-center text-ink-muted">No cash back records found.</p>}
             {rows.map((row) => <article key={row.id} className="rounded-md border border-line bg-surface px-3.5 py-3 text-sm text-ink">

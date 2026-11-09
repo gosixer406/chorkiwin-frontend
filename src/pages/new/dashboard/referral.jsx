@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import { requestAccountRefresh } from '@/lib/refresh-account'
 import { useSelector } from 'react-redux'
@@ -80,7 +81,7 @@ export default function Referral() {
             <div className="flex flex-col gap-2 px-2.5 py-3 text-white">
                 {error && <div className="rounded-lg bg-red-500/10 p-3 text-sm text-red-300">{error}</div>}
                 {message && <div className="rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-300">{message}</div>}
-                {!data && !error && <p className="py-12 text-center text-[13px] text-ink-muted">Loading referral account…</p>}
+                {!data && !error && <Loader />}
 
                 {data && tab === 'invite' && <>
                     <img src={poster} className="block aspect-[2.5/1] w-full rounded-lg object-cover" alt="Invite a friend" />

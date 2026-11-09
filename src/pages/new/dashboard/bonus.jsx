@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useCallback, useEffect, useState } from 'react'
 import { requestAccountRefresh } from '@/lib/refresh-account'
 import PageTitle from '@/components/dashboard/page-title'
@@ -45,7 +46,7 @@ export default function Bonus() {
         <div className="space-y-3 p-3 text-white">
             {message && <div className="rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-300">{message}</div>}
             {error && <div className="rounded-lg bg-red-500/10 p-3 text-sm text-red-300">{error}</div>}
-            {loading && <p className="py-12 text-center text-ink-muted">Loading bonuses…</p>}
+            {loading && <Loader />}
             {!loading && rows.length === 0 && <p className="py-12 text-center text-ink-muted">No bonus records found.</p>}
             {rows.map((row) => <article key={row.id} className="rounded-md border border-line bg-surface p-4">
                 <div className="flex items-start justify-between gap-3"><div><strong>{row.title || 'Promotion bonus'}</strong><p className="mt-1 text-xs text-ink-soft">{row.description}</p></div><span className="rounded-full bg-black/20 px-3 py-1 text-xs capitalize text-gold-light">{row.status}</span></div>

@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import PageTitle from '@/components/dashboard/page-title'
 import { api } from '@/lib/api'
@@ -40,7 +41,7 @@ export default function Turnover() {
             </header>
 
             <div className="flex flex-1 flex-col gap-2 px-2.5 py-3 text-white">
-                {loading && <p className="py-20 text-center text-[13px] text-ink-muted">Loading turnover…</p>}
+                {loading && <Loader />}
                 {error && <div className="rounded-lg bg-red-500/10 p-3 text-sm text-red-300">{error}</div>}
                 {!loading && !error && shown.length === 0 && <p className="py-20 text-center text-[13px] text-ink-muted">No {tab} turnover found.</p>}
                 {shown.map((row) => (

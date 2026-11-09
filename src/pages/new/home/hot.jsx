@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useState } from 'react'
 import useGameLauncher from '@/hooks/use-game-launcher'
 import useHotGames from '@/hooks/use-hot-games'
@@ -22,7 +23,7 @@ function HotGameCard({ game, onLaunch, launching, priority = false }) {
             aria-label={game.name}
         >
             <div className="pointer-events-none absolute left-0 top-0 z-10 hidden h-full w-full rounded-xl bg-black/50 group-data-[loading=true]:block">
-                <div className="flex h-full animate-bounce items-center justify-center text-white">Loading...</div>
+                <Loader label="" className="h-full" />
             </div>
             <GameImage
                 src={game.img}
@@ -72,13 +73,7 @@ export default function Hot() {
                 <div role="alert" className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-200">{launcher.error || error}</div>
             )}
             <div className="flex flex-col gap-1.5">
-                {loading && !games.length && Array.from({ length: 4 }, (_, index) => (
-                    <div key={index} className="flex gap-1.5">
-                        {Array.from({ length: 3 }, (_, cell) => (
-                            <span key={cell} className="aspect-square w-[calc((100%-12px)/3)] shrink-0 animate-pulse rounded bg-white/10" />
-                        ))}
-                    </div>
-                ))}
+                {loading && !games.length && <Loader />}
                 {rows.map((row, index) => (
                     <div key={index} className="flex gap-1.5">
                         {row.map((game) => (

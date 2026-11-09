@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import PageTitle from '@/components/dashboard/page-title'
 import { api } from '@/lib/api'
@@ -89,7 +90,7 @@ export default function LifetimeProfitLossView({ dark = false, title = 'Life Tim
                 </div>}
             </div>
 
-            {loading && <p className={`py-12 text-center ${muted}`}>{daily ? 'Calculating daily P&L…' : 'Calculating lifetime P&L…'}</p>}
+            {loading && <Loader />}
             {error && <div role="alert" className="rounded-lg bg-red-500/10 p-3 text-sm text-red-500">{error}</div>}
 
             {!loading && !error && <>

@@ -1,3 +1,4 @@
+import Loader from "@/components/loader";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -18,7 +19,7 @@ import {
 import { useSelector } from "react-redux";
 import { api } from "@/lib/api";
 import GameHall from "@/components/game-hall";
-import brandLogo from "@/assets/img/new/chorkiwala-logo.png";
+import brandLogo from "@/assets/img/logo/short_logo_3d.png";
 import SpinWheel from "@/components/spin-wheel";
 import launcherGif from "@/assets/img/new/three-logo-animation-images.gif";
 import luckySpinWheel from "@/assets/img/lucky-spin-wheel.svg";
@@ -870,12 +871,7 @@ function SupportPanel({
 
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-4 py-5">
             {loading && !conversation && (
-              <p
-                className="py-10 text-center text-[13px]"
-                style={{ color: t.muted }}
-              >
-                লোড হচ্ছে…
-              </p>
+              <Loader label="লোড হচ্ছে…" />
             )}
             {error && (
               <div

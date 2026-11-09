@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useMemo, useState } from 'react'
 import PageTitle from '@/components/dashboard/page-title'
 import { api } from '@/lib/api'
@@ -87,7 +88,7 @@ export default function AccountStatementView({ dark = false }) {
                 <button type="button" onClick={applyFilters} className={dark ? 'btn-new rounded-lg px-4 py-2' : 'rounded-lg bg-[#FFC800] px-4 py-2 font-bold text-black'}>Apply filters</button>
             </div>
 
-            {loading && <p className={`py-12 text-center ${muted}`}>Loading account statement…</p>}
+            {loading && <Loader />}
             {error && <div role="alert" className="rounded-lg bg-red-500/10 p-3 text-sm text-red-500">{error}</div>}
             {!loading && !error && !rows.length && <p className={`py-12 text-center ${muted}`}>No account activity found.</p>}
 

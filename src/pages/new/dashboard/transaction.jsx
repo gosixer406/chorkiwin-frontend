@@ -1,3 +1,4 @@
+import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import PageTitle from '@/components/dashboard/page-title'
 import { api } from '@/lib/api'
@@ -34,7 +35,7 @@ export default function Transaction() {
             {[['payments', 'Payment Transfer Log'], ['p2p', 'P2p Log']].map(([value, label]) => <button role="tab" aria-selected={tab === value} key={value} onClick={() => setTab(value)} className={`h-10 border-b-2 py-2.5 text-sm font-medium ${tab === value ? 'border-gold text-gold' : 'border-transparent text-ink-soft hover:text-ink'}`}>{label}</button>)}
         </div>
         <div className="space-y-2 px-2 py-4 text-white">
-            {loading && <p className="py-12 text-center text-ink-muted">Loading transactions…</p>}
+            {loading && <Loader />}
             {error && <div className="rounded-lg bg-red-500/10 p-3 text-sm text-red-300">{error}</div>}
             {!loading && !error && shown.length === 0 && <p className="py-12 text-center text-ink-muted">No transaction records found.</p>}
             {shown.map((row) => <article key={row.id} className="rounded-md border border-line bg-surface p-4 text-sm">

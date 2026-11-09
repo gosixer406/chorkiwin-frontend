@@ -1,7 +1,8 @@
+import Loader from '@/components/loader'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { X } from 'lucide-react'
-import velkiLogo from '@/assets/img/new/chorkiwala-logo.png'
+import velkiLogo from '@/assets/img/logo/short_logo_3d.png'
 import { setUser } from '@/lib/auth'
 import { fetchFreshAccount, requestAccountRefresh } from '@/lib/refresh-account'
 import useMobileGameImmersion from '@/hooks/use-mobile-game-immersion'
@@ -167,10 +168,7 @@ export default function GameSession() {
                 </div>
             ) : (
                 <div className="grid min-h-0 flex-1 place-items-center bg-black text-white">
-                    <div className="text-center">
-                        <span className="mx-auto mb-3 block size-9 animate-spin rounded-full border-4 border-white/25 border-t-white" />
-                        <p className="text-sm">Opening game…</p>
-                    </div>
+                    <Loader label="Opening game…" className="text-white" />
                 </div>
             )}
         </section>
