@@ -91,7 +91,7 @@ export default function Header() {
       ) : (
         <div className="flex items-center gap-2">
           <Link
-            to="/signup"
+            to="/login"
             aria-label="Sign up for an account"
             className="flex h-8 shrink-0 items-center gap-1.5 rounded-[5px] bg-linear-to-r from-[#95C04A] to-[#A1CD5E] px-3 text-[#1B2A0B] transition-opacity hover:opacity-90"
           >
