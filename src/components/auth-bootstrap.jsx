@@ -31,7 +31,13 @@ export default function AuthBootstrap({ children }) {
     const dispatch = useDispatch()
     const initialized = useSelector((state) => state.auth.initialized)
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
+    const accountRole = useSelector((state) => state.auth.user?.role)
     const [startupReady, setStartupReady] = useState(false)
+
+    // This site is for players only: a staff session already open here is ended.
+    useEffect(() => {
+        if (isLoggedIn && accountRole && String(accountRole).toLowerCase() !== 'user') signOut(dispatch)
+    }, [accountRole, dispatch, isLoggedIn])
 
     // Auto sign-out once the site has been off screen (hidden, minimised or closed) for 5 minutes.
     useEffect(() => {

@@ -2,9 +2,8 @@ import GameTitle from "@/components/new/game-title";
 import CategoryTitleIcon from "@/components/new/category-title-icon";
 import SportsbookLaunchLoader from "@/components/sportsbook-launch-loader";
 import useGameLauncher from "@/hooks/use-game-launcher";
-import img9w from "@/assets/img/new/game/sports/9wickets-chorkix.webp";
-import imgSaba from "@/assets/img/new/game/sports/saba-2-chorkix.webp";
-import imgBti from "@/assets/img/new/game/sports/3-chorkix.webp";
+import img9w from "@/assets/img/sports/Wicket-White-.png";
+import imgSaba from "@/assets/img/sports/Saba-Sports.png";
 
 const sportsbooks = [
   {
@@ -17,12 +16,6 @@ const sportsbooks = [
     code: "saba",
     name: "SABA Sports",
     img: imgSaba,
-    description: "Seamless sportsbook",
-  },
-  {
-    code: "bti",
-    name: "BTI Sports",
-    img: imgBti,
     description: "Seamless sportsbook",
   },
 ];
