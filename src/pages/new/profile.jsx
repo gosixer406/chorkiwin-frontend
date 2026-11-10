@@ -18,7 +18,6 @@ import {
   Users,
   Waypoints,
 } from "lucide-react";
-import customers_support_whatsapp from "@/assets/img/customers Support_whatsapp.png";
 import { api } from "@/lib/api";
 import { logout, setUser } from "@/lib/auth";
 import { fetchFreshAccount } from "@/lib/refresh-account";
@@ -281,16 +280,6 @@ export default function Profile() {
         <UplineAgentCard className="mt-4" />
 
         <div className="mb-4 mt-4 flex flex-col gap-y-3 pb-[max(12px,env(safe-area-inset-bottom))]">
-          <Link
-            to="/upline-whatsapp"
-            className="block transition-opacity hover:opacity-90"
-          >
-            <img
-              src={customers_support_whatsapp}
-              className="h-auto w-full"
-              alt="Customers Support Whatsapp"
-            />
-          </Link>
           <button
             type="button"
             onClick={signOut}

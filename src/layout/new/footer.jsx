@@ -88,7 +88,7 @@ export default function Footer({ fullWidth = false }) {
           </span>
           <span className="h-px flex-1 bg-line-strong" />
         </div>
-        <SocialButtons />
+        <SocialButtons linked={false} />
       </div>
       <div className="flex w-full flex-col items-center gap-1.5 border-t border-line pt-3">
         <span className="font-inter text-[11px] font-medium uppercase tracking-[0.12em] text-ink-muted">
