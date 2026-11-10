@@ -5,6 +5,16 @@ import useHotGames from '@/hooks/use-hot-games'
 import { isFavorite, toggleFavorite } from '@/lib/favorites'
 import GameImage from '@/components/game-image'
 import hotIcon from '@/assets/img/new/quick-nav-hd/quick-nav-hot-game.png'
+import hot9w from '@/assets/img/hot-games/9-Wickets-(Dark)Yellow.png'
+import hotSaba from '@/assets/img/hot-games/Saba-sports-5000.png'
+import hotBti from '@/assets/img/hot-games/BTI_5000.png'
+
+// Sportsbooks pinned to the front of the Hot list, in this order.
+const HOT_SPORTSBOOKS = [
+    { code: '9w', name: '9Wickets', img: hot9w },
+    { code: 'saba', name: 'SABA Sports', img: hotSaba },
+    { code: 'bti', name: 'BTI', img: hotBti },
+].map((book) => ({ ...book, uid: `sports-${book.code}`, sportsbook: true }))
 
 function HotGameCard({ game, onLaunch, launching, priority = false }) {
     const [favorite, setFavorite] = useState(() => isFavorite(game.uid))
@@ -34,7 +44,7 @@ function HotGameCard({ game, onLaunch, launching, priority = false }) {
             />
             <div className="absolute bottom-0 left-0 right-0 flex h-[21.927px] items-center justify-between bg-[rgba(0,0,0,0.6)] px-[4.39px]">
                 <span className="flex-1 truncate text-left font-roboto text-xs font-bold leading-none text-ink-soft">{game.name}</span>
-                <span
+                {!game.sportsbook && <span
                     role="button"
                     aria-label={favorite ? 'Remove from favourites' : 'Add to favourites'}
                     aria-pressed={favorite}
@@ -44,7 +54,7 @@ function HotGameCard({ game, onLaunch, launching, priority = false }) {
                     <svg className="size-4" viewBox="0 0 24 24" fill={favorite ? '#F5F8F9' : 'none'} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path d="M12 21C12 21 3 14.5 3 8.5C3 5.46243 5.46243 3 8.5 3C10.0706 3 11.4722 3.65238 12 4.5C12.5278 3.65238 13.9294 3 15.5 3C18.5376 3 21 5.46243 21 8.5C21 14.5 12 21 12 21Z" stroke="#F5F8F9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                </span>
+                </span>}
             </div>
         </button>
     )
@@ -52,11 +62,13 @@ function HotGameCard({ game, onLaunch, launching, priority = false }) {
 
 export default function Hot() {
     const launcher = useGameLauncher()
-    const { games, loading, error } = useHotGames()
+    const { games: hotGames, loading, error } = useHotGames()
+    const games = [...HOT_SPORTSBOOKS, ...hotGames]
     const rows = []
     for (let index = 0; index < games.length; index += 3) rows.push(games.slice(index, index + 3))
 
     const launch = (game) => {
+        if (game.sportsbook) return launcher.launchSportsbook(game.code, game.name)
         launcher.launchGame({ uid: game.uid, name: game.name, img: game.img, provider: game.provider })
     }
 
@@ -73,7 +85,7 @@ export default function Hot() {
                 <div role="alert" className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-200">{launcher.error || error}</div>
             )}
             <div className="flex flex-col gap-1.5">
-                {loading && !games.length && <Loader />}
+                {loading && !hotGames.length && <Loader />}
                 {rows.map((row, index) => (
                     <div key={index} className="flex gap-1.5">
                         {row.map((game) => (
