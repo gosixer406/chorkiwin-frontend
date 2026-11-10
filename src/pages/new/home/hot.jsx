@@ -6,8 +6,8 @@ import { isFavorite, toggleFavorite } from '@/lib/favorites'
 import GameImage from '@/components/game-image'
 import hotIcon from '@/assets/img/new/quick-nav-hd/quick-nav-hot-game.png'
 import hot9w from '@/assets/img/hot-games/9-Wickets-(Dark)Yellow.png'
-import hotSaba from '@/assets/img/hot-games/Saba-sports-5000.png'
-import hotBti from '@/assets/img/hot-games/BTI_5000.png'
+import hotSaba from '@/assets/img/hot-games/Saba-sports-500.jpeg'
+import hotBti from '@/assets/img/hot-games/BTI_5000.jpeg'
 
 // Sportsbooks pinned to the front of the Hot list, in this order.
 const HOT_SPORTSBOOKS = [

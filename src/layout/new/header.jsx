@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { LockKeyhole, SquarePen, SquarePlus } from "lucide-react";
+import { LockKeyhole, SquarePen } from "lucide-react";
 import Reload from "@/components/reload";
 import { setUser } from "@/lib/auth";
 import {
@@ -77,16 +77,6 @@ export default function Header() {
               label="Refresh balance"
             />
           </div>
-          <Link
-            to="/dashboard/p2p?tab=deposit"
-            aria-label="Deposit"
-            className="flex h-8 shrink-0 flex-col items-center justify-center gap-0.5 rounded-none bg-[#5EA500] px-2 text-white transition-opacity hover:opacity-90 sm:h-9 sm:px-4"
-          >
-            <SquarePlus className="size-3 sm:size-3.5" strokeWidth={2.5} />
-            <span className="whitespace-nowrap font-poppins text-[10px] font-semibold leading-none sm:text-[11px]">
-              Deposit
-            </span>
-          </Link>
         </div>
       ) : (
         <div className="flex items-center gap-2">

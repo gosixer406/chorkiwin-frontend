@@ -4,7 +4,7 @@ import SportsbookLaunchLoader from "@/components/sportsbook-launch-loader";
 import useGameLauncher from "@/hooks/use-game-launcher";
 import img9w from "@/assets/img/sports/Wicket-White-.png";
 import imgSaba from "@/assets/img/sports/Saba-Sports.png";
-import imgBti from "@/assets/img/sports/BTI-Sports.png";
+import imgBti from "@/assets/img/sports/Bti football-Recovered@0.5x.png";
 
 const sportsbooks = [
   {
