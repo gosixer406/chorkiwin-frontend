@@ -1,6 +1,7 @@
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import useSiteFeatures, { anyLossBack } from "@/hooks/use-site-features";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import PageTitle from "@/components/dashboard/page-title";
@@ -28,6 +29,7 @@ import banner from "@/assets/img/new/menu/app-banner-reference.png";
 export default function Nav({ className = "" }) {
   const router = useLocation();
   const is_login = useSelector((state) => state.auth.isLoggedIn);
+  const features = useSiteFeatures();
   const [is_menu, set_is_menu] = useState(false);
 
   const menus = [
@@ -710,9 +712,16 @@ export default function Nav({ className = "" }) {
           title: "Wallet",
           links: [
             { icon: accountIcon(Wallet), is_svg: true, name: "Balance Overview", path: "/dashboard/balance-overview" },
-            { icon: accountIcon(ArrowLeftRight), is_svg: true, name: "P2P Transfer", path: "/dashboard/p2p" },
-            { icon: accountIcon(ScrollText), is_svg: true, name: "P2P Transfer Log", path: "/dashboard/transaction" },
-            { icon: accountIcon(HandCoins), is_svg: true, name: "Loss Back", path: "/dashboard/loss-back" },
+            // P2P and Loss Back show only when this site has them switched on.
+            ...(features.p2p
+              ? [
+                  { icon: accountIcon(ArrowLeftRight), is_svg: true, name: "P2P Transfer", path: "/dashboard/p2p" },
+                  { icon: accountIcon(ScrollText), is_svg: true, name: "P2P Transfer Log", path: "/dashboard/transaction" },
+                ]
+              : []),
+            ...(anyLossBack(features)
+              ? [{ icon: accountIcon(HandCoins), is_svg: true, name: "Loss Back", path: "/dashboard/loss-back" }]
+              : []),
           ],
         },
         {

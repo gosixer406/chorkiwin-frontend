@@ -20,6 +20,7 @@ import { api } from "@/lib/api";
 import GameHall from "@/components/game-hall";
 import brandLogo from "@/assets/img/logo/short_logo_3d.png";
 import SpinWheel from "@/components/spin-wheel";
+import useSiteFeatures from "@/hooks/use-site-features";
 import launcherGif from "@/assets/img/new/three-logo-animation-images.gif";
 import luckySpinWheel from "@/assets/img/lucky-spin-wheel.svg";
 
@@ -1048,9 +1049,11 @@ export default function Support() {
   }
 
   const [spinCount, setSpinCount] = useState(0);
+  // The Lucky Spin shows only when this site has it switched on.
+  const { spin: spinEnabled } = useSiteFeatures();
 
   const launcherActions = [
-    {
+    spinEnabled && {
       label: "Spin",
       badge: spinCount,
       onClick: () => window.dispatchEvent(new CustomEvent("velki:open-spin")),
@@ -1063,12 +1066,12 @@ export default function Support() {
       onClick: () => setHallOpen(true),
       icon: <img src="/game.svg" alt="" className="size-full object-contain" />,
     },
-  ];
+  ].filter(Boolean);
 
   return (
     <>
       <FloatingLauncher hidden={hallOpen} actions={launcherActions} />
-      <SpinWheel onCountChange={setSpinCount} />
+      {spinEnabled && <SpinWheel onCountChange={setSpinCount} />}
       <GameHall open={hallOpen} onClose={() => setHallOpen(false)} />
       {open && (
         <SupportPanel

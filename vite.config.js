@@ -12,6 +12,9 @@ const __dirname = path.dirname(__filename)
 export default defineConfig({
     server: {
         host: true,
+        // The platform (default) site is registered as localhost:5174.
+        port: 5174,
+        strictPort: true,
         proxy: {
             '/api': {
                 target: 'http://127.0.0.1:5000',
