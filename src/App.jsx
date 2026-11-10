@@ -7,6 +7,7 @@ import AuthBootstrap from './components/auth-bootstrap';
 import ProtectedRoute from './components/protected-route';
 import GameSession from './components/game-session';
 import ExchangeReturn from './components/exchange-return';
+import SingleTabGuard from './components/single-tab-guard';
 import { SplashCloser, StartupFallback } from './components/preloader';
 
 const loadNewIndex = () => import('./layout/new/index')
@@ -296,14 +297,16 @@ export default function App() {
   ]), [routerKey])
   if (window.location.pathname === '/9w-return') return <ExchangeReturn />
   return (
-    <div className="relative z-1 mx-auto min-h-dvh w-full max-w-[480px] overflow-x-hidden">
-      <AuthBootstrap>
-        <Suspense fallback={<StartupFallback />}>
-          <RouterProvider key={routerKey} router={router} />
-          <SplashCloser />
-          <GameSession />
-        </Suspense>
-      </AuthBootstrap>
-    </div>
+    <SingleTabGuard>
+      <div className="relative z-1 mx-auto min-h-dvh w-full max-w-[480px] overflow-x-hidden">
+        <AuthBootstrap>
+          <Suspense fallback={<StartupFallback />}>
+            <RouterProvider key={routerKey} router={router} />
+            <SplashCloser />
+            <GameSession />
+          </Suspense>
+        </AuthBootstrap>
+      </div>
+    </SingleTabGuard>
   )
 }

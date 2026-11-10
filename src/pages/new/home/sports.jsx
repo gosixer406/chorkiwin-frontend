@@ -4,6 +4,7 @@ import SportsbookLaunchLoader from "@/components/sportsbook-launch-loader";
 import useGameLauncher from "@/hooks/use-game-launcher";
 import img9w from "@/assets/img/sports/Wicket-White-.png";
 import imgSaba from "@/assets/img/sports/Saba-Sports.png";
+import imgBti from "@/assets/img/sports/BTI-Sports.png";
 
 const sportsbooks = [
   {
@@ -17,6 +18,12 @@ const sportsbooks = [
     name: "SABA Sports",
     img: imgSaba,
     description: "Seamless sportsbook",
+  },
+  {
+    code: "bti",
+    name: "BTI",
+    img: imgBti,
+    description: "BTI sportsbook",
   },
 ];
 

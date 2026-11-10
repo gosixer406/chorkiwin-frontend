@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import useSiteFeatures, { anyLossBack } from "@/hooks/use-site-features";
 import PageTitle from "@/components/dashboard/page-title";
 import Reload from "@/components/reload";
 import UplineAgentCard from "@/components/upline-agent-card";
@@ -43,6 +44,13 @@ export default function Profile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user) || {};
+  // P2P and Loss Back show only when this site has them switched on.
+  const features = useSiteFeatures();
+  const visible_links = menu_links.filter(
+    (item) =>
+      (item.path !== "/dashboard/p2p" || features.p2p) &&
+      (item.path !== "/dashboard/loss-back" || anyLossBack(features)),
+  );
   const wallet = user.wallet || {};
   const displayName = user.full_name || user.username || "Player";
   const username = user.username || "—";
@@ -255,7 +263,7 @@ export default function Profile() {
         </section>
 
         <nav aria-label="Account" className="mt-2 flex flex-col">
-          {menu_links.map((item) => (
+          {visible_links.map((item) => (
             <Link
               key={item.name}
               to={item.path}

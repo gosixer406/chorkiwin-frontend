@@ -7,6 +7,7 @@ import {
     ACCOUNT_REFRESH_EVENT,
     EXCHANGE_EXIT_CHANNEL,
     collectActiveExchange,
+    endExchangeOnReturn,
     exchangeExitObserved,
     isCurrentExchangeTransfer,
     fetchFreshAccount,
@@ -246,6 +247,8 @@ export default function AuthBootstrap({ children }) {
 
         const handleUnauthorized = () => dispatch(logout())
         let lastReturnSync = 0
+        // When this tab was last hidden (e.g. the player went to the 9 Wickets tab).
+        let leftSiteAt = document.visibilityState === 'visible' ? 0 : Date.now()
         const scheduleCollectionRetry = () => {
             if (!active || collectionRetryTimer || !exchangeExitObserved()) return
             collectionRetryTimer = window.setTimeout(() => {
@@ -271,10 +274,19 @@ export default function AuthBootstrap({ children }) {
         // Implicit: the tab came back. Session expiry is still caught by the
         // wallet poll that runs on the same return.
         const syncWhenVisible = () => {
-            if (document.visibilityState !== 'visible') return
+            if (document.visibilityState !== 'visible') {
+                leftSiteAt = Date.now()
+                return
+            }
             const exchangeActive = localStorage.getItem('velki_exchange_active') === '1'
-            // Focusing the site or opening another site tab does not mean the
-            // provider game ended. Only an observed tab close or exit can collect.
+            // Coming back to the site from the 9 Wickets tab ends that session:
+            // its tab is closed and the balance is brought back and refreshed.
+            // (A moment's grace so the launch itself, which hides this tab, never counts.)
+            if (exchangeActive && leftSiteAt && Date.now() - leftSiteAt > 1500 && endExchangeOnReturn()) {
+                leftSiteAt = 0
+                syncAccountOnReturn(true)
+                return
+            }
             if (exchangeActive) {
                 if (exchangeExitObserved() && Date.now() - lastReturnSync > 2000) syncAccountOnReturn(true)
                 return

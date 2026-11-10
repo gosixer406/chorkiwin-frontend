@@ -68,6 +68,23 @@ export function isExchangeGameTabOpen() {
   return !!exchangeGameTab && !exchangeGameTab.closed;
 }
 
+/**
+ * The player came back to the site while 9 Wickets was open in its own tab:
+ * that tab is closed (it was opened by this page, so the page may close it) and
+ * the exit is recorded so the balance is collected from the provider.
+ */
+export function endExchangeOnReturn() {
+  if (localStorage.getItem(EXCHANGE_ACTIVE_KEY) !== "1") return false;
+  try {
+    if (exchangeGameTab && !exchangeGameTab.closed) exchangeGameTab.close();
+  } catch {
+    /* Already gone, or the browser refused: the collection below still runs. */
+  }
+  finishExchangeGameTab();
+  markExchangeExitObserved({ notify: false });
+  return true;
+}
+
 export function finishExchangeGameTab() {
   if (exchangeTabWatcher) window.clearInterval(exchangeTabWatcher);
   exchangeTabWatcher = null;

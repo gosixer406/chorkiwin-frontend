@@ -5,6 +5,7 @@ import PageTitle from '@/components/dashboard/page-title'
 import { Pagination } from '@/components/dashboard/activity-log'
 import { api } from '@/lib/api'
 import { DISPLAY_CURRENCY } from '@/lib/currency'
+import useSiteFeatures from '@/hooks/use-site-features'
 
 const TABS = [
     { id: 'daily', label: 'Daily', title: 'Daily Loss Back', rule: 'of your loss for each day, paid just after midnight (Bangladesh time).' },
@@ -110,13 +111,18 @@ function LossBackPanel({ tab }) {
 
 export default function LossBack() {
     const [searchParams, setSearchParams] = useSearchParams()
-    const tab = TABS.find((item) => item.id === searchParams.get('tab')) || TABS[0]
+    const features = useSiteFeatures()
+    // Only the periods this site has switched on.
+    const tabs = TABS.filter((item) => features.loss_back?.[item.id])
+    const tab = tabs.find((item) => item.id === searchParams.get('tab')) || tabs[0]
 
     return <>
         <PageTitle title="Loss Back" titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
         <section className="space-y-2 px-[13px] py-3" aria-label="Loss back">
+            {!tab && <p className="py-12 text-center font-poppins text-xs text-ink-muted">Loss Back is currently not available.</p>}
+            {tab && <>
             <div role="tablist" aria-label="Loss back period" className="flex rounded-md border border-line bg-surface p-1">
-                {TABS.map((item) => <button
+                {tabs.map((item) => <button
                     key={item.id}
                     type="button"
                     role="tab"
@@ -127,6 +133,7 @@ export default function LossBack() {
             </div>
             {/* Keyed so each period starts on its own first page with no data from the last tab. */}
             <LossBackPanel key={tab.id} tab={tab} />
+            </>}
         </section>
     </>
 }

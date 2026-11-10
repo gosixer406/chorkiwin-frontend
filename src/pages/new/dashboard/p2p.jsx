@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { api } from "@/lib/api";
+import useSiteFeatures from "@/hooks/use-site-features";
 import { setUser } from "@/lib/auth";
 import { DISPLAY_CURRENCY } from "@/lib/currency";
 
@@ -226,6 +227,10 @@ export default function Banking() {
       tab.toLowerCase() === new URLSearchParams(location.search).get("tab"),
   );
   const [active_tab, set_active_tab] = useState(requested_tab || "P2P");
+  // The P2P tab shows only when this site has P2P switched on.
+  const features = useSiteFeatures();
+  const tabs = features.p2p ? TABS : TABS.filter((tab) => tab !== "P2P");
+  const current_tab = tabs.includes(active_tab) ? active_tab : tabs[0];
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -386,9 +391,9 @@ export default function Banking() {
             <X className="size-7" />
           </button>
         </div>
-        <div role="tablist" aria-label="Banking" className="grid grid-cols-3">
-          {TABS.map((tab) => {
-            const active = tab === active_tab;
+        <div role="tablist" aria-label="Banking" className={`grid ${tabs.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+          {tabs.map((tab) => {
+            const active = tab === current_tab;
             return (
               <button
                 key={tab}
@@ -406,7 +411,7 @@ export default function Banking() {
       </header>
 
       <main className="flex min-h-0 flex-1 flex-col">
-        {active_tab === "Deposit" && (
+        {current_tab === "Deposit" && (
           <div className="flex flex-col gap-4 px-2 pt-3.5">
             <div className="flex h-[32px] items-center justify-between rounded-md border border-gold/70 bg-surface px-3 text-white">
               <span className="flex items-center gap-1.5 text-[11.5px] font-medium">
@@ -435,7 +440,7 @@ export default function Banking() {
           </div>
         )}
 
-        {active_tab === "Withdraw" && (
+        {current_tab === "Withdraw" && (
           <div className="flex flex-col gap-4 px-2 pt-3.5">
             <div className="flex items-center rounded-md border border-line bg-surface">
               <div className="min-w-0 flex-1 px-4 py-3.5">
@@ -476,7 +481,7 @@ export default function Banking() {
           </div>
         )}
 
-        {active_tab === "P2P" && (
+        {current_tab === "P2P" && (
           <form
             onSubmit={submitP2p}
             className="flex min-h-full flex-1 flex-col gap-4 px-2.5 pt-3.5"
