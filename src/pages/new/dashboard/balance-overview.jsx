@@ -1,3 +1,4 @@
+import { DISPLAY_CURRENCY } from '@/lib/currency'
 import { useSelector } from 'react-redux'
 import PageTitle from '@/components/dashboard/page-title'
 
@@ -5,7 +6,7 @@ const amount = (value) => Number(value || 0).toFixed(2)
 
 export default function BalanceOverview() {
     const wallet = useSelector((state) => state.auth.user?.wallet) || {}
-    const currency = 'USD'
+    const currency = DISPLAY_CURRENCY
     const rows = [
         ['Main Balance', wallet.available ?? wallet.main_balance ?? wallet.balance],
         ['Bonus Balance', wallet.bonus_balance],

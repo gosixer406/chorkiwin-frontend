@@ -1,3 +1,4 @@
+import { DISPLAY_CURRENCY } from '@/lib/currency'
 import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import { requestAccountRefresh } from '@/lib/refresh-account'
@@ -107,7 +108,7 @@ export default function Referral() {
                             </div>
                         </div>
                     </section>
-                    {Number(data.dashboard?.claimable_amount || 0) > 0 && <button type="button" onClick={claim} className="h-[38px] w-full rounded-[3px] bg-linear-to-b from-gold-light to-gold-dark text-[13px] font-semibold text-on-gold">Claim referral bonus (USD {Number(data.dashboard.claimable_amount).toFixed(2)})</button>}
+                    {Number(data.dashboard?.claimable_amount || 0) > 0 && <button type="button" onClick={claim} className="h-[38px] w-full rounded-[3px] bg-linear-to-b from-gold-light to-gold-dark text-[13px] font-semibold text-on-gold">Claim referral bonus ({DISPLAY_CURRENCY} {Number(data.dashboard.claimable_amount).toFixed(2)})</button>}
                 </>}
 
                 {data && tab === 'details' && (

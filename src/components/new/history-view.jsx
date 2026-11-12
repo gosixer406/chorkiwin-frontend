@@ -1,33 +1,66 @@
+import { DISPLAY_CURRENCY } from '@/lib/currency'
 import Loader from '@/components/loader'
 import { useEffect, useMemo, useState } from 'react'
 import { CalendarDays, ChevronDown, MoveRight } from 'lucide-react'
 import PageTitle from '@/components/dashboard/page-title'
 import { api } from '@/lib/api'
 
+// One tab per category. `kind` picks the status filters and the card layout:
+// exchange (9W exchange markets), sportsbook (a seamless sportsbook provider),
+// sports (native sports bets) and casino (one line per game round).
 const sources = [
-    { label: 'Exchange', value: 'exchange', category: 'exchange' },
-    { label: 'BookMaker', value: 'exchange', category: 'bookmaker' },
-    { label: 'FancyBet', value: 'exchange', category: 'fancy' },
-    { label: 'SportsBook', value: 'exchange', category: 'sportsbook' },
-    { label: 'SABA', value: 'saba' },
-    { label: 'BTI', value: 'bti' },
-    { label: 'UG', value: 'ug' },
-    { label: 'SBO Virtual', value: 'sbobet' },
-    { label: 'SBOBET', value: 'sbobet' },
-    { label: 'Lucky', value: 'lucky' },
-    { label: 'TF', value: 'tf' },
-    { label: 'BetBy', value: 'betby' },
-    { label: 'Sports', value: 'sports' },
-    { label: 'Casino', value: 'casino' },
+    { label: 'Exchange', value: 'exchange', category: 'exchange', kind: 'exchange' },
+    { label: 'BookMaker', value: 'exchange', category: 'bookmaker', kind: 'exchange' },
+    { label: 'FancyBet', value: 'exchange', category: 'fancy', kind: 'exchange' },
+    { label: 'SportsBook', value: 'exchange', category: 'sportsbook', kind: 'exchange' },
+    { label: 'SABA', value: 'saba', kind: 'sportsbook' },
+    { label: 'BTI', value: 'bti', kind: 'sportsbook' },
+    { label: 'UG', value: 'ug', kind: 'sportsbook' },
+    { label: 'SBOBET', value: 'sbobet', kind: 'sportsbook' },
+    { label: 'Lucky', value: 'lucky', kind: 'sportsbook' },
+    { label: 'TF', value: 'tf', kind: 'sportsbook' },
+    { label: 'BetBy', value: 'betby', kind: 'sportsbook' },
+    { label: 'Sports', value: 'sports', kind: 'sports' },
+    { label: 'Casino', value: 'casino', kind: 'casino' },
 ]
 
-const statusFilters = [
-    { label: 'ALL', value: 'all' },
-    { label: 'Settled', value: 'settled' },
-    { label: 'Matched', value: 'pending' },
-    { label: 'Unmatched', value: 'unmatched' },
-    { label: 'Voided', value: 'void' },
-]
+const statusFiltersByKind = {
+    exchange: [
+        { label: 'ALL', value: 'all' },
+        { label: 'Settled', value: 'settled' },
+        { label: 'Matched', value: 'pending' },
+        { label: 'Unmatched', value: 'unmatched' },
+        { label: 'Voided', value: 'void' },
+    ],
+    sportsbook: [
+        { label: 'ALL', value: 'all' },
+        { label: 'Settled', value: 'settled' },
+        { label: 'Open', value: 'pending' },
+        { label: 'Voided', value: 'void' },
+    ],
+    sports: [
+        { label: 'ALL', value: 'all' },
+        { label: 'Open', value: 'pending' },
+        { label: 'Won', value: 'won' },
+        { label: 'Lost', value: 'lost' },
+        { label: 'Voided', value: 'void' },
+    ],
+    // A casino round settles at once: won, lost or void.
+    casino: [
+        { label: 'ALL', value: 'all' },
+        { label: 'Won', value: 'won' },
+        { label: 'Lost', value: 'lost' },
+        { label: 'Voided', value: 'void' },
+    ],
+}
+
+const CATEGORY_LABEL = {
+    exchange: 'Exchange',
+    bookmaker: 'BookMaker',
+    fancy: 'FancyBet',
+    sportsbook: 'SportsBook',
+    casino: 'Casino',
+}
 
 const presets = [
     { label: 'Today', value: 'today', days: 0 },
@@ -49,7 +82,7 @@ const presetRange = (days) => {
     return { from: isoDate(from), to: isoDate(to) }
 }
 
-const money = (value) => `USD ${Number(value || 0).toFixed(2)}`
+const money = (value) => `${DISPLAY_CURRENCY} ${Number(value || 0).toFixed(2)}`
 const when = (value) => value ? new Date(value).toLocaleString() : '—'
 
 const chipClass = (active) => `h-[30px] shrink-0 whitespace-nowrap rounded-full border px-3.5 text-[13px] transition-colors ${active ? 'border-gold bg-gold text-on-gold' : 'border-line-strong bg-transparent text-ink-soft hover:border-gold/60'}`
@@ -57,6 +90,8 @@ const chipClass = (active) => `h-[30px] shrink-0 whitespace-nowrap rounded-full 
 export default function HistoryView({ profitLoss = false }) {
     const [activeSource, setActiveSource] = useState(sources[0])
     const source = activeSource.value
+    const kind = activeSource.kind
+    const statusFilters = statusFiltersByKind[kind] || statusFiltersByKind.exchange
     const [status, setStatus] = useState('all')
     const [preset, setPreset] = useState('week')
     const [range, setRange] = useState(() => presetRange(7))
@@ -79,6 +114,10 @@ export default function HistoryView({ profitLoss = false }) {
 
     const chooseSource = (item) => {
         setActiveSource(item)
+        // Each category has its own status filters: start again from ALL.
+        setStatus('all')
+        setRows([])
+        setTotals(null)
         resetReport()
     }
 
@@ -264,15 +303,31 @@ export default function HistoryView({ profitLoss = false }) {
                         const market = row.market || firstSelection?.market_name || ''
                         const selection = row.selection || firstSelection?.selection_name || ''
                         const odds = row.total_odds ?? firstSelection?.odds
-                        const provider = row.provider || row.source || ''
-                        const context = [provider, row.sport, row.league].filter(Boolean).join(' · ')
+                        const isCasino = kind === 'casino'
+                        const provider = row.provider_label || row.provider_name || row.provider || row.source || ''
+                        const context = isCasino
+                            ? provider
+                            : [kind === 'exchange' ? '' : provider, row.sport, row.league].filter(Boolean).join(' · ')
+                        const badge = isCasino
+                            ? 'Casino'
+                            : kind === 'exchange'
+                                ? CATEGORY_LABEL[String(row.category || activeSource.category || '').toLowerCase()] || activeSource.label
+                                : activeSource.label
+                        const title = isCasino ? (row.game_name || row.market || 'Casino') : label
+                        const detail = isCasino ? selection : [market, selection].filter(Boolean).join(' · ')
                         return <article key={row.id || row.reference_id || index} className="rounded-md border border-line bg-surface p-3 text-sm">
-                            <div className="flex justify-between gap-3"><strong className="truncate text-[13px]">{label}</strong><span className="shrink-0 text-[12px] capitalize text-gold">{row.status || 'settled'}</span></div>
+                            <div className="flex items-start justify-between gap-3">
+                                <strong className="min-w-0 truncate text-[13px]">{title}</strong>
+                                <span className="flex shrink-0 items-center gap-1.5">
+                                    <span className="rounded border border-gold/40 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-gold">{badge}</span>
+                                    <span className="text-[12px] capitalize text-gold">{row.status || 'settled'}</span>
+                                </span>
+                            </div>
                             {context && <p className="mt-1 truncate text-[11px] text-ink-muted">{context}</p>}
-                            {(market || selection) && <p className="mt-1 text-[11px] text-ink-soft">{[market, selection].filter(Boolean).join(' · ')}</p>}
+                            {detail && <p className="mt-1 text-[11px] text-ink-soft">{detail}</p>}
                             <div className="mt-2.5 grid grid-cols-2 gap-2 border-t border-line-strong pt-2.5 text-[11px] text-ink-muted">
                                 <span>Stake<br /><strong className="text-ink">{money(stake)}</strong></span>
-                                {odds !== null && odds !== undefined && odds !== '' && <span>Odds<br /><strong className="text-ink">{Number(odds).toFixed(2)}</strong></span>}
+                                {!isCasino && odds !== null && odds !== undefined && odds !== '' && <span>Odds<br /><strong className="text-ink">{Number(odds).toFixed(2)}</strong></span>}
                                 <span>{row.potential_win !== null && row.potential_win !== undefined ? 'Potential win' : 'Won'}<br /><strong className="text-ink">{money(row.potential_win ?? row.won ?? row.actual_win)}</strong></span>
                                 <span>P/L<br /><strong className={Number(pl) >= 0 ? 'text-emerald-400' : 'text-red-400'}>{money(pl)}</strong></span>
                                 <span className="col-span-2">Placed<br /><strong className="text-ink">{when(row.placed || row.created_at || row.started_at)}</strong></span>
