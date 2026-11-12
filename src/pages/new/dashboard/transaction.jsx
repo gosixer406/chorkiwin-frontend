@@ -1,9 +1,10 @@
+import { DISPLAY_CURRENCY } from '@/lib/currency'
 import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import PageTitle from '@/components/dashboard/page-title'
 import { api } from '@/lib/api'
 
-const money = (value) => `USD ${Number(value || 0).toFixed(2)}`
+const money = (value) => `${DISPLAY_CURRENCY} ${Number(value || 0).toFixed(2)}`
 
 export default function Transaction() {
     const [tab, setTab] = useState('payments')

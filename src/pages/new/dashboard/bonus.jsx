@@ -1,3 +1,4 @@
+import { DISPLAY_CURRENCY } from '@/lib/currency'
 import Loader from '@/components/loader'
 import { useCallback, useEffect, useState } from 'react'
 import { requestAccountRefresh } from '@/lib/refresh-account'
@@ -50,7 +51,7 @@ export default function Bonus() {
             {!loading && rows.length === 0 && <p className="py-12 text-center text-ink-muted">No bonus records found.</p>}
             {rows.map((row) => <article key={row.id} className="rounded-md border border-line bg-surface p-4">
                 <div className="flex items-start justify-between gap-3"><div><strong>{row.title || 'Promotion bonus'}</strong><p className="mt-1 text-xs text-ink-soft">{row.description}</p></div><span className="rounded-full bg-black/20 px-3 py-1 text-xs capitalize text-gold-light">{row.status}</span></div>
-                <p className="mt-3 text-sm">Bonus: USD {Number(row.amount || row.bonus_amount || 0).toFixed(2)}</p>
+                <p className="mt-3 text-sm">Bonus: {DISPLAY_CURRENCY} {Number(row.amount || row.bonus_amount || 0).toFixed(2)}</p>
                 <div className="mt-3 h-2 overflow-hidden rounded-full bg-line-strong"><div className="h-full bg-primary2" style={{ width: `${Math.min(100, Number(row.overall_progress_pct || 0))}%` }} /></div>
                 <div className="mt-1 flex justify-between text-xs text-ink-soft"><span>Turnover progress</span><span>{Number(row.overall_progress_pct || 0).toFixed(0)}%</span></div>
                 {row.can_claim && <button disabled={claiming === row.id} onClick={() => claim(row)} className="btn-new mt-4 w-full py-2 disabled:opacity-50">{claiming === row.id ? 'Claiming…' : 'Claim bonus'}</button>}

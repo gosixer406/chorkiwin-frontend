@@ -1,3 +1,4 @@
+import { DISPLAY_CURRENCY } from '@/lib/currency'
 import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import PageTitle from '@/components/dashboard/page-title'
@@ -48,7 +49,7 @@ export default function Turnover() {
                     <article key={row.id} className="rounded-md border border-line bg-surface p-3 text-sm">
                         <div className="flex justify-between gap-3"><strong className="truncate text-[13px]">{row.title || 'Bonus turnover'}</strong><span className="shrink-0 text-[12px] capitalize text-gold">{row.status}</span></div>
                         <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-line-strong"><div className="h-full bg-gold" style={{ width: `${Math.min(100, Number(row.overall_progress_pct || 0))}%` }} /></div>
-                        <div className="mt-2 flex justify-between text-[11px] text-ink-muted"><span>Wagered USD {Number(row.wagered_amount || 0).toFixed(2)}</span><span>Required USD {Number(row.required_wager || 0).toFixed(2)}</span></div>
+                        <div className="mt-2 flex justify-between text-[11px] text-ink-muted"><span>Wagered {DISPLAY_CURRENCY} {Number(row.wagered_amount || 0).toFixed(2)}</span><span>Required {DISPLAY_CURRENCY} {Number(row.required_wager || 0).toFixed(2)}</span></div>
                     </article>
                 ))}
             </div>

@@ -1,3 +1,4 @@
+import { DISPLAY_CURRENCY } from '@/lib/currency'
 import Loader from '@/components/loader'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -9,7 +10,7 @@ export default function Cashback() {
     const [rows, setRows] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
-    const currency = 'USD'
+    const currency = DISPLAY_CURRENCY
 
     useEffect(() => {
         let active = true

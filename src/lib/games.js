@@ -25,14 +25,19 @@ export function featuredGameArtwork(value) {
     return FEATURED_GAME_ARTWORK[key] || ''
 }
 
+// The provider's "no artwork" stand-in (…/images/index.png) is not a game image:
+// treat it as none, so the card shows the site's own placeholder instead.
+const PLACEHOLDER_ARTWORK_RE = /\/images\/index\.(png|jpe?g|webp|gif)(\?.*)?$/i
+const realArtwork = (url) => (url && !PLACEHOLDER_ARTWORK_RE.test(String(url).trim()) ? url : '')
+
 export function normalizeGame(game) {
     const uid = String(game.game_uid || game.game_code || game.game_id || game.id || '')
     const provider = game.provider_name || game.provider || game.provider_code || game.brand || '9W'
     const name = game.game_name || game.locale_name || game.name || 'Casino game'
-    const providerArtwork = apiAssetUrl(
+    const providerArtwork = apiAssetUrl(realArtwork(
         game.img_url || game.game_image_narrow || game.game_image ||
         game.thumbnail_url || game.image_url || game.image || game.logo || ''
-    )
+    ))
     const featuredArtwork = featuredGameArtwork(name)
     return {
         uid,
