@@ -9,6 +9,7 @@ import {
   requestAccountRefresh,
 } from "@/lib/refresh-account";
 import logo from "@/assets/img/logo/short_logo_3d.png";
+import LoadingDots from "@/components/loading-dots";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -60,7 +61,7 @@ export default function Header() {
           <div className="flex h-8 min-w-0 items-center gap-1.5 overflow-hidden rounded-none border border-line bg-[#1C1C1C] pl-2 sm:h-9 sm:gap-2.5 sm:pl-3">
             <div className="flex shrink-0 items-center gap-1 whitespace-nowrap leading-none sm:gap-1.5">
               <span className="text-[10px] font-bold text-gold sm:text-[11px]">
-                $ {balance}
+                {refreshing ? <LoadingDots /> : `$ ${balance}`}
               </span>
               <span className="h-2.5 w-px bg-line sm:h-3" />
               <span className="text-[9px] font-semibold text-[#FF4D4F] sm:text-[10px]">

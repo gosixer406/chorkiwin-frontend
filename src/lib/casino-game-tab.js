@@ -16,8 +16,35 @@ const WATCH_MS = 1000
 let gameTab = null
 let watcher = 0
 
-const LOADING_HTML = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Loading game…</title></head>
-<body style="margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:#1C1C1C;color:#d4af37;font:600 15px system-ui,sans-serif">Loading game…</body></html>`
+// "PLEASE WAIT" card with dancing dots, shown in the game tab while the launch
+// request runs (same loader as gamex24).
+const WAIT_DOTS = [
+    [8, 8, '#a9d0e4'], [23, 8, '#c9e0ec'], [38, 9, '#eef7fb'], [53, 17, '#8fbfda'], [66, 22, '#006faf'],
+    [80, 14, '#0067a5'], [93, 12, '#006faf'], [8, 32, '#006faf'], [24, 32, '#006faf'], [40, 27, '#006faf'],
+    [55, 21, '#006faf'], [74, 32, '#6da9ce'], [88, 32, '#197db7'], [102, 32, '#006faf'],
+]
+const WAIT_DOTS_CSS = WAIT_DOTS.map(([left, top, bg], i) => (
+    `.wait-dots span:nth-child(${i + 1}){left:${left}px;top:${top}px;background:${bg};animation-delay:${(i * 0.06).toFixed(2)}s}`
+)).join('')
+
+const LOADING_HTML = '<!doctype html><html><head><meta charset="utf-8">'
+    + '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">'
+    + '<meta name="theme-color" content="#ffffff"><meta name="color-scheme" content="light">'
+    + '<title>Please wait…</title><style>'
+    + '*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;min-height:100dvh;overflow:hidden;background:#fff}'
+    + '.wait-loader{position:fixed;inset:0;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px;background:#fff}'
+    + '.wait-card{width:min(90vw,430px);height:clamp(330px,52dvh,430px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(35px,7vw,48px);border-radius:clamp(24px,7.466667vw,30px);background:#fff;box-shadow:0 16px 35px rgba(0,0,0,.22)}'
+    + '.wait-title{color:#006faf;font-family:Arial,"Helvetica Neue",sans-serif;font-size:clamp(30px,8.8vw,44px);font-weight:400;line-height:1;letter-spacing:.15em;text-indent:.15em}'
+    + '.wait-dots{position:relative;width:112px;height:44px}'
+    + '.wait-dots span{position:absolute;width:6.5px;height:6.5px;border-radius:50%;background:#006faf;animation:dotDance 1.08s ease-in-out infinite;box-shadow:0 0 3px rgba(0,111,175,.2)}'
+    + WAIT_DOTS_CSS
+    + '@keyframes dotDance{0%,100%{opacity:.42;transform:translate3d(0,0,0) scale(.82)}45%{opacity:1;transform:translate3d(0,-8px,0) scale(1.15)}}'
+    + '@media(prefers-reduced-motion:reduce){.wait-dots span{animation:none}}'
+    + '</style></head><body>'
+    + '<div class="wait-loader" role="status" aria-label="Please wait"><div class="wait-card">'
+    + '<div class="wait-title">PLEASE WAIT</div>'
+    + `<div class="wait-dots" aria-hidden="true">${'<span></span>'.repeat(WAIT_DOTS.length)}</div>`
+    + '</div></div></body></html>'
 
 /**
  * Open (or reuse) the game tab. Must run synchronously inside the click:

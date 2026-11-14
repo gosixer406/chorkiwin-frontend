@@ -433,3 +433,14 @@ body.pwa-install-visible .velki-site-header-dark {
   .spin-float-pulse,
   .spin-bulb { animation: none; }
 }
+
+/* Header balance placeholder while it refreshes (same as the admin header). */
+.loading-dots { display: inline-flex; align-items: center; gap: 4px; height: 12px; vertical-align: middle; color: currentColor; }
+.loading-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .15; animation: loading-dot .8s ease-in-out infinite; }
+@keyframes loading-dot {
+  0%, 100% { opacity: .15; transform: scale(.8); }
+  40% { opacity: 1; transform: scale(1.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-dots i { animation: none; opacity: .6; }
+}

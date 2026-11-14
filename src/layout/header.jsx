@@ -14,6 +14,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import Reload from "../components/reload";
+import LoadingDots from "../components/loading-dots";
 import { api } from "@/lib/api";
 import {
   fetchFreshAccount,
@@ -636,15 +637,19 @@ export default function Header() {
                   @{user?.username || "player"}
                 </span>
                 <div className="flex items-center gap-x-2.5 text-[#795A06] font-bold text-xs leading-[110%]">
-                  <span>
-                    $
-                    <span className="text-[#5A0600]">
-                      {" "}
-                      {Number(
-                        wallet.available ?? wallet.main_balance ?? 0,
-                      ).toFixed(2)}
+                  {refreshing ? (
+                    <LoadingDots className="text-[#5A0600]" />
+                  ) : (
+                    <span>
+                      $
+                      <span className="text-[#5A0600]">
+                        {" "}
+                        {Number(
+                          wallet.available ?? wallet.main_balance ?? 0,
+                        ).toFixed(2)}
+                      </span>
                     </span>
-                  </span>
+                  )}
                   <span>
                     Exp{" "}
                     <span className="text-[#FB2E30]">
