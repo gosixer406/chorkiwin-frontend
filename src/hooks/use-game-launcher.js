@@ -6,6 +6,7 @@ import { preconnectGameOrigins, rememberGameOrigin, validatedGameLaunchUrl } fro
 import { beginEmbeddedGame, cancelEmbeddedGame, openEmbeddedGame } from '@/lib/game-session-events'
 import { isExchangeGameTabOpen, rememberExchangeReturnPath, rememberExchangeWallet, requestAccountRefresh, waitForExchangeRelaunch, watchExchangeGameTab } from '@/lib/refresh-account'
 import { markGameAway, returnFromGame } from '@/lib/away-logout'
+import { cancelCasinoGameTab, reserveCasinoGameTab, showCasinoGame } from '@/lib/casino-game-tab'
 
 // Every game list uses this hook; warm the provider hosts once per page load.
 preconnectGameOrigins()
@@ -28,7 +29,7 @@ export default function useGameLauncher() {
         return false
     }
 
-    const runLaunch = async (id, path, body, { collectOnReturn = false, topLevel = false, title = 'Game' } = {}) => {
+    const runLaunch = async (id, path, body, { collectOnReturn = false, topLevel = false, newTab = false, title = 'Game' } = {}) => {
         if (!requireLogin()) return
         if (topLevel && isExchangeGameTabOpen()) {
             setError('Close the current 9 Wickets tab before opening another session.')
@@ -43,7 +44,10 @@ export default function useGameLauncher() {
 
         setError('')
         setLaunchingId(id)
-        const embeddedToken = topLevel ? '' : beginEmbeddedGame({ title })
+        // Casino: own tab, reserved during the click. If the browser blocks
+        // it (popup blocker, in-app webview) the game opens on the site instead.
+        const casinoTab = newTab && !topLevel ? reserveCasinoGameTab() : null
+        const embeddedToken = topLevel || casinoTab ? '' : beginEmbeddedGame({ title })
         let gameTab = null
 
         try {
@@ -68,6 +72,9 @@ export default function useGameLauncher() {
             if (topLevel) {
                 if (gameTab.closed) throw new Error('The 9 Wickets tab was closed before the game opened.')
                 gameTab.location.replace(gameUrl)
+            } else if (casinoTab) {
+                if (casinoTab.closed) throw new Error('The game tab was closed before the game opened.')
+                showCasinoGame(casinoTab, gameUrl)
             } else {
                 openEmbeddedGame({ url: gameUrl, title, token: embeddedToken })
             }
@@ -78,6 +85,7 @@ export default function useGameLauncher() {
                 rememberExchangeWallet(user?.wallet, launchError.payload?.errors?.transfer_id, gameTab)
             }
             if (gameTab && !gameTab.closed) gameTab.close()
+            if (casinoTab) cancelCasinoGameTab(casinoTab)
             if (topLevel) {
                 returnFromGame({ force: true })
                 requestAccountRefresh()
@@ -98,7 +106,7 @@ export default function useGameLauncher() {
             game.uid,
             '/api/9w/launch',
             { game_uid: game.uid, wallet_mode: 'both' },
-            { title: game.name || 'Casino Game' },
+            { title: game.name || 'Casino Game', newTab: true },
         ),
         launchSportsbook: (provider, title = `${String(provider).toUpperCase()} Sports`) => provider === '9w'
             ? runLaunch('sports-9w', '/api/9wicket/launch', {
