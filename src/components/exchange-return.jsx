@@ -17,6 +17,18 @@ export default function ExchangeReturn() {
         let stopped = false
         let retryTimer = 0
         let fallbackTimer = 0
+        // 9Wicket guide: send the player home after the cashout answer, or
+        // after 6 seconds at most. The server's reconcile worker finishes an
+        // unanswered cashout on its own, so leaving early never loses money.
+        const deadlineTimer = window.setTimeout(() => {
+            if (stopped) return
+            stopped = true
+            window.clearTimeout(retryTimer)
+            try { window.close() } catch { /* Some browsers keep the tab open. */ }
+            fallbackTimer = window.setTimeout(() => {
+                if (!window.closed) window.location.replace(returnPath())
+            }, 800)
+        }, 6000)
         const channel = typeof BroadcastChannel === 'function'
             ? new BroadcastChannel(EXCHANGE_EXIT_CHANNEL)
             : null
@@ -26,7 +38,9 @@ export default function ExchangeReturn() {
         const settleAndClose = async () => {
             try {
                 const collected = await collectActiveExchange({ force: true, transferId, strictSession: true })
+                if (stopped) return
                 if (!collected.settled) throw collected.error || new Error('Collection is pending')
+                window.clearTimeout(deadlineTimer)
                 if (collected.stale) {
                     try { window.close() } catch { /* Some browsers keep the tab open. */ }
                     fallbackTimer = window.setTimeout(() => {
@@ -55,6 +69,7 @@ export default function ExchangeReturn() {
             stopped = true
             window.clearTimeout(retryTimer)
             window.clearTimeout(fallbackTimer)
+            window.clearTimeout(deadlineTimer)
             channel?.close()
         }
     }, [])
