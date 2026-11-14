@@ -640,22 +640,24 @@ export default function Header() {
                   {refreshing ? (
                     <LoadingDots className="text-[#5A0600]" />
                   ) : (
-                    <span>
-                      $
-                      <span className="text-[#5A0600]">
-                        {" "}
-                        {Number(
-                          wallet.available ?? wallet.main_balance ?? 0,
-                        ).toFixed(2)}
+                    <>
+                      <span>
+                        $
+                        <span className="text-[#5A0600]">
+                          {" "}
+                          {Number(
+                            wallet.available ?? wallet.main_balance ?? 0,
+                          ).toFixed(2)}
+                        </span>
                       </span>
-                    </span>
+                      <span>
+                        Exp{" "}
+                        <span className="text-[#FB2E30]">
+                          ({Number(wallet.exposure || 0).toFixed(2)})
+                        </span>
+                      </span>
+                    </>
                   )}
-                  <span>
-                    Exp{" "}
-                    <span className="text-[#FB2E30]">
-                      ({Number(wallet.exposure || 0).toFixed(2)})
-                    </span>
-                  </span>
                 </div>
               </div>
               <Reload onClick={refreshAccount} label="Refresh balance" />

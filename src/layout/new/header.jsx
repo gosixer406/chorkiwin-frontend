@@ -39,8 +39,12 @@ export default function Header() {
     return () => window.removeEventListener("velki:balance-changed", refresh);
   }, [refreshAccount]);
 
+  // Signed in (or the page opened signed in): fetch the balance right away,
+  // with the loader in the header (the listener above runs refreshAccount).
   useEffect(() => {
-    if (isLoggedIn) requestAccountRefresh();
+    if (!isLoggedIn) return;
+    window.dispatchEvent(new Event("velki:balance-changed"));
+    requestAccountRefresh();
   }, [isLoggedIn]);
 
   return (
@@ -58,22 +62,30 @@ export default function Header() {
       </Link>
       {isLoggedIn ? (
         <div className="flex min-w-0 items-center gap-1 sm:gap-1.5">
-          <div className="flex h-8 min-w-0 items-center gap-1.5 overflow-hidden rounded-none border border-line bg-[#1C1C1C] pl-2 sm:h-9 sm:gap-2.5 sm:pl-3">
-            <div className="flex shrink-0 items-center gap-1 whitespace-nowrap leading-none sm:gap-1.5">
-              <span className="text-[10px] font-bold text-gold sm:text-[11px]">
-                {refreshing ? <LoadingDots /> : `$ ${balance}`}
-              </span>
-              <span className="h-2.5 w-px bg-line sm:h-3" />
-              <span className="text-[9px] font-semibold text-[#FF4D4F] sm:text-[10px]">
-                <span className="mr-0.5 text-[8px] font-medium uppercase sm:text-[9px]">
-                  Exp
-                </span>
-                {exposure}
-              </span>
+          <div className="flex h-8 min-w-0 items-center gap-2 sm:h-9 sm:gap-2.5">
+            {/* Main and Exp on one line; one loader for both while refreshing. */}
+            <div
+              className="flex shrink-0 items-center gap-2 whitespace-nowrap leading-none"
+              aria-busy={refreshing}
+            >
+              {refreshing ? (
+                <LoadingDots className="text-gold" />
+              ) : (
+                <>
+                  <span className="text-[11px] font-bold text-gold sm:text-[12px]">
+                    <span className="font-medium text-ink-soft">Main: </span>
+                    {balance}
+                  </span>
+                  <span className="text-[11px] font-bold text-[#FF4D4F] sm:text-[12px]">
+                    <span className="font-medium text-ink-soft">Exp: </span>
+                    {exposure}
+                  </span>
+                </>
+              )}
             </div>
             <Reload
-              className="text-ink-soft"
-              buttonClassName="grid h-full shrink-0 place-items-center border-l border-line px-1.5 transition-opacity hover:opacity-70 disabled:opacity-40 sm:px-2.5"
+              className="size-3.5! text-gold"
+              buttonClassName="grid size-6 shrink-0 place-items-center rounded-md border border-gold/70 transition-opacity hover:opacity-70 disabled:opacity-40 sm:size-7"
               onClick={refreshAccount}
               label="Refresh balance"
             />

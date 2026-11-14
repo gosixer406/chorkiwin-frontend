@@ -15,6 +15,10 @@ let exchangeTabWatcher = null;
 let exchangeGameTabTransferred = false;
 
 export const ACCOUNT_REFRESH_EVENT = "velki:refresh-account";
+/** Page the 9W tab shows while the launch request runs (public/). */
+export const EXCHANGE_WELCOME_URL = "/welcome-9wickets.html";
+// Pages of this site the 9W tab may show while the game is still running.
+const EXCHANGE_TAB_OWN_PATHS = new Set(["/9w-return", EXCHANGE_WELCOME_URL, "/welcome-9wickets"]);
 export const EXCHANGE_EXIT_CHANNEL = "velki:exchange-exit";
 
 export function rememberExchangeReturnPath(path) {
@@ -58,7 +62,7 @@ export function isExchangeGameTabOpen() {
       exchangeGameTab &&
       exchangeGameTab.location.href !== "about:blank" &&
       exchangeGameTab.location.origin === window.location.origin &&
-      exchangeGameTab.location.pathname !== "/9w-return"
+      !EXCHANGE_TAB_OWN_PATHS.has(exchangeGameTab.location.pathname)
     ) {
       finishExchangeGameTab();
     }
@@ -218,6 +222,7 @@ export async function collectActiveExchange({
   }
   if (exchangeCollectRequest) return exchangeCollectRequest;
 
+  emitExchangeSync(true);
   exchangeCollectRequest = (async () => {
     let lastError = null;
     const delays = [0, 2100, 2100, 2100];
@@ -273,9 +278,32 @@ export async function collectActiveExchange({
     return { active: true, settled: false, error: lastError };
   })().finally(() => {
     exchangeCollectRequest = null;
+    emitExchangeSync(false);
   });
 
   return exchangeCollectRequest;
+}
+
+// "Returning balance…" (components/exchange-sync-notice.jsx): on while a
+// 9 Wickets balance is being collected back to the site wallet.
+export const EXCHANGE_SYNC_EVENT = "velki:exchange-sync";
+let exchangeSyncDepth = 0;
+
+function emitExchangeSync(active) {
+  exchangeSyncDepth = Math.max(0, exchangeSyncDepth + (active ? 1 : -1));
+  try {
+    window.dispatchEvent(
+      new CustomEvent(EXCHANGE_SYNC_EVENT, {
+        detail: { active: exchangeSyncDepth > 0 },
+      }),
+    );
+  } catch {
+    /* no DOM events (tests) */
+  }
+}
+
+export function exchangeSyncInProgress() {
+  return exchangeSyncDepth > 0;
 }
 
 export async function waitForExchangeRelaunch() {

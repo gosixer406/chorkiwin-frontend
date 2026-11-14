@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { api } from '@/lib/api'
 import { preconnectGameOrigins, rememberGameOrigin, validatedGameLaunchUrl } from '@/lib/game-launch-url'
 import { beginEmbeddedGame, cancelEmbeddedGame, openEmbeddedGame } from '@/lib/game-session-events'
-import { isExchangeGameTabOpen, rememberExchangeReturnPath, rememberExchangeWallet, requestAccountRefresh, waitForExchangeRelaunch, watchExchangeGameTab } from '@/lib/refresh-account'
+import { EXCHANGE_WELCOME_URL, isExchangeGameTabOpen, rememberExchangeReturnPath, rememberExchangeWallet, requestAccountRefresh, waitForExchangeRelaunch, watchExchangeGameTab } from '@/lib/refresh-account'
 import { markGameAway, returnFromGame } from '@/lib/away-logout'
 import { cancelCasinoGameTab, reserveCasinoGameTab, showCasinoGame } from '@/lib/casino-game-tab'
 
@@ -55,7 +55,7 @@ export default function useGameLauncher() {
                 // Reserve the tab during the click. Browsers block windows
                 // opened only after the asynchronous launch request finishes.
                 rememberExchangeReturnPath(body.return_path)
-                gameTab = window.open('about:blank', '_blank')
+                gameTab = window.open(EXCHANGE_WELCOME_URL, '_blank')
                 if (!gameTab) throw new Error('Please allow a new tab for 9 Wickets and try again.')
                 gameTab.opener = null
                 markGameAway()

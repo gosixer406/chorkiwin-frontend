@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { api, readSession } from '@/lib/api'
 import { finishAuth, logout, setUser, setWallet } from '@/lib/auth'
 import { StartupFallback } from '@/components/preloader'
+import ExchangeSyncNotice from '@/components/exchange-sync-notice'
 import {
     ACCOUNT_REFRESH_EVENT,
     EXCHANGE_EXIT_CHANNEL,
@@ -343,5 +344,10 @@ export default function AuthBootstrap({ children }) {
     if (!startupReady || !initialized) {
         return <StartupFallback />
     }
-    return children
+    return (
+        <>
+            {children}
+            <ExchangeSyncNotice />
+        </>
+    )
 }
