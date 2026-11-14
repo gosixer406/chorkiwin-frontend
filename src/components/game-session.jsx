@@ -1,4 +1,4 @@
-import Loader from '@/components/loader'
+import GameLaunchLoader from '@/components/game-launch-loader'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { X } from 'lucide-react'
@@ -17,6 +17,8 @@ export default function GameSession() {
     const dispatch = useDispatch()
     const wallet = useSelector((state) => state.auth.user?.wallet)
     const [session, setSession] = useState(null)
+    // The game frame finished loading: hide the "PLEASE WAIT" overlay.
+    const [frameLoaded, setFrameLoaded] = useState(false)
     const historyPushed = useRef(false)
     const refreshRun = useRef(0)
     const walletRef = useRef(wallet)
@@ -71,6 +73,7 @@ export default function GameSession() {
     useEffect(() => {
         const openGame = (event) => {
             const detail = event.detail || {}
+            setFrameLoaded(false)
             setSession({ token: detail.token, url: detail.url || '', title: detail.title || 'Game' })
             if (!historyPushed.current) {
                 window.history.pushState(
@@ -154,7 +157,9 @@ export default function GameSession() {
                         className="absolute inset-0 size-full border-0 bg-black"
                         allow="autoplay; fullscreen; payment; clipboard-read; clipboard-write"
                         allowFullScreen
+                        onLoad={() => setFrameLoaded(true)}
                     />
+                    {!frameLoaded && <GameLaunchLoader overlay />}
                     {!immersive && (
                         <button
                             type="button"
@@ -176,9 +181,7 @@ export default function GameSession() {
                     )}
                 </div>
             ) : (
-                <div className="grid min-h-0 flex-1 place-items-center bg-black text-white">
-                    <Loader label="Opening game…" className="text-white" />
-                </div>
+                <GameLaunchLoader />
             )}
         </section>
     )

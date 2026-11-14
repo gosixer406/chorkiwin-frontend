@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 export default function Balance() {
   const wallet = useSelector((state) => state.auth.user?.wallet) || {}
-  const currency = '$'
+  const currency = 'BDT'
   const available = Number(wallet.available ?? wallet.main_balance ?? 0).toFixed(2)
   return (
     <>

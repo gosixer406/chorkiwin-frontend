@@ -14,8 +14,8 @@ import { ACCOUNT_REFRESH_EVENT, requestAccountRefresh } from '@/lib/refresh-acco
 // A spin exists only after the player's loss in the 24h after the day's first
 // deposit reaches the lowest band, so without loss there is nothing to spin.
 // The wheel only animates: the amount always comes from the server.
-const CURRENCY = '$'
-// The $1 - $100 wheel (same order as the backend's LOSS_SPIN_WHEEL); the
+const CURRENCY = '৳'
+// The ৳1 - ৳100 wheel (same order as the backend's LOSS_SPIN_WHEEL); the
 // server's list replaces it once loaded.
 const DEFAULT_WHEEL = [1, 50, 3, 10, 6, 100, 2, 20, 8, 40, 4, 80, 7, 30, 5, 60, 9]
 const SEGMENT_COLORS = ['#FFFFFF', '#F2545B', '#F7A928', 'var(--c-gold)', '#E84393', '#10AC84']

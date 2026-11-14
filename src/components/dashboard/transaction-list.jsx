@@ -105,7 +105,7 @@ export default function TransactionList({ p2pOnly = false }) {
                 <div className="mt-3 flex items-end justify-between gap-3 text-xs text-[#647D8D]">
                     <span>{row.created_at ? new Date(row.created_at).toLocaleString('en-GB') : ''}</span>
                     <strong className={amount >= 0 ? 'text-[#16883E]' : 'text-[#C72D36]'}>
-                        {amount < 0 ? '-$' : '$'}{Math.abs(amount).toFixed(2)}
+                        {amount < 0 ? '-' : ''}BDT {Math.abs(amount).toFixed(2)}
                     </strong>
                 </div>
             </article>
