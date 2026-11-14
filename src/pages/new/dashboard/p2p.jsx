@@ -15,7 +15,7 @@ const formatAmount = (value) =>
 function CurrencyBadge() {
   return (
     <span className="grid size-[22px] place-items-center rounded-full border-[1.5px] border-white text-[12px] font-semibold leading-none text-white">
-      $
+      ৳
     </span>
   );
 }

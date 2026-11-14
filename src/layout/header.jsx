@@ -642,7 +642,7 @@ export default function Header() {
                   ) : (
                     <>
                       <span>
-                        $
+                        ৳
                         <span className="text-[#5A0600]">
                           {" "}
                           {Number(
