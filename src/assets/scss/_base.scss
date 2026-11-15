@@ -1,0 +1,50 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+@layer components {
+    body {
+        background-image: url('../img/bg.png')
+    }
+    [class*="overflow-x"],
+    [class*="overflow-y"] {
+        @media only screen and (min-width: 600px) {
+            @include custom-scroll(var(--scroll, 6px));
+        }
+    }
+    #root {
+        overflow: hidden;
+    }
+    .swiper-pagination-bullets {
+        --swiper-pagination-bottom: 0px;
+        & .swiper-pagination-bullet {
+            height: 5px !important;
+            background: #235673 !important;
+            border-radius: 100px !important;
+            opacity: 1 !important;
+            --swiper-pagination-bullet-horizontal-gap: 3px;
+            &-active {
+                --swiper-pagination-bullet-width: 28px;
+                background-color: $primary !important;
+            }
+        }
+    }
+    .poster-slider {
+        overflow: visible !important;
+        & .swiper-pagination-bullets {
+            --swiper-pagination-bottom: -21px;
+        }
+        & .swiper-pagination-bullet {
+            width: 5px !important;
+            background: #4f7a93 !important;
+            &-active {
+                background-color: $primary !important;
+                width: 28px !important;
+            }
+        }
+    }
+    .hide-scrollbar {
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+}

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#111111">
+<title>Welcome to 9Wickets</title>
+<link rel="icon" href="/favicon.png">
+<script>
+  // Shown in the 9Wickets tab while the game link is prepared; the site
+  // replaces this page with the game. A clean address instead of the file name.
+  try { history.replaceState(null, '', '/welcome-9wickets' + location.search) } catch (e) { /* keep the file URL */ }
+</script>
+<style>
+  :root { color-scheme: dark; --gold: #eac463; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px; box-sizing: border-box;
+    background: radial-gradient(120% 80% at 50% 0%, #1d2b24 0%, #111 60%);
+    color: #fff; font-family: "Poppins", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    text-align: center;
+  }
+
+  /* Progress bar right under the browser's address bar. */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 4px;
+    background: rgba(234, 196, 99, .15); overflow: hidden; z-index: 10;
+  }
+  .topbar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #c09a3a, var(--gold), #fff3c4);
+    box-shadow: 0 0 10px rgba(234, 196, 99, .8);
+    transition: width .25s ease-out;
+    position: relative;
+  }
+  /* A light sweeping over the filled part so it never looks stuck. */
+  .topbar-fill::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .55), transparent);
+    transform: translateX(-100%); animation: sweep 1.2s ease-in-out infinite;
+  }
+
+  .card { width: 100%; max-width: 340px; }
+  .spinner {
+    width: 44px; height: 44px; margin: 0 auto 20px; border-radius: 50%;
+    border: 3px solid rgba(234, 196, 99, .25); border-top-color: var(--gold);
+    animation: spin .9s linear infinite;
+  }
+  h1 { margin: 0 0 8px; font-size: 22px; font-weight: 700; letter-spacing: -.3px; }
+  h1 span { color: var(--gold); }
+  p { margin: 0; font-size: 14px; color: rgba(255, 255, 255, .7); }
+
+  .progress { margin: 22px auto 0; width: 100%; }
+  .progress-track {
+    height: 6px; border-radius: 999px; overflow: hidden;
+    background: rgba(255, 255, 255, .1);
+  }
+  .progress-fill {
+    height: 100%; width: 0%; border-radius: inherit;
+    background: linear-gradient(90deg, #c09a3a, var(--gold));
+    transition: width .25s ease-out;
+  }
+  .progress-label {
+    display: flex; justify-content: space-between; margin-top: 8px;
+    font-size: 12px; color: rgba(255, 255, 255, .6); font-variant-numeric: tabular-nums;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes sweep { to { transform: translateX(100%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation-duration: 2.4s; }
+    .topbar-fill::after { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar" aria-hidden="true"><div class="topbar-fill" id="topbar-fill"></div></div>
+
+  <main class="card">
+    <div class="spinner" aria-hidden="true"></div>
+    <h1>Welcome to <span>9Wickets</span></h1>
+    <p>Loading your game…</p>
+
+    <div class="progress">
+      <div class="progress-track" role="progressbar" aria-label="Loading 9Wickets"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-label">
+        <span id="progress-step">Connecting to 9Wickets</span>
+        <span id="progress-value">0%</span>
+      </div>
+    </div>
+  </main>
+
+<script>
+  // The real launch time is unknown here: the site opens the game in this tab
+  // as soon as its link is ready. So progress moves quickly at first and then
+  // eases toward 95%, never claiming "done" before the game actually arrives.
+  (function () {
+    var topFill = document.getElementById('topbar-fill');
+    var fill = document.getElementById('progress-fill');
+    var bar = document.getElementById('progress');
+    var value = document.getElementById('progress-value');
+    var step = document.getElementById('progress-step');
+    var steps = [
+      [0, 'Connecting to 9Wickets'],
+      [30, 'Transferring your balance'],
+      [60, 'Preparing your game'],
+      [85, 'Opening 9Wickets'],
+    ];
+    var CAP = 95;
+    var HALF_LIFE_MS = 1600; // half the remaining way every 1.6 s
+    var started = Date.now();
+    var shown = -1;
+
+    function render(pct) {
+      var whole = Math.floor(pct);
+      if (whole === shown) return;
+      shown = whole;
+      topFill.style.width = pct + '%';
+      fill.style.width = pct + '%';
+      value.textContent = whole + '%';
+      bar.setAttribute('aria-valuenow', String(whole));
+      for (var i = steps.length - 1; i >= 0; i--) {
+        if (whole >= steps[i][0]) { step.textContent = steps[i][1]; break; }
+      }
+    }
+
+    function tick() {
+      var elapsed = Date.now() - started;
+      render(CAP * (1 - Math.pow(0.5, elapsed / HALF_LIFE_MS)));
+      if (shown < CAP - 1) window.setTimeout(tick, 120);
+    }
+    render(4);
+    window.setTimeout(tick, 120);
+
+    // The game is replacing this page: show it complete for the last frame.
+    window.addEventListener('pagehide', function () { render(100); });
+  })();
+</script>
+</body>
+</html>

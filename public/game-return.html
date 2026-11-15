@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Returning…</title>
+</head>
+<body style="background:#1C1C1C">
+    <script>
+        // The game provider sends the player here on exit: inside the site's
+        // game frame, or in the casino game tab (window name below).
+        if (window.parent !== window) window.parent.postMessage('velki:game-exit', window.location.origin)
+        else {
+            // A tab the site opened may close itself; the site tab sees it close.
+            if (window.name === 'velki_casino_game') window.close()
+            setTimeout(function () { window.location.replace('/') }, 300)
+        }
+    </script>
+</body>
+</html>

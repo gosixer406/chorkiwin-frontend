@@ -1,0 +1,519 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"); */
+
+@import "tailwindcss";
+
+@custom-variant hover (&:hover);
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: var(--c-gold-light);
+  --color-primary2: var(--c-gold);
+  --color-background: #f5f8f9;
+  --color-heading: #00121e;
+  --color-para: #3b6c88;
+  --color-stroke: #647d8d;
+  --breakpoint-xs: 390px;
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1240px;
+  --breakpoint-2xl: 1432px;
+  --font-ubuntu: "Ubuntu", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-poppins: "Poppins", "Inter", ui-sans-serif, sans-serif;
+  --font-roboto: "Roboto", "Inter", ui-sans-serif, sans-serif;
+  --font-bangla: "Hind Siliguri", "Inter", ui-sans-serif, sans-serif;
+}
+/* Site palette, sampled from the reference screenshots: charcoal + sky blue, one theme.
+   Components use the Tailwind names (bg-page, bg-surface, border-line, text-ink-soft, text-gold …). */
+@theme inline {
+  --color-page: var(--c-page);
+  --color-bar: var(--c-bar);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-ink: var(--c-ink);
+  --color-ink-soft: var(--c-ink-soft);
+  --color-ink-muted: var(--c-ink-muted);
+  --color-ink-dim: var(--c-ink-dim);
+  --color-gold: var(--c-gold);
+  --color-gold-light: var(--c-gold-light);
+  --color-gold-dark: var(--c-gold-dark);
+  --color-gold-active: var(--c-gold-active);
+  --color-on-gold: var(--c-on-gold);
+  --color-account-header: var(--c-account-header);
+}
+/* The --c-gold* names are the accent slots used across the site; the accent is now sky blue. */
+:root,
+.dark {
+  --c-page: #1C1C1C;
+  --c-bar: #202020;
+  --c-surface: #333333;
+  --c-surface-2: #3E3E3E;
+  --c-line: #3B3B3B;
+  --c-line-strong: #555555;
+  --c-ink: #FFFFFF;
+  --c-ink-soft: #D4D5D8;
+  --c-ink-muted: #A0A1A6;
+  --c-ink-dim: #6B6C70;
+  --c-gold: #6EBEF9;
+  --c-gold-light: #8FCEFB;
+  --c-gold-dark: #4A9BD8;
+  --c-gold-active: #6EBEF9;
+  --c-on-gold: #0D2436;
+  --c-account-header: #4CC2FF;
+  --menu-banner-sub: #DCEFFD;
+  --menu-banner-from: #6EBEF3;
+  --menu-banner-via: #537692;
+  --menu-banner-to: #333436;
+}
+
+@layer base {
+  html {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+    touch-action: pan-x pan-y pinch-zoom;
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--c-line-strong) transparent;
+    scrollbar-width: thin;
+  }
+  body,
+  #root {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+  body::-webkit-scrollbar {
+    width: 4px;
+  }
+  body::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: var(--c-line-strong);
+  }
+  body {
+    @apply text-base leading-normal font-normal text-para bg-cover bg-center bg-fixed;
+    margin: 0;
+    overscroll-behavior-x: none;
+    background-color: var(--c-page);
+    color-scheme: dark;
+    transition: background-color 0.2s ease;
+  }
+
+  /* Banking keeps the plain page tone so it matches every other screen. */
+  body.dark-banking-backdrop {
+    background-color: var(--c-page);
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-medium font-ubuntu text-heading;
+  }
+  img {
+    @apply max-w-full;
+  }
+  a {
+    @apply no-underline transition-all duration-300;
+  }
+  input,
+  textarea,
+  button {
+    @apply outline-0 transition-all duration-300;
+  }
+  button {
+    @apply cursor-pointer;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration {
+    display: none;
+  }
+}
+
+/* Swiper ships an unlayered `.swiper-horizontal { touch-action: pan-y; }`
+   rule. Keep this override outside Tailwind's base layer so mobile browsers
+   are allowed to start native pinch zoom directly over every banner. */
+.velki-zoomable-banner,
+.velki-zoomable-banner .swiper,
+.velki-zoomable-banner .swiper-wrapper,
+.velki-zoomable-banner .swiper-slide,
+.velki-zoomable-banner a,
+.velki-zoomable-banner img {
+  touch-action: pan-y pinch-zoom !important;
+}
+
+.new-version-shell .page-title {
+  min-height: 44px;
+}
+
+.new-version-shell .new-menu-title {
+  min-height: 48px;
+}
+
+.new-version-shell {
+  scrollbar-color: var(--c-line-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.new-version-shell *::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.new-version-shell *::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--c-line-strong);
+}
+
+.casino-provider-pill-active {
+  background-image: linear-gradient(181deg, transparent 2%, color-mix(in srgb, var(--c-gold) 25%, transparent) 44%, transparent 97%);
+}
+
+/* The light header is viewport-fixed, so it needs the install-bar offset. */
+body.pwa-install-visible .velki-site-header-light {
+  top: 56px;
+}
+
+/* The menu drawer is viewport-fixed too; keep its title and close button below the bar. */
+body.pwa-install-visible .new-menu-drawer {
+  top: 56px;
+  height: calc(100dvh - 56px);
+}
+
+/* Keeps the P2P buttons on screen when the install bar pushes the page down. */
+body.pwa-install-visible .banking-page {
+  min-height: calc(100dvh - 56px);
+}
+
+/* The dark shell already moves with the body's install-bar padding. Adding the
+   same offset to its sticky header would create a second 56px gap. */
+body.pwa-install-visible .velki-site-header-dark {
+  top: 0;
+}
+
+/* Match the reference 9Wickets launch indicator. */
+@keyframes preloader-progress {
+  0% {
+    width: 8%;
+  }
+
+  50% {
+    width: 68%;
+  }
+
+  100% {
+    width: 92%;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-x-3 rounded-lg text-base font-medium leading-normal px-4 min-h-9 bg-black hover:bg-primary hover:text-heading text-white hover:[&_svg]:translate-x-1 active:scale-97;
+  }
+  .btn svg {
+    @apply transition-all duration-300;
+  }
+  .btn-new {
+    @apply inline-flex items-center justify-center gap-x-3 rounded-lg text-base font-bold leading-normal px-4 min-h-9 bg-primary2 hover:bg-primary hover:text-heading text-on-gold hover:[&_svg]:translate-x-1 active:scale-97;
+  }
+}
+
+@layer utilities {
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes legal-drawer-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes velki-hall-in {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .game-hall-enter {
+    animation: velki-hall-in 500ms ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .game-hall-enter {
+      animation: none;
+    }
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .reference-search-scroll::-webkit-scrollbar {
+    width: 16px;
+  }
+
+  .reference-search-scroll::-webkit-scrollbar-thumb {
+    border: 5px solid transparent;
+    border-radius: 999px;
+    background: var(--c-ink-muted);
+    background-clip: padding-box;
+  }
+}
+
+/* Admin-authored promotion details often carry inline colours; keep them on the active theme. */
+.promotion-content,
+.promotion-content * {
+  background-color: transparent !important;
+  color: var(--c-ink-soft) !important;
+  border-color: var(--c-line) !important;
+}
+
+.promotion-content :is(h1, h2, h3, h4, h5, h6, strong, b, th) {
+  color: var(--c-ink) !important;
+}
+
+.promotion-content a {
+  color: var(--c-gold) !important;
+  text-decoration: underline;
+}
+
+.promotion-content :is(h1, h2, h3, h4, h5, h6) {
+  margin: 1rem 0 0.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.promotion-content p {
+  margin: 0 0 0.6rem;
+}
+
+.promotion-content :is(ul, ol) {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.promotion-content ul {
+  list-style: disc;
+}
+
+.promotion-content ol {
+  list-style: decimal;
+}
+
+.promotion-content li {
+  margin-bottom: 0.25rem;
+}
+
+.promotion-content table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+  border-collapse: collapse;
+}
+
+.promotion-content :is(th, td) {
+  border: 1px solid var(--c-line);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+
+.promotion-content th,
+.promotion-content thead td {
+  background-color: var(--c-surface) !important;
+}
+
+.promotion-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+/* Spin & Win */
+.spin-title {
+  background: linear-gradient(180deg, #fff6c2 0%, #ffcb07 55%, #b88700 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 3px 0 #5a4100);
+}
+.spin-bulb {
+  fill: #fff6c2;
+  animation: spin-bulb-blink 1s steps(1) infinite;
+}
+.spin-bulb-alt {
+  animation-delay: 0.5s;
+}
+.spin-bulb-fast {
+  animation-duration: 0.3s;
+}
+.spin-bulb-alt.spin-bulb-fast {
+  animation-delay: 0.15s;
+}
+@keyframes spin-bulb-blink {
+  0% { fill: #fff6c2; filter: drop-shadow(0 0 4px #ffcb07); }
+  50% { fill: #7a5a00; filter: none; }
+}
+.spin-winners-scroll {
+  animation: spin-winners-scroll linear infinite;
+}
+.spin-winners-scroll:hover {
+  animation-play-state: paused;
+}
+@keyframes spin-winners-scroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+.spin-mini-face {
+  animation: spin-float-rotate 6s linear infinite;
+}
+@keyframes spin-float-rotate {
+  to { transform: rotate(360deg); }
+}
+/* Same heartbeat pulse and timing as the floating Games icon (public/game.svg). */
+.spin-float-pulse {
+  animation: spin-float-pulse 4.43s linear infinite;
+}
+@keyframes spin-float-pulse {
+  0%, 3.16% { transform: scale(1); }
+  8.13% { transform: scale(0.94); }
+  13.54% { transform: scale(1); }
+  19.41% { transform: scale(1.06); }
+  25.28%, 88.04% { transform: scale(1); }
+  93.91% { transform: scale(1.06); }
+  99.77%, 100% { transform: scale(1); }
+}
+.spin-result-pop {
+  animation: spin-result-pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+@keyframes spin-result-pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spin-winners-scroll,
+  .spin-mini-face,
+  .spin-float-pulse,
+  .spin-bulb { animation: none; }
+}
+
+/* Header balance placeholder while it refreshes (same as the admin header). */
+.loading-dots { display: inline-flex; align-items: center; gap: 4px; height: 12px; vertical-align: middle; color: currentColor; }
+.loading-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .15; animation: loading-dot .8s ease-in-out infinite; }
+@keyframes loading-dot {
+  0%, 100% { opacity: .15; transform: scale(.8); }
+  40% { opacity: 1; transform: scale(1.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-dots i { animation: none; opacity: .6; }
+}
+
+/* Game launch loader ("PLEASE WAIT" + dancing dots), same as gamex24. */
+.game-launch-wait {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #fff;
+}
+.game-launch-wait.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+.game-launch-wait-card {
+  width: min(90vw, 430px);
+  height: clamp(330px, 52dvh, 430px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(35px, 7vw, 48px);
+  border-radius: clamp(24px, 7.466667vw, 30px);
+  background: #fff;
+  box-shadow: 0 16px 35px rgba(0, 0, 0, .22);
+}
+.game-launch-wait-title {
+  color: #006faf;
+  font-family: Arial, "Helvetica Neue", sans-serif;
+  font-size: clamp(30px, 8.8vw, 44px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: .15em;
+  text-indent: .15em;
+}
+.game-launch-wait-dots {
+  position: relative;
+  width: 112px;
+  height: 44px;
+}
+.game-launch-wait-dots span {
+  position: absolute;
+  width: 6.5px;
+  height: 6.5px;
+  border-radius: 50%;
+  background: #006faf;
+  animation: game-launch-dot-dance 1.08s ease-in-out infinite;
+  box-shadow: 0 0 3px rgba(0, 111, 175, .2);
+}
+.game-launch-wait-dots span:nth-child(1) { left: 8px; top: 8px; background: #a9d0e4; animation-delay: 0s; }
+.game-launch-wait-dots span:nth-child(2) { left: 23px; top: 8px; background: #c9e0ec; animation-delay: .06s; }
+.game-launch-wait-dots span:nth-child(3) { left: 38px; top: 9px; background: #eef7fb; animation-delay: .12s; }
+.game-launch-wait-dots span:nth-child(4) { left: 53px; top: 17px; background: #8fbfda; animation-delay: .18s; }
+.game-launch-wait-dots span:nth-child(5) { left: 66px; top: 22px; background: #006faf; animation-delay: .24s; }
+.game-launch-wait-dots span:nth-child(6) { left: 80px; top: 14px; background: #0067a5; animation-delay: .3s; }
+.game-launch-wait-dots span:nth-child(7) { left: 93px; top: 12px; background: #006faf; animation-delay: .36s; }
+.game-launch-wait-dots span:nth-child(8) { left: 8px; top: 32px; background: #006faf; animation-delay: .42s; }
+.game-launch-wait-dots span:nth-child(9) { left: 24px; top: 32px; background: #006faf; animation-delay: .48s; }
+.game-launch-wait-dots span:nth-child(10) { left: 40px; top: 27px; background: #006faf; animation-delay: .54s; }
+.game-launch-wait-dots span:nth-child(11) { left: 55px; top: 21px; background: #006faf; animation-delay: .6s; }
+.game-launch-wait-dots span:nth-child(12) { left: 74px; top: 32px; background: #6da9ce; animation-delay: .66s; }
+.game-launch-wait-dots span:nth-child(13) { left: 88px; top: 32px; background: #197db7; animation-delay: .72s; }
+.game-launch-wait-dots span:nth-child(14) { left: 102px; top: 32px; background: #006faf; animation-delay: .78s; }
+@keyframes game-launch-dot-dance {
+  0%, 100% { opacity: .42; transform: translate3d(0, 0, 0) scale(.82); }
+  45% { opacity: 1; transform: translate3d(0, -8px, 0) scale(1.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-launch-wait-dots span { animation: none; }
+}

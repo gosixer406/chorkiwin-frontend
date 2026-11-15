@@ -1,0 +1,71 @@
+import { useEffect, useState } from 'react'
+import logo from '../assets/img/logo/short_logo_3d.png'
+
+const splashVisible = () => Boolean(document.getElementById('splash'))
+
+// While the index.html splash is still up it is the only loader: show nothing
+// underneath it. Once it has gone, later loads use the normal Preloader.
+export function StartupFallback() {
+    const [splash, setSplash] = useState(splashVisible)
+    useEffect(() => {
+        if (!splash) return undefined
+        const onClosed = () => setSplash(false)
+        window.addEventListener('splash:closed', onClosed)
+        return () => window.removeEventListener('splash:closed', onClosed)
+    }, [splash])
+    return splash ? null : <Preloader />
+}
+
+// Rendered next to the routes: it only mounts once the first page has finished
+// loading, which is the moment to drop the splash.
+export function SplashCloser() {
+    useEffect(() => {
+        window.__closeSplash?.()
+    }, [])
+    return null
+}
+
+export default function Preloader({ className = "bg-page" }) {
+    return (
+        <div className={`fixed top-0 left-0 z-160 size-full flex items-center justify-center ${className}`}>
+            <div className="max-w-120 w-full mx-auto bg-page h-full flex flex-col items-center justify-center">
+                <div className="relative z-1">
+                    <svg
+                        className='animate-[spin_2s_linear_infinite] absolute top-1/2 left-1/2 -translate-1/2 -z-20' width="146" height="146" viewBox="0 0 146 146" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M146 73C146 113.317 113.317 146 73 146C32.6832 146 0 113.317 0 73C0 32.6832 32.6832 0 73 0C113.317 0 146 32.6832 146 73ZM3.24776 73C3.24776 111.523 34.4769 142.752 73 142.752C111.523 142.752 142.752 111.523 142.752 73C142.752 34.4769 111.523 3.24776 73 3.24776C34.4769 3.24776 3.24776 34.4769 3.24776 73Z" fill="var(--c-surface-2)" />
+                        <path d="M145 73C145.552 73 146.001 72.5522 145.993 72C145.866 62.7539 143.984 53.6128 140.443 45.0641C136.775 36.2073 131.397 28.1599 124.619 21.3812C117.84 14.6025 109.793 9.22539 100.936 5.55679C92.3872 2.01581 83.2461 0.133511 74 0.00684906C73.4478 -0.000715945 73 0.447715 73 1L73 2.24776C73 2.80004 73.4478 3.24701 74 3.25493C82.8196 3.38137 91.5384 5.17956 99.693 8.55733C108.156 12.0627 115.845 17.2006 122.322 23.6777C128.799 30.1548 133.937 37.8442 137.443 46.307C140.82 54.4616 142.619 63.1804 142.745 72C142.753 72.5522 143.2 73 143.752 73H145Z" fill="#08AF72" />
+                    </svg>
+
+                    <svg
+                        className='animate-[spin_2s_linear_infinite_reverse] absolute top-1/2 left-1/2 -translate-1/2 -z-20' width="102" height="102" viewBox="0 0 102 102" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M102 51C102 79.1665 79.1665 102 51 102C22.8335 102 0 79.1665 0 51C0 22.8335 22.8335 0 51 0C79.1665 0 102 22.8335 102 51ZM3.11451 51C3.11451 77.4464 24.5536 98.8855 51 98.8855C77.4464 98.8855 98.8855 77.4464 98.8855 51C98.8855 24.5536 77.4464 3.11451 51 3.11451C24.5536 3.11451 3.11451 24.5536 3.11451 51Z" fill="var(--c-surface-2)" />
+                        <path d="M76.904 93.7666C77.1902 94.239 77.8058 94.3907 78.2725 94.0954C88.6622 87.5206 96.3376 77.4051 99.8646 65.6031C103.392 53.8011 102.525 41.1329 97.4466 29.9354C97.2184 29.4324 96.6205 29.2215 96.1221 29.4594L95.1163 29.9396C94.6179 30.1775 94.4078 30.7741 94.6353 31.2774C99.3814 41.7773 100.186 53.6495 96.8805 64.7113C93.5747 75.773 86.3876 85.2568 76.6585 91.4309C76.1922 91.7269 76.0405 92.3409 76.3266 92.8133L76.904 93.7666Z" fill="#F4B105" />
+                    </svg>
+
+                    <svg className='absolute top-1/2 left-1/2 -translate-1/2 -z-20' width="55" height="55" viewBox="0 0 55 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="27.5" cy="27.5" r="27.5" fill="var(--c-surface-2)" />
+                    </svg>
+                    <svg className='absolute top-1/2 left-1/2 -translate-1/2 -z-20' width="199" height="119" viewBox="0 0 199 119" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g filter="url(#filter0_f_6282_1250)">
+                            <rect x="44" y="44" width="111" height="31" fill="#00D285" />
+                        </g>
+                        <defs>
+                            <filter id="filter0_f_6282_1250" x="0" y="0" width="199" height="119" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                                <feGaussianBlur stdDeviation="22" result="effect1_foregroundBlur_6282_1250" />
+                            </filter>
+                        </defs>
+                    </svg>
+                    <img src={logo} className='h-9 animate-ping' alt="" />
+                </div>
+                <div className="flex flex-col gap-y-6 text-center uppercase mt-25 text-base leading-normal font-medium text-ink-muted w-full max-w-81">
+                    <div className="h-1 bg-surface w-full relative">
+                        <div className="h-full w-[8%] absolute top-0 left-0 bg-[linear-gradient(90deg,#D7B514_0%,#08B173_100%)] animate-[preloader-progress_1.4s_ease-in-out_infinite]" />
+                    </div>
+                    <span className='tracking-[5px] block mt-0'>loading</span>
+                </div>
+            </div>
+        </div>
+    )
+}
