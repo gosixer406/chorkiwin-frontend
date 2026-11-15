@@ -1,6 +1,6 @@
 // import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { logout, setUser } from "@/lib/auth";
+import { logout, setUser, setWallet } from "@/lib/auth";
 import {
   ChartNoAxesCombined,
   ChevronRight,
@@ -17,7 +17,7 @@ import Reload from "../components/reload";
 import LoadingDots from "../components/loading-dots";
 import { api } from "@/lib/api";
 import {
-  fetchFreshAccount,
+  refreshBalanceFast,
   requestAccountRefresh,
 } from "@/lib/refresh-account";
 
@@ -34,7 +34,10 @@ export default function Header() {
     if (!is_login || refreshing) return;
     setRefreshing(true);
     try {
-      dispatch(setUser(await fetchFreshAccount()));
+      await refreshBalanceFast({
+        onWallet: (nextWallet) => dispatch(setWallet(nextWallet)),
+        onAccount: (account) => dispatch(setUser(account)),
+      });
     } catch {
       // Keep the current wallet visible when a transient refresh fails.
     } finally {

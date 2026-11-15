@@ -19,8 +19,8 @@ import {
   Waypoints,
 } from "lucide-react";
 import { api } from "@/lib/api";
-import { logout, setUser } from "@/lib/auth";
-import { fetchFreshAccount } from "@/lib/refresh-account";
+import { logout, setUser, setWallet } from "@/lib/auth";
+import { refreshBalanceFast } from "@/lib/refresh-account";
 
 // Brushed-gold face of the balance cards.
 const metal_card = {
@@ -67,7 +67,10 @@ export default function Profile() {
     navigator.clipboard.writeText(String(value || ""));
   const refreshBalance = useCallback(async () => {
     try {
-      dispatch(setUser(await fetchFreshAccount()));
+      await refreshBalanceFast({
+        onWallet: (nextWallet) => dispatch(setWallet(nextWallet)),
+        onAccount: (account) => dispatch(setUser(account)),
+      });
     } catch {
       // Preserve the last confirmed wallet amount instead of blanking the page.
     }
@@ -174,22 +177,7 @@ export default function Profile() {
           </h6>
           <div className="flex items-center justify-between gap-x-3">
             <div className="flex h-8.5 items-center gap-x-1 rounded-full bg-[#111111] px-2.5 [&>svg:first-child]:size-4">
-<<<<<<< HEAD
               <span aria-hidden="true" className="text-base font-bold leading-none text-white">৳</span>
-=======
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 22 22"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10.3541 3.4332V4.19805L10.0448 4.22812C8.22288 4.4043 6.71038 5.31523 6.11741 6.5957C5.63186 7.65273 5.7135 9.22969 6.30218 10.1277C6.38382 10.248 6.57288 10.4758 6.72757 10.6305C7.34202 11.2535 7.96936 11.5586 9.52913 12.0055L10.3326 12.2375L10.3455 13.7027L10.3541 15.168L10.1951 15.1035C9.78264 14.9316 9.45179 14.4977 9.34866 13.9992L9.2928 13.7285L7.54827 13.7156L5.80374 13.707L5.82522 13.9305C5.94983 15.1809 6.4053 16.0316 7.31194 16.7148C8.051 17.2734 9.12952 17.6602 10.2037 17.7547L10.3326 17.7676L10.3455 18.5496L10.3541 19.3359H10.9772H11.6002V18.5625V17.7891H11.7334C11.9869 17.7891 12.7647 17.6559 13.1385 17.5484C13.6756 17.3937 14.3975 17.0285 14.8014 16.702C15.4116 16.2121 15.8627 15.5332 16.0776 14.7941C16.1635 14.5062 16.1764 14.3602 16.1764 13.75C16.1764 12.9637 16.1076 12.6156 15.8541 12.1172C15.5834 11.5801 14.926 10.9613 14.2858 10.6391C13.9592 10.4758 12.9194 10.1148 12.1073 9.88281L11.6002 9.73672V8.30586C11.6002 7.51953 11.6174 6.875 11.6346 6.875C11.7162 6.875 12.0686 7.13711 12.1717 7.27031C12.3178 7.46367 12.4467 7.75586 12.4854 7.98359L12.5155 8.16406H14.2686C15.7295 8.16406 16.026 8.15547 16.026 8.10391C16.026 7.95352 15.8842 7.25313 15.8026 7.00391C15.3127 5.48711 14.0408 4.54609 12.1116 4.2668L11.6002 4.19375V3.42891V2.66406H10.9772H10.3541V3.4332ZM10.3541 8.05664V9.32422L10.1479 9.22109C9.55491 8.92031 9.27991 8.54219 9.27991 8.02227C9.27991 7.85898 9.30139 7.64844 9.33147 7.5582C9.40452 7.30469 9.64514 7.05117 9.94163 6.91367C10.3885 6.70312 10.3541 6.6043 10.3541 8.05664ZM12.0041 12.7961C12.5369 13.084 12.7604 13.4191 12.7604 13.9305C12.7604 14.3344 12.6401 14.6051 12.335 14.8758C12.1416 15.052 11.8194 15.2109 11.6561 15.2109C11.6131 15.2109 11.6002 14.9617 11.6002 13.9176V12.6285L11.6991 12.6543C11.7506 12.6715 11.8881 12.7359 12.0041 12.7961Z"
-                  fill="white"
-                />
-              </svg>
->>>>>>> origin/main
               <span className="font-semibold text-white text-sm">
                 {mainBalance}
               </span>
