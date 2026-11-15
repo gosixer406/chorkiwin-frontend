@@ -74,11 +74,19 @@ export default function Header() {
                 <>
                   <span className="text-[11px] font-bold text-gold sm:text-[12px]">
                     <span className="font-medium text-ink-soft">Main: </span>
+<<<<<<< HEAD
                     ৳{balance}
                   </span>
                   <span className="text-[11px] font-bold text-[#FF4D4F] sm:text-[12px]">
                     <span className="font-medium text-ink-soft">Exp: </span>
                     ৳{exposure}
+=======
+                    {balance}
+                  </span>
+                  <span className="text-[11px] font-bold text-[#FF4D4F] sm:text-[12px]">
+                    <span className="font-medium text-ink-soft">Exp: </span>
+                    {exposure}
+>>>>>>> origin/main
                   </span>
                 </>
               )}
