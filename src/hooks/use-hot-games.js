@@ -29,7 +29,8 @@ export default function useHotGames() {
             if (catalogue?.games?.length) setGames(catalogue.games.map(withHotArtwork))
             if (catalogue?.timestamp || attempt >= MAX_RETRIES) {
                 setLoading(false)
-                if (!catalogue?.games?.length) setError(result.reason?.message || 'Hot games are unavailable right now.')
+                // An empty admin Hot list is not an error; a failed request is.
+                if (!catalogue?.games?.length && result.status === 'rejected') setError(result.reason?.message || 'Hot games are unavailable right now.')
                 return
             }
             timer = setTimeout(() => load(attempt + 1), RETRY_DELAY)

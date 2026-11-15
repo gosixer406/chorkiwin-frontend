@@ -86,37 +86,6 @@ const CATEGORY_DATA = [
     { id: 'sports', label: 'Sports', bg: 'bg-sports-B-Iy1ZC0.jpg', icon: '⚽', providers: ['SABA', 'PINNACLE'] },
 ]
 
-const RANKING_GAMES = [
-    ['SEXYBCRT', 'SEXYBCRT', 'SEXY CASINO'],
-    ['JILI', 'JILI-SLOT-042', 'Golden Empire'],
-    ['JILI', 'JILI-SLOT-027', 'Super Ace'],
-    ['JILI', 'JILI-SLOT-031', 'Boxing King'],
-    ['JILI', 'JILI-FISH-005', 'Happy Fishing'],
-    ['JILI', 'JILI-SLOT-102', 'Super Ace Deluxe'],
-    ['JILI', 'JILI-SLOT-096', 'Fortune Gems 3'],
-    ['PG', 'PG-SLOT-058', 'Treasures of Aztec'],
-    ['JILI', 'JILI-SLOT-193', 'Fortune Garuda 500'],
-    ['PG', 'PG-SLOT-050', 'Mahjong Ways 2'],
-    ['PG', 'PG-SLOT-105', 'Wild Bounty Showdown'],
-    ['JILI', 'JILI-SLOT-130', 'Super Ace 2'],
-    ['JILI', 'JILI-SLOT-022', 'Fengshen'],
-    ['JILI', 'JILI-SLOT-026', 'Charge Buffalo'],
-    ['JILI', 'JILI-SLOT-076', 'Fortune Gems 2'],
-    ['JILI', 'JILI-SLOT-149', 'Crazy777 2'],
-    ['JILI', 'JILI-SLOT-083', 'Aztec Priestess'],
-    ['JILI', 'JILI-SLOT-014', 'Crazy777'],
-    ['JILI', 'JILI-SLOT-161', 'Boxing King Title Match'],
-    ['SPRIBE', 'SPRIBE-EGAME-001', 'Aviator'],
-].map(([assetCode, imageCode, name], index) => ({
-    uid: `reference:${assetCode}:${imageCode}`,
-    rank: index + 1,
-    name,
-    provider: PROVIDER_BY_ASSET[assetCode]?.name || assetCode,
-    img: `${AWC}/image/ranking/${assetCode}/char-${imageCode}.png`,
-    category: 'Hot',
-    raw: {},
-}))
-
 const NAV_ITEMS = [['recent', 'Recent'], ['favorite', 'Favorite'], ['rankings', 'Rankings'], ['games', 'Games'], ['platform', 'Platform']]
 
 function readStored(key) {
@@ -235,9 +204,13 @@ function GameGrid({ games, favoriteIds = new Set(), onFavorite, onLaunch, loadin
     return <div className="grid grid-cols-3 gap-x-2 gap-y-3 p-2 pb-24">{games.map((game, index) => <article key={game.uid} className="relative min-w-0 pb-9 text-white"><button type="button" onClick={() => onLaunch?.(game)} className="relative mx-auto block aspect-square w-[94%] overflow-hidden rounded-lg border border-line bg-surface"><span className="absolute inset-x-0 top-0 z-10 h-4 truncate bg-black/70 px-1 text-left text-[8px] leading-4 text-white">{game.provider}</span><GameImage src={game.img} fallback={game.fallbackImg} placeholder={fallbackGame} alt={game.name} priority={index < 9} className="size-full object-cover" /></button><strong className="mt-1 block truncate px-1 text-[12px] font-semibold">{game.name}</strong><button type="button" onClick={() => onFavorite?.(game)} aria-label={`${favoriteIds.has(game.uid) ? 'Remove' : 'Add'} favorite`} className="absolute -right-2 bottom-3 grid size-14 place-items-center"><Star className={`size-9 stroke-gold stroke-[2] ${favoriteIds.has(game.uid) ? 'fill-gold' : 'fill-page'}`} /></button></article>)}</div>
 }
 
+// Rankings = admin's Hot list in admin's order (no hard-coded games).
 function RankingsPage({ query, onLaunch }) {
-    const rows = RANKING_GAMES.filter((game) => `${game.name} ${game.provider}`.toLowerCase().includes(query.toLowerCase()))
-    return <section className="min-h-full bg-page pb-20 text-white"><img src={`${AWC}/image/banner/banner-4.png`} alt="" className="w-full object-cover" style={{ height: 144 }} /><div className="grid gap-y-3 bg-surface px-3 py-4 text-center text-[10px] text-ink-soft" style={{ gridTemplateColumns: 'repeat(5, minmax(0, 1fr))' }}>{CATEGORY_DATA.map((category) => <div key={category.id}><span className="mx-auto mb-1 block text-2xl text-gold">{category.icon}</span>{category.label}</div>)}</div><div className="mt-3 flex h-12 items-center border-y border-line bg-surface px-3 text-sm font-bold"><span className="flex-1">♛ &nbsp;Most Popular Games</span><span className="border-l border-line px-3 text-ink-soft">⚙ &nbsp;More Rankings</span><ChevronDown className="size-5" /></div><div>{rows.map((game) => <article key={game.uid} className="relative flex items-center border-b-8 border-line bg-surface" style={{ height: 97 }}><span className="w-16 shrink-0 text-center text-lg">{game.rank < 4 ? <span className="text-3xl text-gold">♛</span> : game.rank}</span><img src={game.img} onError={(event) => { event.currentTarget.src = fallbackGame }} alt="" className="self-end object-contain object-bottom" style={{ width: 145, height: 92 }} /><div className="min-w-0 flex-1 pr-2 text-right"><small className="block truncate text-[10px] text-ink-muted">{game.provider}</small><strong className="block truncate text-sm">{game.name}</strong><button type="button" onClick={() => onLaunch(game)} className="mt-1 rounded bg-gold px-2 py-0.5 text-[8px] font-semibold text-on-gold">PLAY NOW ›</button></div><Star className="mr-2 size-7 fill-page stroke-gold" /></article>)}</div></section>
+    const { games: hotGames, loading } = useHotGames()
+    const ranked = hotGames.map((game, index) => ({ ...game, rank: index + 1 }))
+    if (loading && !hotGames.length) return <Loader />
+    const rows = ranked.filter((game) => `${game.name} ${game.provider}`.toLowerCase().includes(query.toLowerCase()))
+    return <section className="min-h-full bg-page pb-20 text-white"><img src={`${AWC}/image/banner/banner-4.png`} alt="" className="w-full object-cover" style={{ height: 144 }} /><div className="grid gap-y-3 bg-surface px-3 py-4 text-center text-[10px] text-ink-soft" style={{ gridTemplateColumns: 'repeat(5, minmax(0, 1fr))' }}>{CATEGORY_DATA.map((category) => <div key={category.id}><span className="mx-auto mb-1 block text-2xl text-gold">{category.icon}</span>{category.label}</div>)}</div><div className="mt-3 flex h-12 items-center border-y border-line bg-surface px-3 text-sm font-bold"><span className="flex-1">♛ &nbsp;Most Popular Games</span><span className="border-l border-line px-3 text-ink-soft">⚙ &nbsp;More Rankings</span><ChevronDown className="size-5" /></div><div>{rows.map((game) => <article key={game.uid} className="relative flex items-center border-b-8 border-line bg-surface" style={{ height: 97 }}><span className="w-16 shrink-0 text-center text-lg">{game.rank < 4 ? <span className="text-3xl text-gold">♛</span> : game.rank}</span><GameImage src={game.img} fallback={game.fallbackImg} placeholder={fallbackGame} alt="" className="h-[92px] w-[145px] shrink-0 self-end object-contain object-bottom" /><div className="min-w-0 flex-1 pr-2 text-right"><small className="block truncate text-[10px] text-ink-muted">{game.provider}</small><strong className="block truncate text-sm">{game.name}</strong><button type="button" onClick={() => onLaunch(game)} className="mt-1 rounded bg-gold px-2 py-0.5 text-[8px] font-semibold text-on-gold">PLAY NOW ›</button></div><Star className="mr-2 size-7 fill-page stroke-gold" /></article>)}</div></section>
 }
 
 function ReportPage({ type }) {
