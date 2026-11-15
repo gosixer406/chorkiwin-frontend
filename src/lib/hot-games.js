@@ -1,4 +1,5 @@
-// The Hot Game list itself comes from /api/9w/games/reference?category=hot.
+// The Hot Game list itself is admin's Hot list (Game Catalog > Hot Games),
+// served by /api/9w/games/reference?category=hot.
 // These bundled icons only stand in when the API sends a game without artwork.
 const icon = (file) => `/game-icons/hot/${file}`
 

@@ -1,5 +1,5 @@
+// Hot has no fallback: it shows only the games admin marked Hot.
 const referenceFallbackEndpoints = {
-    hot: '/api/9w/games/hot?limit=40',
     live: '/api/9w/games/all?category=live&limit=40',
     slots: '/api/9w/games/all?category=slot&limit=40',
     table: '/api/9w/games/all?category=table&limit=40',
