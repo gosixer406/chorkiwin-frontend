@@ -26,7 +26,7 @@ jobs:
           script: |
             set -e
 
-            APP_DIR=/var/www/normal-b2b-service/b2b-9wickts-vip-frontend
+            APP_DIR=/var/www/normal-b2b-service/chorki88-frontend
 
             echo "🚀 Starting deployment..."
             echo "📂 Project directory: $APP_DIR"
