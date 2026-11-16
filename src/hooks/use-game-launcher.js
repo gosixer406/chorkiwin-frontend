@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { api } from '@/lib/api'
 import { preconnectGameOrigins, rememberGameOrigin, validatedGameLaunchUrl } from '@/lib/game-launch-url'
 import { beginEmbeddedGame, cancelEmbeddedGame, openEmbeddedGame } from '@/lib/game-session-events'
-import { EXCHANGE_WELCOME_URL, isExchangeGameTabOpen, rememberExchangeReturnPath, rememberExchangeWallet, requestAccountRefresh, waitForExchangeRelaunch, watchExchangeGameTab } from '@/lib/refresh-account'
+import { EXCHANGE_WELCOME_URL, beginExchangeLaunch, endExchangeOnReturn, exchangeReturnDetected, isExchangeGameTabOpen, rememberExchangeReturnPath, rememberExchangeWallet, requestAccountRefresh, waitForExchangeRelaunch, watchExchangeGameTab } from '@/lib/refresh-account'
 import { markGameAway, returnFromGame } from '@/lib/away-logout'
 import { cancelCasinoGameTab, reserveCasinoGameTab, showCasinoGame } from '@/lib/casino-game-tab'
 
@@ -55,6 +55,7 @@ export default function useGameLauncher() {
                 // Reserve the tab during the click. Browsers block windows
                 // opened only after the asynchronous launch request finishes.
                 rememberExchangeReturnPath(body.return_path)
+                beginExchangeLaunch()
                 gameTab = window.open(EXCHANGE_WELCOME_URL, '_blank')
                 if (!gameTab) throw new Error('Please allow a new tab for 9 Wickets and try again.')
                 gameTab.opener = null
@@ -72,6 +73,8 @@ export default function useGameLauncher() {
             if (topLevel) {
                 if (gameTab.closed) throw new Error('The 9 Wickets tab was closed before the game opened.')
                 gameTab.location.replace(gameUrl)
+                // The player came back to the site while the launch was loading.
+                if (exchangeReturnDetected() && document.hasFocus()) endExchangeOnReturn()
             } else if (casinoTab) {
                 if (casinoTab.closed) throw new Error('The game tab was closed before the game opened.')
                 showCasinoGame(casinoTab, gameUrl)
