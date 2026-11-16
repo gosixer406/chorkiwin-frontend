@@ -22,6 +22,8 @@ import { BALANCE_POLL_MS, shouldSyncOnReturn, startPolling } from '@/lib/polling
 
 const EXCHANGE_EXIT_TOKEN = 'JITBO_EXCHANGE_EXIT'
 const STARTUP_MAX_WAIT_MS = 1000
+const BOOTSTRAP_MAX_DELAY_MS = 10_000
+const BOOTSTRAP_POLL_LIMIT_MS = 60_000
 const SEEN_STAMP_MS = 5_000
 
 // Same as the header's sign-out: revoke the token server-side, clear it locally regardless.
@@ -143,7 +145,13 @@ export default function AuthBootstrap({ children }) {
             // than 20 seconds, so never release the app with partial data.
             // Errors (backend down or mid-deploy) are retried below, so no
             // separate health round trip is needed first.
-            while (active) {
+            // The loader closes after STARTUP_MAX_WAIT_MS anyway, so back off
+            // (500ms, 1s, 2s … up to 10s) and stop after a minute: a backend
+            // that stays "warming" (e.g. a provider not set up locally) must
+            // not be asked twice a second for as long as the page is open.
+            const deadline = Date.now() + BOOTSTRAP_POLL_LIMIT_MS
+            let delay = 500
+            while (active && Date.now() < deadline) {
                 try {
                     const response = await api.get('/api/bootstrap', {
                         auth: false,
@@ -155,7 +163,8 @@ export default function AuthBootstrap({ children }) {
                     // A rolling deployment may expose this endpoint a moment
                     // after health becomes available.
                 }
-                await new Promise((resolve) => window.setTimeout(resolve, 500))
+                await new Promise((resolve) => window.setTimeout(resolve, delay))
+                delay = Math.min(delay * 2, BOOTSTRAP_MAX_DELAY_MS)
             }
             return null
         }

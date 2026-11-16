@@ -11,7 +11,7 @@ const SESSION_KEY = 'velki_session'
 // runs on a host that is not registered for the site (dev, preview, CDN).
 export const TENANT_HOST = (import.meta.env.VITE_TENANT_DOMAIN || window.location.host).toLowerCase()
 // Caches that only speed up first paint and can be thrown away at any time.
-const DISPOSABLE_STORAGE_KEYS = ['velki_home_catalogues_v1', 'velki_home_sections_v1']
+const DISPOSABLE_STORAGE_KEYS = ['velki_home_catalogues_v1', 'velki_home_sections_v1', 'velki_login_banner_v1']
 let refreshRequest = null
 const responseCache = new Map()
 const inFlightGets = new Map()
