@@ -1,7 +1,36 @@
+import { useState } from 'react'
 import { Link, Outlet } from 'react-router-dom'
 
-import banner from '@/assets/img/logo/login-banner.png'
+import defaultBanner from '@/assets/img/logo/login-banner.png'
 import logo from '@/assets/img/logo/short_logo_3d.png'
+import { loginBannerSrc, useLoginBanner } from '@/lib/login-banner'
+
+// Login and signup share this layout, so both show the same banner: the one
+// set in Admin > CMS > Login Banner, or the bundled image when none is set.
+function Banner() {
+    const { banner, ready } = useLoginBanner()
+    const [failedSrc, setFailedSrc] = useState('')
+    const customSrc = loginBannerSrc(banner)
+    const useCustom = !!customSrc && customSrc !== failedSrc
+    const src = useCustom ? customSrc : defaultBanner
+    const link = useCustom ? banner?.link_url : null
+
+    const image = (
+        <img
+            src={src}
+            // First visit only: hold the space until we know which banner to show.
+            className={`block h-auto w-full ${ready || useCustom ? '' : 'invisible'}`}
+            alt=""
+            decoding="async"
+            fetchpriority="high"
+            onError={() => useCustom && setFailedSrc(customSrc)}
+        />
+    )
+
+    if (!link) return <div className="pointer-events-none">{image}</div>
+    if (link.startsWith('/')) return <Link to={link} aria-label="Banner" className="block">{image}</Link>
+    return <a href={link} target="_blank" rel="noopener noreferrer" aria-label="Banner" className="block">{image}</a>
+}
 
 export default function Index() {
     return (
@@ -19,7 +48,7 @@ export default function Index() {
                         </svg>
                     </Link>
                 </div>
-                <img src={banner} className="pointer-events-none block h-auto w-full" alt="" />
+                <Banner />
                 <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-linear-to-t from-[#272727] to-transparent" />
             </div>
             <Outlet />
