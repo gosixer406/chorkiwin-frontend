@@ -26,7 +26,7 @@ import useHotGames from '@/hooks/use-hot-games'
 import GameImage from '@/components/game-image'
 import { readFavorites, toggleFavorite } from '@/lib/favorites'
 import { validatedGameLaunchUrl } from '@/lib/game-launch-url'
-import { cancelCasinoGameTab, reserveCasinoGameTab, showCasinoGame } from '@/lib/casino-game-tab'
+import { openCasinoGameTab } from '@/lib/casino-game-tab'
 import useMobileGameImmersion from '@/hooks/use-mobile-game-immersion'
 import fallbackGame from '@/assets/img/game-img.png'
 import velkiLogo from '@/assets/img/logo/short_logo_3d.png'
@@ -417,25 +417,24 @@ export default function GameHall({ open, onClose }) {
     const launchGame = async (displayGame) => {
         if (!isLoggedIn) { closeHall(); navigate('/login', { state: { returnTo: window.location.pathname + window.location.search } }); return }
         if (launching) return
-        setLaunching(displayGame.uid)
         setError('')
-        // Own tab, reserved during the click (browsers block it after an await).
-        // Blocked: the game opens inside the hall as before.
-        const gameTab = reserveCasinoGameTab()
+        // Own tab on /open-game/..., opened during the click (browsers block it
+        // after an await); that page launches the game. Blocked: the game opens
+        // inside the hall as before.
+        if (openCasinoGameTab({ uid: displayGame.uid, name: displayGame.name, platform: 2 })) {
+            setRecent(saveRecentGame(displayGame))
+            return
+        }
+        setLaunching(displayGame.uid)
         try {
             const game = await resolveReferenceGame(displayGame)
             if (!game) throw new Error('This provider game is temporarily unavailable.')
             const response = await api.post('/api/9w/launch', { game_uid: game.uid, wallet_mode: 'both', language: 'en', platform: 2 })
             const gameUrl = validatedGameLaunchUrl(response.data?.game_url)
             setRecent(saveRecentGame({ ...game, img: displayGame.img || game.img }))
-            if (gameTab && !gameTab.closed) {
-                showCasinoGame(gameTab, gameUrl)
-            } else {
-                leaveImmersive()
-                setGameUrl(gameUrl)
-            }
+            leaveImmersive()
+            setGameUrl(gameUrl)
         } catch (launchError) {
-            cancelCasinoGameTab(gameTab)
             setError(launchError.message || 'Unable to launch this game right now.')
         }
         finally { setLaunching('') }
