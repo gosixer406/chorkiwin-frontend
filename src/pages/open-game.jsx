@@ -4,7 +4,6 @@ import { normalizeGame } from '@/lib/games'
 import { rememberGameOrigin, validatedGameLaunchUrl } from '@/lib/game-launch-url'
 import { OPEN_GAME_PREFIX } from '@/lib/casino-game-tab'
 import logo from '@/assets/img/logo/short_logo_3d.png'
-import pinwheel from '@/assets/img/logo/launch-pinwheel.png'
 
 // /open-game/<platform>/<game uid>?name=<game name>
 // The casino game tab (gamex24's OpenGameLauncher): a top bar with the logo and
@@ -89,15 +88,9 @@ export default function OpenGame() {
                 </button>
             </header>
             <section className="grid min-h-0 flex-1 place-items-center bg-black p-6" aria-live="polite">
-                {/* While the launch request runs: the spinning pinwheel and
-                    "Launching <game>..." (gamex24's launch message). */}
+                {/* While the launch request runs: "Launching <game>..." (gamex24's launch message). */}
                 {!error && (
-                    <div role="status" className="grid w-[min(280px,80vw)] justify-items-center gap-4 text-center">
-                        <img
-                            src={pinwheel}
-                            alt=""
-                            className="size-24 animate-[spin_1.6s_linear_infinite] rounded-full motion-reduce:animate-none"
-                        />
+                    <div role="status" className="grid w-[min(280px,80vw)] justify-items-center text-center">
                         <p className="m-0 max-w-full truncate font-poppins text-[15px] font-medium text-white/85">
                             Launching {request.name}...
                         </p>
