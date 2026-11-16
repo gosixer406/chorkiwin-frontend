@@ -1,4 +1,4 @@
-name: Deploy b2b-frontend
+name: Deploy chorki88-frontend
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: deploy-b2b-frontend
+  group: deploy-chorki88-frontend
   cancel-in-progress: false
 
 jobs:
@@ -43,7 +43,11 @@ jobs:
             docker network inspect b2b-net > /dev/null 2>&1 || docker network create b2b-net
 
             echo "🐳 Building image & restarting container..."
-            docker compose up -d --build --remove-orphans
+            docker compose build
+            # Once: the container every site used to share also holds this port.
+            # Removed only after the build so the site is down for seconds, not minutes.
+            docker rm -f b2b-frontend-web-1 > /dev/null 2>&1 || true
+            docker compose up -d --remove-orphans
 
             echo "🩺 Health check..."
 
