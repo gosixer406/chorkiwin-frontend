@@ -6,14 +6,10 @@ import { isFavorite, toggleFavorite } from '@/lib/favorites'
 import GameImage from '@/components/game-image'
 import hotIcon from '@/assets/img/new/quick-nav-hd/quick-nav-hot-game.png'
 import hot9w from '@/assets/img/hot-games/9-Wickets-(Dark)Yellow.png'
-import hotSaba from '@/assets/img/hot-games/Saba-sports-500.jpeg'
-import hotBti from '@/assets/img/hot-games/BTI_5000.jpeg'
 
-// Sportsbooks always first in the Hot list, in this order; admin's Hot games follow.
+// 9Wickets is always first in the Hot list (static); admin's Hot games follow.
 const HOT_SPORTSBOOKS = [
     { code: '9w', name: '9Wickets', img: hot9w },
-    { code: 'saba', name: 'SABA Sports', img: hotSaba },
-    { code: 'bti', name: 'BTI', img: hotBti },
 ].map((book) => ({ ...book, uid: `sports-${book.code}`, sportsbook: true }))
 
 function HotGameCard({ game, onLaunch, launching, priority = false }) {
@@ -63,7 +59,7 @@ function HotGameCard({ game, onLaunch, launching, priority = false }) {
 export default function Hot() {
     const launcher = useGameLauncher()
     const { games: hotGames, loading, error } = useHotGames()
-    // 9W, SABA and BTI first (shown at once), then the games admin marked Hot
+    // 9Wickets first (shown at once), then the games admin marked Hot
     // (Game Catalog > Hot Games) in admin's order as they arrive from the API.
     const games = [...HOT_SPORTSBOOKS, ...hotGames]
     const rows = []
