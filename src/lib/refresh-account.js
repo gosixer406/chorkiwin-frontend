@@ -13,6 +13,11 @@ let exchangeCollectRequest = null;
 let exchangeGameTab = null;
 let exchangeTabWatcher = null;
 let exchangeGameTabTransferred = false;
+// True from a 9W launch click until this tab has actually left the site. While
+// it is set, this tab being on screen is the launch itself, not a return.
+let exchangeAwaitingLeave = false;
+let exchangeLeaveListening = false;
+let exchangeCloseChannel = null;
 
 export const ACCOUNT_REFRESH_EVENT = "velki:refresh-account";
 /** Page the 9W tab shows while the launch request runs (public/). */
@@ -20,6 +25,70 @@ export const EXCHANGE_WELCOME_URL = "/welcome-9wickets.html";
 // Pages of this site the 9W tab may show while the game is still running.
 const EXCHANGE_TAB_OWN_PATHS = new Set(["/9w-return", EXCHANGE_WELCOME_URL, "/welcome-9wickets"]);
 export const EXCHANGE_EXIT_CHANNEL = "velki:exchange-exit";
+
+function noteSiteLeft() {
+  if (document.visibilityState === "hidden" || !document.hasFocus()) {
+    exchangeAwaitingLeave = false;
+  }
+}
+
+function listenForSiteLeave() {
+  if (exchangeLeaveListening) return;
+  exchangeLeaveListening = true;
+  document.addEventListener("visibilitychange", noteSiteLeft);
+  window.addEventListener("blur", noteSiteLeft);
+  window.addEventListener("pagehide", noteSiteLeft);
+}
+
+function closeChannel() {
+  if (exchangeCloseChannel || typeof BroadcastChannel !== "function") {
+    return exchangeCloseChannel;
+  }
+  exchangeCloseChannel = new BroadcastChannel(EXCHANGE_EXIT_CHANNEL);
+  // Any site tab can see the player come back; the tab that opened the
+  // game owns the window handle and closes it.
+  exchangeCloseChannel.addEventListener("message", (event) => {
+    if (event.data?.type === "close-game") {
+      closeExchangeGameTab({ broadcast: false });
+    }
+  });
+  return exchangeCloseChannel;
+}
+
+/** Called on the launch click, before the game tab opens. */
+export function beginExchangeLaunch() {
+  listenForSiteLeave();
+  closeChannel();
+  exchangeAwaitingLeave = true;
+}
+
+/** Close the 9W game tab (here, or in whichever site tab opened it). */
+export function closeExchangeGameTab({ broadcast = true } = {}) {
+  const tab = exchangeGameTab;
+  if (tab && !tab.closed) {
+    try {
+      tab.close();
+    } catch {
+      /* Already gone. */
+    }
+  }
+  if (broadcast) closeChannel()?.postMessage({ type: "close-game" });
+}
+
+/**
+ * The player is looking at the site while 9W still holds their balance: they
+ * came back. 9W runs alone, so its tab is closed and the balance collected.
+ */
+export function exchangeReturnDetected() {
+  if (exchangeAwaitingLeave) return false;
+  if (document.visibilityState !== "visible") return false;
+  return (
+    localStorage.getItem(EXCHANGE_ACTIVE_KEY) === "1" &&
+    !exchangeExitObserved()
+  );
+}
+
+closeChannel();
 
 export function rememberExchangeReturnPath(path) {
   localStorage.setItem(EXCHANGE_RETURN_PATH_KEY, String(path || "/sports"));
@@ -79,13 +148,10 @@ export function isExchangeGameTabOpen() {
  */
 export function endExchangeOnReturn() {
   if (localStorage.getItem(EXCHANGE_ACTIVE_KEY) !== "1") return false;
-  try {
-    if (exchangeGameTab && !exchangeGameTab.closed) exchangeGameTab.close();
-  } catch {
-    /* Already gone, or the browser refused: the collection below still runs. */
-  }
+  closeExchangeGameTab();
   finishExchangeGameTab();
-  markExchangeExitObserved({ notify: false });
+  // Notifies AuthBootstrap, which collects the balance ("Returning balance…").
+  markExchangeExitObserved();
   return true;
 }
 

@@ -10,6 +10,7 @@ import {
     collectActiveExchange,
     endExchangeOnReturn,
     exchangeExitObserved,
+    exchangeReturnDetected,
     isCurrentExchangeTransfer,
     fetchFreshAccount,
     finishExchangeGameTab,
@@ -229,6 +230,7 @@ export default function AuthBootstrap({ children }) {
                 setStartupReady(true)
                 const account = (await earlyAccount) || await backendReady.then(loadAccount).catch(() => null)
                 if (account && active) dispatch(setUser(account))
+                if (active && exchangeReturnDetected()) endExchangeOnReturn()
                 if (active && exchangeExitObserved()) syncAccountOnReturn(true)
                 return
             }
@@ -243,13 +245,12 @@ export default function AuthBootstrap({ children }) {
             } finally {
                 if (active) setStartupReady(true)
             }
+            if (active && exchangeReturnDetected()) endExchangeOnReturn()
             if (active && exchangeExitObserved()) syncAccountOnReturn(true)
         }
 
         const handleUnauthorized = () => dispatch(logout())
         let lastReturnSync = 0
-        // When this tab was last hidden (e.g. the player went to the 9 Wickets tab).
-        let leftSiteAt = document.visibilityState === 'visible' ? 0 : Date.now()
         const scheduleCollectionRetry = () => {
             if (!active || collectionRetryTimer || !exchangeExitObserved()) return
             collectionRetryTimer = window.setTimeout(() => {
@@ -275,17 +276,12 @@ export default function AuthBootstrap({ children }) {
         // Implicit: the tab came back. Session expiry is still caught by the
         // wallet poll that runs on the same return.
         const syncWhenVisible = () => {
-            if (document.visibilityState !== 'visible') {
-                leftSiteAt = Date.now()
-                return
-            }
+            if (document.visibilityState !== 'visible') return
             const exchangeActive = localStorage.getItem('velki_exchange_active') === '1'
-            // Coming back to the site from the 9 Wickets tab ends that session:
-            // its tab is closed and the balance is brought back and refreshed.
-            // (A moment's grace so the launch itself, which hides this tab, never counts.)
-            if (exchangeActive && leftSiteAt && Date.now() - leftSiteAt > 1500 && endExchangeOnReturn()) {
-                leftSiteAt = 0
-                syncAccountOnReturn(true)
+            // 9Wickets runs alone: being back on the site ends it. Its tab is
+            // closed and the balance returned and refreshed straight away.
+            if (exchangeReturnDetected()) {
+                endExchangeOnReturn()
                 return
             }
             if (exchangeActive) {
