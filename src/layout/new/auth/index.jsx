@@ -1,29 +1,27 @@
 import { useState } from 'react'
 import { Link, Outlet } from 'react-router-dom'
 
-import defaultBanner from '@/assets/img/logo/login-banner.png'
 import logo from '@/assets/img/logo/short_logo_3d.png'
 import { loginBannerSrc, useLoginBanner } from '@/lib/login-banner'
 
 // Login and signup share this layout, so both show the same banner: the one
-// set in Admin > CMS > Login Banner, or the bundled image when none is set.
+// set in Admin > CMS > Login Banner. With no banner set (or until it is known,
+// or if it fails to load) the space stays empty: no stand-in image.
 function Banner() {
-    const { banner, ready } = useLoginBanner()
+    const { banner } = useLoginBanner()
     const [failedSrc, setFailedSrc] = useState('')
-    const customSrc = loginBannerSrc(banner)
-    const useCustom = !!customSrc && customSrc !== failedSrc
-    const src = useCustom ? customSrc : defaultBanner
-    const link = useCustom ? banner?.link_url : null
+    const src = loginBannerSrc(banner)
+    if (!src || src === failedSrc) return null
+    const link = banner?.link_url
 
     const image = (
         <img
             src={src}
-            // First visit only: hold the space until we know which banner to show.
-            className={`block h-auto w-full ${ready || useCustom ? '' : 'invisible'}`}
+            className="block h-auto w-full"
             alt=""
             decoding="async"
             fetchpriority="high"
-            onError={() => useCustom && setFailedSrc(customSrc)}
+            onError={() => setFailedSrc(src)}
         />
     )
 

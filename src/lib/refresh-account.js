@@ -150,7 +150,7 @@ export function endExchangeOnReturn() {
   if (localStorage.getItem(EXCHANGE_ACTIVE_KEY) !== "1") return false;
   closeExchangeGameTab();
   finishExchangeGameTab();
-  // Notifies AuthBootstrap, which collects the balance ("Returning balance…").
+  // Notifies AuthBootstrap, which collects the balance and refreshes it.
   markExchangeExitObserved();
   return true;
 }
@@ -350,8 +350,7 @@ export async function collectActiveExchange({
   return exchangeCollectRequest;
 }
 
-// "Returning balance…" (components/exchange-sync-notice.jsx): on while a
-// 9 Wickets balance is being collected back to the site wallet.
+// Raised while a 9 Wickets balance is being collected back to the site wallet.
 export const EXCHANGE_SYNC_EVENT = "velki:exchange-sync";
 let exchangeSyncDepth = 0;
 

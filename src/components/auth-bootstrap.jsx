@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { api, readSession } from '@/lib/api'
 import { finishAuth, logout, setUser, setWallet } from '@/lib/auth'
 import { StartupFallback } from '@/components/preloader'
-import ExchangeSyncNotice from '@/components/exchange-sync-notice'
 import {
     ACCOUNT_REFRESH_EVENT,
     EXCHANGE_EXIT_CHANNEL,
@@ -128,6 +127,15 @@ export default function AuthBootstrap({ children }) {
                 if (collectExchange) {
                     const exchange = await collectActiveExchange({ force: true })
                     if (!exchange.settled) preserveWallet = readExchangeWalletSnapshot()
+                }
+                // Balance first: the wallet read is quick, /auth/me (bonus and
+                // VIP sync) follows and updates the rest of the account.
+                if (collectExchange && !preserveWallet) {
+                    api.get('/api/wallet/balance', { cache: 'no-store' })
+                        .then((response) => {
+                            if (active && response?.data) dispatch(setWallet({ ...response.data, balance_syncing: false }))
+                        })
+                        .catch(() => { /* fetchFreshAccount below still updates it */ })
                 }
                 const account = await fetchFreshAccount({ preserveWallet })
                 if (active) dispatch(setUser(account))
@@ -318,6 +326,15 @@ export default function AuthBootstrap({ children }) {
             : null
         if (exitChannel) {
             exitChannel.onmessage = (event) => {
+                // The 9 Wickets tab reached /9w-return and is closing itself:
+                // collect the balance here and refresh it straight away.
+                if (event.data?.type === 'exited') {
+                    if (!isCurrentExchangeTransfer(event.data.transfer_id)) return
+                    finishExchangeGameTab()
+                    markExchangeExitObserved({ notify: false })
+                    syncAccountOnReturn(true)
+                    return
+                }
                 if (event.data?.type !== 'settled') return
                 if (!isCurrentExchangeTransfer(event.data.transfer_id)) return
                 finishExchangeGameTab()
@@ -349,10 +366,5 @@ export default function AuthBootstrap({ children }) {
     if (!startupReady || !initialized) {
         return <StartupFallback />
     }
-    return (
-        <>
-            {children}
-            <ExchangeSyncNotice />
-        </>
-    )
+    return children
 }
