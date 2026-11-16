@@ -1,4 +1,4 @@
-name: Deploy b2b-frontend
+name: Deploy chorkiwin-frontend
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: deploy-b2b-frontend
+  group: deploy-chorkiwin-frontend
   cancel-in-progress: false
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
             git reset --hard origin/main
 
             APP_PORT=$(grep -E '^APP_PORT=' .env 2>/dev/null | cut -d= -f2 | tr -d '\r' || true)
-            APP_PORT=${APP_PORT:-8011}
+            APP_PORT=${APP_PORT:-8015}
 
             docker network inspect b2b-net > /dev/null 2>&1 || docker network create b2b-net
 
@@ -61,6 +61,12 @@ jobs:
 
               sleep 3
             done
+
+            # nginx serves this site straight from dist/ on the host: copy the
+            # new build there. Old assets stay so pages already open keep working.
+            echo "📁 Publishing build to dist/..."
+            mkdir -p "$APP_DIR/dist"
+            docker compose cp web:/usr/share/nginx/html/. "$APP_DIR/dist/"
 
             echo "📌 Current commit:"
             git log -1 --oneline
