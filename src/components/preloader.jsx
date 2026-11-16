@@ -25,9 +25,11 @@ export function SplashCloser() {
     return null
 }
 
-export default function Preloader({ className = "bg-page" }) {
+// contained: fill the nearest positioned parent (e.g. the game window while a
+// game launches) instead of the whole screen.
+export default function Preloader({ className = "bg-page", contained = false }) {
     return (
-        <div className={`fixed top-0 left-0 z-160 size-full flex items-center justify-center ${className}`}>
+        <div className={`${contained ? 'absolute' : 'fixed'} top-0 left-0 z-160 size-full flex items-center justify-center ${className}`}>
             <div className="max-w-120 w-full mx-auto bg-page h-full flex flex-col items-center justify-center">
                 <div className="relative z-1">
                     <svg

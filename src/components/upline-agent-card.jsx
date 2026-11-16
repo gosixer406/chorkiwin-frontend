@@ -68,6 +68,37 @@ export default function UplineAgentCard({ className = "" }) {
   );
 }
 
+/**
+ * The upline's WhatsApp as one button, styled like the profile page's Log Out
+ * button, showing only the WhatsApp icon. Always shown: the number falls back
+ * to the upline's own number, then the site's default one.
+ */
+export function UplineWhatsappButton({ className = "" }) {
+  const { phone } = useUplineAgent();
+
+  return (
+    <a
+      href={whatsappLink(phone)}
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Chat with your upline on WhatsApp"
+      title="WhatsApp"
+      className={`flex h-[42px] gap-2 items-center justify-center rounded-md border border-solid border-[#1F7A45] bg-surface px-4 hover:bg-surface-2 ${className}`}
+    >
+      {/* The JPEG has a white margin around the green square; scaling it up
+          inside a rounded box crops that margin away. */}
+      <span className="relative size-6 shrink-0 overflow-hidden rounded-[6px]">
+        <img
+          src={whatsapp_icon}
+          className="absolute left-1/2 top-1/2 size-[143%] max-w-none -translate-x-1/2 -translate-y-1/2"
+          alt=""
+        />
+      </span>
+      <p>Upline Whatsapp Number</p>
+    </a>
+  );
+}
+
 function AgentBanner({ agentId, phone }) {
   // Agent IDs show at least 4 digits (7 -> 0007); longer IDs get a smaller font to fit the seal.
   const shownId = agentId ? String(agentId).padStart(4, "0") : "—";
@@ -102,7 +133,11 @@ function AgentBanner({ agentId, phone }) {
 
       {/* Gold seal: agent ID. */}
       <div className="absolute left-0 top-1/2 z-10 size-[80px] -translate-y-1/2 drop-shadow-[0_3px_6px_rgba(0,0,0,0.45)]">
-        <svg className="absolute inset-0 size-full" viewBox="0 0 100 100" aria-hidden="true">
+        <svg
+          className="absolute inset-0 size-full"
+          viewBox="0 0 100 100"
+          aria-hidden="true"
+        >
           <path d={SEAL_PATH} fill="#CFA626" />
           <circle
             cx="50"
@@ -121,7 +156,11 @@ function AgentBanner({ agentId, phone }) {
           </span>
           <span
             className={`mt-0.5 max-w-[56px] truncate font-poppins font-extrabold leading-none text-[#9B0000] ${
-              shownId.length <= 4 ? "text-[19px]" : shownId.length === 5 ? "text-[16px]" : "text-[13px]"
+              shownId.length <= 4
+                ? "text-[19px]"
+                : shownId.length === 5
+                  ? "text-[16px]"
+                  : "text-[13px]"
             }`}
           >
             {shownId}

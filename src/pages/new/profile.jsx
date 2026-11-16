@@ -4,13 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import useSiteFeatures, { anyLossBack } from "@/hooks/use-site-features";
 import PageTitle from "@/components/dashboard/page-title";
 import Reload from "@/components/reload";
-import UplineAgentCard from "@/components/upline-agent-card";
+import { UplineWhatsappButton } from "@/components/upline-agent-card";
 import {
   ArrowLeftRight,
   ChartNoAxesColumn,
   ChevronRight,
   Banknote,
   Copy,
+  FileClock,
   HandCoins,
   ScrollText,
   Trophy,
@@ -30,13 +31,30 @@ const metal_card = {
 
 const menu_links = [
   { icon: <Waypoints />, name: "P2P Transfer", path: "/dashboard/p2p" },
-  { icon: <ArrowLeftRight />, name: "Transaction", path: "/dashboard/transaction" },
+  {
+    icon: <ArrowLeftRight />,
+    name: "Transaction",
+    path: "/dashboard/transaction",
+  },
   { icon: <ScrollText />, name: "Bet History", path: "/dashboard/bet-history" },
   { icon: <Banknote />, name: "Profit/Loss", path: "/dashboard/profit-loss" },
-  { icon: <ChartNoAxesColumn />, name: "Turnover", path: "/dashboard/turnover" },
+  {
+    icon: <ChartNoAxesColumn />,
+    name: "Turnover",
+    path: "/dashboard/turnover",
+  },
   { icon: <HandCoins />, name: "Loss Back", path: "/dashboard/loss-back" },
   { icon: <Users />, name: "Referral", path: "/dashboard/referral" },
-  { icon: <UserCog />, name: "Profile & Settings", path: "/dashboard/settings" },
+  {
+    icon: <UserCog />,
+    name: "Profile & Settings",
+    path: "/dashboard/settings",
+  },
+  {
+    icon: <FileClock />,
+    name: "Activity Log",
+    path: "/dashboard/activity-log",
+  },
 ];
 
 export default function Profile() {
@@ -177,7 +195,12 @@ export default function Profile() {
           </h6>
           <div className="flex items-center justify-between gap-x-3">
             <div className="flex h-8.5 items-center gap-x-1 rounded-full bg-[#111111] px-2.5 [&>svg:first-child]:size-4">
-              <span aria-hidden="true" className="text-base font-bold leading-none text-white">৳</span>
+              <span
+                aria-hidden="true"
+                className="text-base font-bold leading-none text-white"
+              >
+                ৳
+              </span>
               <span className="font-semibold text-white text-sm">
                 {mainBalance}
               </span>
@@ -269,7 +292,7 @@ export default function Profile() {
           ))}
         </nav>
 
-        <UplineAgentCard className="mt-4" />
+        <UplineWhatsappButton className="mt-4" />
 
         <div className="mb-4 mt-4 flex flex-col gap-y-3 pb-[max(12px,env(safe-area-inset-bottom))]">
           <button

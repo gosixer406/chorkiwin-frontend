@@ -1,4 +1,4 @@
-import GameLaunchLoader from '@/components/game-launch-loader'
+import Preloader from '@/components/preloader'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { X } from 'lucide-react'
@@ -17,7 +17,7 @@ export default function GameSession() {
     const dispatch = useDispatch()
     const wallet = useSelector((state) => state.auth.user?.wallet)
     const [session, setSession] = useState(null)
-    // The game frame finished loading: hide the "PLEASE WAIT" overlay.
+    // The game frame finished loading: hide the loader over it.
     const [frameLoaded, setFrameLoaded] = useState(false)
     const historyPushed = useRef(false)
     const refreshRun = useRef(0)
@@ -159,7 +159,7 @@ export default function GameSession() {
                         allowFullScreen
                         onLoad={() => setFrameLoaded(true)}
                     />
-                    {!frameLoaded && <GameLaunchLoader overlay />}
+                    {!frameLoaded && <Preloader contained className="bg-page" />}
                     {!immersive && (
                         <button
                             type="button"
@@ -181,7 +181,9 @@ export default function GameSession() {
                     )}
                 </div>
             ) : (
-                <GameLaunchLoader />
+                <div className="relative min-h-0 flex-1 overflow-hidden">
+                    <Preloader contained className="bg-page" />
+                </div>
             )}
         </section>
     )
