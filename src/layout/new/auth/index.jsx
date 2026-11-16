@@ -35,7 +35,7 @@ export default function Index() {
         <div className="app-shell new-version-shell mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-[#272727] pb-[66px] font-inter text-sm leading-[21px] text-white">
             <div className="relative shrink-0 overflow-hidden">
                 <div className="flex items-center justify-between bg-bar px-2 py-[9px] pt-[calc(0.5625rem+env(safe-area-inset-top))]">
-                    <img src={logo} className="ml-3 h-8 w-28 shrink-0 origin-left scale-125 object-contain object-left" alt="chorkix.com" />
+                    <img src={logo} className="ml-2 h-9 w-32 shrink-0 origin-left scale-125 object-contain object-left" alt="chorkix.com" />
                     <Link
                         to="/"
                         aria-label="Go back"
