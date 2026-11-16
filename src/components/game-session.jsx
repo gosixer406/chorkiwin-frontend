@@ -159,7 +159,7 @@ export default function GameSession() {
                         allowFullScreen
                         onLoad={() => setFrameLoaded(true)}
                     />
-                    {!frameLoaded && <Preloader contained className="bg-page" />}
+                    {!frameLoaded && <Preloader contained className="bg-page" title={`Launching ${session.title}...`} />}
                     {!immersive && (
                         <button
                             type="button"
@@ -182,7 +182,7 @@ export default function GameSession() {
                 </div>
             ) : (
                 <div className="relative min-h-0 flex-1 overflow-hidden">
-                    <Preloader contained className="bg-page" />
+                    <Preloader contained className="bg-page" title={`Launching ${session.title}...`} />
                 </div>
             )}
         </section>

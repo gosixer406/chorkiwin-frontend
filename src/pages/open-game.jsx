@@ -3,6 +3,7 @@ import { api } from '@/lib/api'
 import { normalizeGame } from '@/lib/games'
 import { rememberGameOrigin, validatedGameLaunchUrl } from '@/lib/game-launch-url'
 import { OPEN_GAME_PREFIX } from '@/lib/casino-game-tab'
+import Preloader from '@/components/preloader'
 import logo from '@/assets/img/logo/short_logo_3d.png'
 
 // /open-game/<platform>/<game uid>?name=<game name>
@@ -87,13 +88,12 @@ export default function OpenGame() {
                     </svg>
                 </button>
             </header>
-            <section className="grid min-h-0 flex-1 place-items-center bg-black p-6" aria-live="polite">
-                {/* While the launch request runs: "Launching <game>..." (gamex24's launch message). */}
+            <section className="relative grid min-h-0 flex-1 place-items-center bg-black p-6" aria-live="polite">
+                {/* While the launch request runs (and until the provider page
+                    replaces this tab): the site loader, still spinning, with the game name. */}
                 {!error && (
-                    <div role="status" className="grid w-[min(280px,80vw)] justify-items-center text-center">
-                        <p className="m-0 max-w-full truncate font-poppins text-[15px] font-medium text-white/85">
-                            Launching {request.name}...
-                        </p>
+                    <div role="status" aria-label={`Launching ${request.name}`}>
+                        <Preloader contained className="bg-page" title={`Launching ${request.name}...`} />
                     </div>
                 )}
                 {error && (
