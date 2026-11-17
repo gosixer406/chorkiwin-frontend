@@ -446,3 +446,42 @@ export async function fetchFreshAccount({
     },
   };
 }
+
+/**
+ * The header's Refresh button (and the first balance read after sign-in).
+ * Shows the wallet as soon as it arrives instead of waiting for /auth/me then
+ * the wallet one after another. The live exposure comes from the provider and
+ * can be slow: after LIVE_WALLET_WAIT_MS the plain wallet read (already in
+ * flight) is shown instead, and /auth/me updates the header in the background.
+ */
+const LIVE_WALLET_WAIT_MS = 1500;
+let manualRefresh = null;
+export function refreshBalanceFast({ onWallet, onAccount } = {}) {
+  if (manualRefresh) return manualRefresh;
+  manualRefresh = (async () => {
+    const read = (path) =>
+      api
+        .get(path, { cache: "no-store" })
+        .then((response) => response?.data || null)
+        .catch(() => null);
+    const live = read("/api/wallet/balance?live_exposure=1");
+    const plain = read("/api/wallet/balance");
+    let timer = 0;
+    const slow = new Promise((resolve) => {
+      timer = window.setTimeout(() => resolve(null), LIVE_WALLET_WAIT_MS);
+    });
+    const wallet = (await Promise.race([live, slow])) || (await plain);
+    window.clearTimeout(timer);
+    if (wallet) onWallet?.({ ...wallet, balance_syncing: false });
+    // Not awaited: /auth/me (bonus and VIP sync) updates the header again
+    // when it arrives, without keeping the loader on screen.
+    fetchFreshAccount()
+      .then((account) => onAccount?.(account))
+      .catch(() => {
+        /* Keep the wallet already on screen. */
+      });
+  })().finally(() => {
+    manualRefresh = null;
+  });
+  return manualRefresh;
+}

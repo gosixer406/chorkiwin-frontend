@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { LockKeyhole, SquarePen } from "lucide-react";
 import Reload from "@/components/reload";
-import { setUser } from "@/lib/auth";
+import { setUser, setWallet } from "@/lib/auth";
 import {
-  fetchFreshAccount,
+  refreshBalanceFast,
   requestAccountRefresh,
 } from "@/lib/refresh-account";
 import logo from "@/assets/img/logo/short_logo_3d.png";
@@ -25,7 +25,10 @@ export default function Header() {
     if (!isLoggedIn || refreshing) return;
     setRefreshing(true);
     try {
-      dispatch(setUser(await fetchFreshAccount()));
+      await refreshBalanceFast({
+        onWallet: (nextWallet) => dispatch(setWallet(nextWallet)),
+        onAccount: (account) => dispatch(setUser(account)),
+      });
     } catch {
       // Leave the last known balance on screen if the network is briefly unavailable.
     } finally {

@@ -7,10 +7,6 @@ import { setSession } from "@/lib/auth";
 import { requestAccountRefresh } from "@/lib/refresh-account";
 import SocialButtons from "@/components/social-buttons";
 
-function createValidationCode() {
-  return String(Math.floor(1000 + Math.random() * 9000));
-}
-
 function UserIcon() {
   return (
     <svg
@@ -213,13 +209,11 @@ export default function Login() {
     username: "",
     password: "",
     confirm_password: "",
-    validation_code: "",
     phone: "",
     first_name: "",
     last_name: "",
     referral_code: searchParams.get("referral") || "",
   }));
-  const [validationCode, setValidationCode] = useState(createValidationCode);
   const [remember, setRemember] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [showReferral, setShowReferral] = useState(() =>
@@ -254,8 +248,7 @@ export default function Login() {
     if (
       loading ||
       !form.username.trim() ||
-      !form.password ||
-      form.validation_code.length !== 4
+      !form.password
     )
       return false;
     if (mode === "login") return true;
@@ -268,20 +261,9 @@ export default function Login() {
     );
   }, [form, loading, mode, agreed]);
 
-  const resetValidationCode = () => {
-    setValidationCode(createValidationCode());
-    setForm((current) => ({ ...current, validation_code: "" }));
-  };
-
   const submit = async (event) => {
     event.preventDefault();
     setError("");
-
-    if (form.validation_code !== validationCode) {
-      setError("Invalid validation code. Please try again.");
-      resetValidationCode();
-      return;
-    }
 
     if (mode === "register" && form.password !== form.confirm_password) {
       setError("Passwords do not match.");
@@ -322,7 +304,6 @@ export default function Login() {
         requestError.message ||
           "Unable to continue. Please check your details.",
       );
-      resetValidationCode();
     } finally {
       setLoading(false);
     }
@@ -429,32 +410,6 @@ export default function Login() {
               </Field>
             </>
           )}
-
-          <Field icon={<ShieldIcon />}>
-            <input
-              id="validation_code"
-              value={form.validation_code}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  validation_code: event.target.value
-                    .replace(/\D/g, "")
-                    .slice(0, 4),
-                }))
-              }
-              inputMode="numeric"
-              autoComplete="off"
-              placeholder="Validation Code"
-              required
-              className={inputClassName}
-            />
-            <span
-              className="shrink-0 select-none font-poppins text-[22px] font-bold tracking-[-0.48px] text-white"
-              aria-label={`Validation code ${validationCode}`}
-            >
-              {validationCode}
-            </span>
-          </Field>
         </div>
 
         {mode === "login" ? (

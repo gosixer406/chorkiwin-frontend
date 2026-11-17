@@ -6,7 +6,7 @@ import { preconnectGameOrigins, rememberGameOrigin, validatedGameLaunchUrl } fro
 import { beginEmbeddedGame, cancelEmbeddedGame, openEmbeddedGame } from '@/lib/game-session-events'
 import { EXCHANGE_WELCOME_URL, beginExchangeLaunch, endExchangeOnReturn, exchangeReturnDetected, isExchangeGameTabOpen, rememberExchangeReturnPath, rememberExchangeWallet, requestAccountRefresh, waitForExchangeRelaunch, watchExchangeGameTab } from '@/lib/refresh-account'
 import { markGameAway, returnFromGame } from '@/lib/away-logout'
-import { cancelCasinoGameTab, reserveCasinoGameTab, showCasinoGame } from '@/lib/casino-game-tab'
+import { openCasinoGameTab } from '@/lib/casino-game-tab'
 
 // Every game list uses this hook; warm the provider hosts once per page load.
 preconnectGameOrigins()
@@ -43,11 +43,15 @@ export default function useGameLauncher() {
         launchInFlight.current = true
 
         setError('')
+        // Casino: its own tab on /open-game/..., which launches the game itself
+        // (as gamex24). If the browser blocks the tab (popup blocker, in-app
+        // webview) the game opens on the site instead.
+        if (newTab && !topLevel && openCasinoGameTab({ uid: body.game_uid, name: title, platform: platformCode() })) {
+            launchInFlight.current = false
+            return
+        }
         setLaunchingId(id)
-        // Casino: own tab, reserved during the click. If the browser blocks
-        // it (popup blocker, in-app webview) the game opens on the site instead.
-        const casinoTab = newTab && !topLevel ? reserveCasinoGameTab() : null
-        const embeddedToken = topLevel || casinoTab ? '' : beginEmbeddedGame({ title })
+        const embeddedToken = topLevel ? '' : beginEmbeddedGame({ title })
         let gameTab = null
 
         try {
@@ -75,9 +79,6 @@ export default function useGameLauncher() {
                 gameTab.location.replace(gameUrl)
                 // The player came back to the site while the launch was loading.
                 if (exchangeReturnDetected() && document.hasFocus()) endExchangeOnReturn()
-            } else if (casinoTab) {
-                if (casinoTab.closed) throw new Error('The game tab was closed before the game opened.')
-                showCasinoGame(casinoTab, gameUrl)
             } else {
                 openEmbeddedGame({ url: gameUrl, title, token: embeddedToken })
             }
@@ -88,7 +89,6 @@ export default function useGameLauncher() {
                 rememberExchangeWallet(user?.wallet, launchError.payload?.errors?.transfer_id, gameTab)
             }
             if (gameTab && !gameTab.closed) gameTab.close()
-            if (casinoTab) cancelCasinoGameTab(casinoTab)
             if (topLevel) {
                 returnFromGame({ force: true })
                 requestAccountRefresh()

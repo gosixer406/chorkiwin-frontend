@@ -25,9 +25,12 @@ export function SplashCloser() {
     return null
 }
 
-export default function Preloader({ className = "bg-page" }) {
+// contained: fill the nearest positioned parent (e.g. the game window while a
+// game launches) instead of the whole screen.
+// title: an optional line over the progress bar (e.g. the game being launched).
+export default function Preloader({ className = "bg-page", contained = false, title = '' }) {
     return (
-        <div className={`fixed top-0 left-0 z-160 size-full flex items-center justify-center ${className}`}>
+        <div className={`${contained ? 'absolute' : 'fixed'} top-0 left-0 z-160 size-full flex items-center justify-center ${className}`}>
             <div className="max-w-120 w-full mx-auto bg-page h-full flex flex-col items-center justify-center">
                 <div className="relative z-1">
                     <svg
@@ -60,6 +63,11 @@ export default function Preloader({ className = "bg-page" }) {
                     <img src={logo} className='h-9 animate-ping' alt="" />
                 </div>
                 <div className="flex flex-col gap-y-6 text-center uppercase mt-25 text-base leading-normal font-medium text-ink-muted w-full max-w-81">
+                    {title && (
+                        <p className="m-0 -mb-2 max-w-full truncate normal-case tracking-normal text-[15px] text-ink" title={title}>
+                            {title}
+                        </p>
+                    )}
                     <div className="h-1 bg-surface w-full relative">
                         <div className="h-full w-[8%] absolute top-0 left-0 bg-[linear-gradient(90deg,#D7B514_0%,#08B173_100%)] animate-[preloader-progress_1.4s_ease-in-out_infinite]" />
                     </div>

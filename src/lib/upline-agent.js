@@ -35,9 +35,11 @@ export function useUplineAgent() {
     // without the user ID set there it does not count as online.
     isOnline: Boolean(contact?.agent?.id_number),
     agentId: contact?.agent?.id_number || "",
+    // The number the upline (Master Agent) set in its panel's Upline Whatsapp
+    // comes first, then the online agent's Agent List number.
     phone:
-      contact?.agent?.whatsapp ||
       contact?.number ||
+      contact?.agent?.whatsapp ||
       user.upline_whatsapp ||
       DEFAULT_UPLINE_WHATSAPP,
   };
