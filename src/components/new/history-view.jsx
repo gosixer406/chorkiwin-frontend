@@ -1,26 +1,22 @@
 import { DISPLAY_CURRENCY } from '@/lib/currency'
 import Loader from '@/components/loader'
-import { useEffect, useMemo, useState } from 'react'
-import { CalendarDays, ChevronDown, MoveRight } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, MoveRight } from 'lucide-react'
 import PageTitle from '@/components/dashboard/page-title'
 import { api } from '@/lib/api'
 
-// One tab per category. `kind` picks the status filters and the card layout:
-// exchange (9W exchange markets), sportsbook (a seamless sportsbook provider),
-// sports (native sports bets) and casino (one line per game round).
+// One tab per category, the same tabs as the admin member page. `kind` picks
+// the status filters and the card layout: exchange (9W / 9 Wickets markets,
+// Toss being cricket toss markets), sportsbook (SABA, BTI) and casino (one
+// line per game round).
 const sources = [
     { label: 'Exchange', value: 'exchange', category: 'exchange', kind: 'exchange' },
-    { label: 'BookMaker', value: 'exchange', category: 'bookmaker', kind: 'exchange' },
     { label: 'FancyBet', value: 'exchange', category: 'fancy', kind: 'exchange' },
-    { label: 'SportsBook', value: 'exchange', category: 'sportsbook', kind: 'exchange' },
-    { label: 'SABA', value: 'saba', kind: 'sportsbook' },
+    { label: 'Toss', value: 'exchange', category: 'toss', kind: 'exchange' },
+    { label: 'Sportsbook', value: 'exchange', category: 'sportsbook', kind: 'exchange' },
+    { label: 'BookMaker', value: 'exchange', category: 'bookmaker', kind: 'exchange' },
+    { label: 'SABA SPORTS', value: 'saba', kind: 'sportsbook' },
     { label: 'BTI', value: 'bti', kind: 'sportsbook' },
-    { label: 'UG', value: 'ug', kind: 'sportsbook' },
-    { label: 'SBOBET', value: 'sbobet', kind: 'sportsbook' },
-    { label: 'Lucky', value: 'lucky', kind: 'sportsbook' },
-    { label: 'TF', value: 'tf', kind: 'sportsbook' },
-    { label: 'BetBy', value: 'betby', kind: 'sportsbook' },
-    { label: 'Sports', value: 'sports', kind: 'sports' },
     { label: 'Casino', value: 'casino', kind: 'casino' },
 ]
 
@@ -58,7 +54,8 @@ const CATEGORY_LABEL = {
     exchange: 'Exchange',
     bookmaker: 'BookMaker',
     fancy: 'FancyBet',
-    sportsbook: 'SportsBook',
+    toss: 'Toss',
+    sportsbook: 'Sportsbook',
     casino: 'Casino',
 }
 
@@ -103,6 +100,26 @@ export default function HistoryView({ profitLoss = false }) {
     const [submittedQuery, setSubmittedQuery] = useState(null)
     const [error, setError] = useState('')
     const { from, to } = range
+    // Tab strip: arrows appear on the side that has more tabs to scroll to.
+    const tabsRef = useRef(null)
+    const [tabEdges, setTabEdges] = useState({ left: false, right: false })
+    const updateTabEdges = () => {
+        const el = tabsRef.current
+        if (!el) return
+        setTabEdges({
+            left: el.scrollLeft > 2,
+            right: el.scrollLeft + el.clientWidth < el.scrollWidth - 2,
+        })
+    }
+    const scrollTabs = (direction) => {
+        const el = tabsRef.current
+        if (el) el.scrollBy({ left: direction * Math.max(140, el.clientWidth * 0.6), behavior: 'smooth' })
+    }
+    useEffect(() => {
+        updateTabEdges()
+        window.addEventListener('resize', updateTabEdges)
+        return () => window.removeEventListener('resize', updateTabEdges)
+    }, [])
 
     const resetReport = () => {
         if (!profitLoss) return
@@ -112,8 +129,10 @@ export default function HistoryView({ profitLoss = false }) {
         setError('')
     }
 
-    const chooseSource = (item) => {
+    const chooseSource = (item, event) => {
         setActiveSource(item)
+        // Bring a half-hidden tab fully into view.
+        event?.currentTarget?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest', inline: 'center' })
         // Each category has its own status filters: start again from ALL.
         setStatus('all')
         setRows([])
@@ -200,19 +219,41 @@ export default function HistoryView({ profitLoss = false }) {
         <div className="flex min-h-dvh flex-col bg-page">
             <header className="sticky top-0 z-20 bg-account-header">
                 <PageTitle title={profitLoss ? 'Profit & Loss' : 'Bets History'} titleClass="font-poppins text-[15px] font-bold tracking-tight" className="min-h-[51px]! bg-account-header px-3! text-white" />
-                <div className="no-scrollbar flex overflow-x-auto" role="tablist" aria-label="History source tabs">
-                    {sources.map((item) => (
+                <div className="relative">
+                    {tabEdges.left && (
                         <button
                             type="button"
-                            role="tab"
-                            aria-selected={activeSource === item}
-                            key={`${item.value}-${item.category || item.label}`}
-                            onClick={() => chooseSource(item)}
-                            className={`h-[38px] min-w-[92px] shrink-0 whitespace-nowrap border-b-[3px] px-4 text-[14px] font-medium transition-colors ${activeSource === item ? 'border-white text-white' : 'border-transparent text-white/70 hover:text-white'}`}
+                            aria-label="Scroll tabs left"
+                            onClick={() => scrollTabs(-1)}
+                            className="absolute inset-y-0 left-0 z-10 flex w-8 items-center justify-start bg-gradient-to-r from-account-header via-account-header/90 to-transparent pl-1 text-white"
                         >
-                            {item.label}
+                            <ChevronLeft className="size-5" strokeWidth={2} />
                         </button>
-                    ))}
+                    )}
+                    <div ref={tabsRef} onScroll={updateTabEdges} className="no-scrollbar flex overflow-x-auto scroll-smooth" role="tablist" aria-label="History source tabs">
+                        {sources.map((item) => (
+                            <button
+                                type="button"
+                                role="tab"
+                                aria-selected={activeSource === item}
+                                key={`${item.value}-${item.category || item.label}`}
+                                onClick={(event) => chooseSource(item, event)}
+                                className={`h-[38px] min-w-[92px] shrink-0 whitespace-nowrap border-b-[3px] px-4 text-[14px] font-medium transition-colors ${activeSource === item ? 'border-white text-white' : 'border-transparent text-white/70 hover:text-white'}`}
+                            >
+                                {item.label}
+                            </button>
+                        ))}
+                    </div>
+                    {tabEdges.right && (
+                        <button
+                            type="button"
+                            aria-label="Scroll tabs right"
+                            onClick={() => scrollTabs(1)}
+                            className="absolute inset-y-0 right-0 z-10 flex w-8 items-center justify-end bg-gradient-to-l from-account-header via-account-header/90 to-transparent pr-1 text-white"
+                        >
+                            <ChevronRight className="size-5" strokeWidth={2} />
+                        </button>
+                    )}
                 </div>
             </header>
 
