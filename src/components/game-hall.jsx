@@ -116,6 +116,8 @@ function saveRecentGame(game) {
 }
 
 function providerAsset(provider, kind = 'logo') {
+    // Providers outside the built-in list carry their own logo from the catalogue.
+    if (provider.logo) return provider.logo
     if (kind === 'cover') return `${AWC}/image/platform/${provider.assetCode}/${provider.assetCode}_cover.png`
     if (kind === 'tile') return `${AWC}/image/gameIcon/${provider.assetCode}/${provider.assetCode}.png`
     return `${AWC}/image/platform/${provider.assetCode}/${provider.assetCode}.png`
@@ -388,8 +390,16 @@ export default function GameHall({ open, onClose }) {
     useEffect(() => { if (contentRef.current) contentRef.current.scrollTop = 0 }, [category, page, section, selectedProvider])
 
     const providers = useMemo(() => {
+        // Every provider in the catalogue, A→Z: the built-in list plus any other provider the site offers.
         const available = new Map(localProviders.map((provider) => [String(provider.code).toLowerCase(), provider]))
-        return PROVIDERS.map((provider) => ({ ...provider, available: available.has(provider.localCode.toLowerCase()) }))
+        const keyOf = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+        const builtIn = new Set(PROVIDERS.flatMap((provider) => [provider.localCode, provider.assetCode, provider.name].map(keyOf)))
+        const extra = localProviders
+            .filter((provider) => provider?.code && !builtIn.has(keyOf(provider.code)) && !builtIn.has(keyOf(provider.name)))
+            .map((provider) => ({ assetCode: String(provider.code), name: String(provider.name || provider.code), localCode: String(provider.code), state: 'more', logo: provider.logo_url || '' }))
+        return [...PROVIDERS, ...extra]
+            .map((provider) => ({ ...provider, available: available.has(provider.localCode.toLowerCase()) }))
+            .sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true, sensitivity: 'base' }))
     }, [localProviders])
     const favoriteIds = useMemo(() => new Set(favorites.map((game) => game.uid)), [favorites])
 
