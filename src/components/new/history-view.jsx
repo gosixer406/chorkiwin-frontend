@@ -1,5 +1,6 @@
 import { DISPLAY_CURRENCY } from '@/lib/currency'
 import Loader from '@/components/loader'
+import PnlMarkets from '@/components/new/pnl-markets'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, MoveRight } from 'lucide-react'
 import PageTitle from '@/components/dashboard/page-title'
@@ -94,6 +95,8 @@ export default function HistoryView({ profitLoss = false }) {
     const [range, setRange] = useState(() => presetRange(7))
     const [showCustom, setShowCustom] = useState(false)
     const [rows, setRows] = useState([])
+    // Profit & Loss: one line per market with its bets (9Wickets layout).
+    const [markets, setMarkets] = useState([])
     const [totals, setTotals] = useState(null)
     const [loading, setLoading] = useState(!profitLoss)
     // Profit & Loss is a report: it only loads after the user taps Submit.
@@ -125,6 +128,7 @@ export default function HistoryView({ profitLoss = false }) {
         if (!profitLoss) return
         setSubmittedQuery(null)
         setRows([])
+        setMarkets([])
         setTotals(null)
         setError('')
     }
@@ -135,6 +139,7 @@ export default function HistoryView({ profitLoss = false }) {
         event?.currentTarget?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest', inline: 'center' })
         // Each category has its own status filters: start again from ALL.
         setStatus('all')
+        setMarkets([])
         setRows([])
         setTotals(null)
         resetReport()
@@ -161,8 +166,10 @@ export default function HistoryView({ profitLoss = false }) {
         if (to) params.set('to', to)
         // Report calendar dates in the device's timezone, not UTC.
         if (profitLoss) params.set('tz_offset', String(-new Date().getTimezoneOffset()))
+        // P&L and the exchange history tabs: one card per market (9Wickets layout).
+        if (profitLoss || kind === 'exchange') params.set('group', 'market')
         return params.toString()
-    }, [activeSource.category, from, profitLoss, source, status, to])
+    }, [activeSource.category, from, kind, profitLoss, source, status, to])
 
     const activeQuery = profitLoss ? submittedQuery : query
 
@@ -171,7 +178,7 @@ export default function HistoryView({ profitLoss = false }) {
         let active = true
         let inFlight = false
         let controller = null
-        const path = profitLoss ? '/api/betting/lifetime-profit-loss' : '/api/betting/history'
+        const path = profitLoss ? '/api/betting/profit-loss' : '/api/betting/history'
 
         const load = async (showLoading = false) => {
             if (!active || inFlight) return
@@ -187,6 +194,7 @@ export default function HistoryView({ profitLoss = false }) {
                 if (!active || controller.signal.aborted) return
                 const data = response.data
                 setRows(Array.isArray(data) ? data : (data?.rows || []))
+                setMarkets(Array.isArray(data?.markets) ? data.markets : [])
                 setTotals(data?.totals || null)
             } catch (requestError) {
                 if (active && !controller.signal.aborted) setError(requestError.message)
@@ -335,15 +343,18 @@ export default function HistoryView({ profitLoss = false }) {
                     </div>
                 )}
 
+                {(profitLoss || kind === 'exchange') && !loading && <PnlMarkets markets={markets} showStatus={!profitLoss} />}
+
                 <div className="space-y-2">
-                    {rows.map((row, index) => {
+                    {(markets.length ? [] : rows).map((row, index) => {
                         const firstSelection = Array.isArray(row.selections) ? row.selections[0] : null
                         const stake = row.stake ?? row.bet_amount ?? 0
                         const pl = row.pl ?? row.profit_loss ?? row.amount ?? 0
                         const label = row.event_name || firstSelection?.event_name || row.market || row.game_name || row.selection || row.description || `${source} record`
                         const market = row.market || firstSelection?.market_name || ''
                         const selection = row.selection || firstSelection?.selection_name || ''
-                        const odds = row.total_odds ?? firstSelection?.odds
+                        // Fancy odds come as run/rate ("163/100"): show them as sent.
+                        const odds = row.odds_text || (row.total_odds ?? firstSelection?.odds)
                         const isCasino = kind === 'casino'
                         const provider = row.provider_label || row.provider_name || row.provider || row.source || ''
                         const context = isCasino
@@ -368,7 +379,7 @@ export default function HistoryView({ profitLoss = false }) {
                             {detail && <p className="mt-1 text-[11px] text-ink-soft">{detail}</p>}
                             <div className="mt-2.5 grid grid-cols-2 gap-2 border-t border-line-strong pt-2.5 text-[11px] text-ink-muted">
                                 <span>Stake<br /><strong className="text-ink">{money(stake)}</strong></span>
-                                {!isCasino && odds !== null && odds !== undefined && odds !== '' && <span>Odds<br /><strong className="text-ink">{Number(odds).toFixed(2)}</strong></span>}
+                                {!isCasino && odds !== null && odds !== undefined && odds !== '' && <span>Odds<br /><strong className="text-ink">{row.fancy || Number.isNaN(Number(odds)) ? odds : Number(odds).toFixed(2)}</strong></span>}
                                 <span>{row.potential_win !== null && row.potential_win !== undefined ? 'Potential win' : 'Won'}<br /><strong className="text-ink">{money(row.potential_win ?? row.won ?? row.actual_win)}</strong></span>
                                 <span>P/L<br /><strong className={Number(pl) >= 0 ? 'text-emerald-400' : 'text-red-400'}>{money(pl)}</strong></span>
                                 <span className="col-span-2">Placed<br /><strong className="text-ink">{when(row.placed || row.created_at || row.started_at)}</strong></span>

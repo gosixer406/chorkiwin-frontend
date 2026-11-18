@@ -102,7 +102,8 @@ function BetRecordRow({ row, index, dark = false }) {
   const marketName =
     row.market || firstSelection?.market_name || row.sport || "";
   const selectionName = row.selection || firstSelection?.selection_name || "";
-  const odds = row.total_odds ?? firstSelection?.odds;
+  // Fancy odds come as run/rate ("163/100"): shown as sent.
+  const odds = row.odds_text || (row.total_odds ?? firstSelection?.odds);
   const stake = row.stake ?? row.bet_amount ?? 0;
   const won = row.won ?? row.actual_win ?? 0;
   const potentialWin = row.potential_win;
@@ -168,7 +169,7 @@ function BetRecordRow({ row, index, dark = false }) {
             <strong
               className={`mt-0.5 block ${dark ? "text-white" : "text-black"}`}
             >
-              {Number(odds).toFixed(2)}
+              {row.fancy || Number.isNaN(Number(odds)) ? odds : Number(odds).toFixed(2)}
             </strong>
           </span>
         )}

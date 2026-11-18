@@ -15,6 +15,7 @@ import {
     finishExchangeGameTab,
     markExchangeExitObserved,
     readExchangeWalletSnapshot,
+    requestAccountRefresh,
 } from '@/lib/refresh-account'
 import { AWAY_LIMIT_MS, isAwayTooLong, markSeen, returnFromGame } from '@/lib/away-logout'
 import { BALANCE_POLL_MS, shouldSyncOnReturn, startPolling } from '@/lib/polling'
@@ -92,12 +93,15 @@ export default function AuthBootstrap({ children }) {
             const response = await api.get('/api/wallet/balance?live_exposure=1', {
                 cache: 'no-store',
             })
-            const nextWallet = response.data || {}
+            const { exchange_collected: exchangeCollected, ...nextWallet } = response.data || {}
             const signature = JSON.stringify(nextWallet)
             if (active && signature !== lastWalletSignature) {
                 lastWalletSignature = signature
                 dispatch(setWallet(nextWallet))
             }
+            // The backend brought back money a finished 9Wickets match released:
+            // reload the whole account (statement, bonus, turnover) as well.
+            if (active && Number(exchangeCollected) > 0) requestAccountRefresh()
         }
         const poller = startPolling(refreshLiveWallet, BALANCE_POLL_MS)
         poller.tick()
