@@ -16,7 +16,12 @@ const stamp = (value) => {
     if (Number.isNaN(d.getTime())) return '—'
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
 }
-const sideLabel = (side) => (side === 'lay' ? 'Lay' : side === 'back' ? 'Back' : '—')
+// Fancy markets: Back is "Yes" (over the run), Lay is "No" (under it).
+const sideLabel = (side, fancy = false) => {
+    if (side === 'back') return fancy ? 'Yes' : 'Back'
+    if (side === 'lay') return fancy ? 'No' : 'Lay'
+    return '—'
+}
 const statusLabel = (status) => {
     const value = String(status || '').toLowerCase()
     if (['pending', 'open', 'matched'].includes(value)) return 'Matched'
@@ -30,8 +35,8 @@ function MarketCard({ market, showStatus = false }) {
     const hasFancy = bets.some((bet) => bet.fancy)
     const totals = [
         ['Total Stakes', market.total_stake, false],
-        ['Back subtotal', market.back_subtotal, true],
-        ['Lay subtotal', market.lay_subtotal, true],
+        [hasFancy ? 'Yes subtotal' : 'Back subtotal', market.back_subtotal, true],
+        [hasFancy ? 'No subtotal' : 'Lay subtotal', market.lay_subtotal, true],
         ['Market subtotal', market.market_subtotal ?? market.pl, true],
         ['Net Market Total', market.net_total ?? market.pl, true],
     ]
@@ -85,7 +90,7 @@ function MarketCard({ market, showStatus = false }) {
                                         <td className="border-b border-line px-2 py-1.5 text-right font-semibold">{bet.odds || '—'}</td>
                                         <td className="border-b border-line px-2 py-1.5 text-right">{amount(bet.stake)}</td>
                                         <td className="border-b border-line px-2 py-1.5">
-                                            <span className={`rounded px-1.5 py-px text-[10px] font-semibold ${sideClass(bet.side)}`}>{sideLabel(bet.side)}</span>
+                                            <span className={`rounded px-1.5 py-px text-[10px] font-semibold ${sideClass(bet.side)}`}>{sideLabel(bet.side, bet.fancy)}</span>
                                         </td>
                                         <td className="whitespace-nowrap border-b border-line px-2 py-1.5 text-right">{stamp(bet.placed)}</td>
                                         <td className={`border-b border-line px-2 py-1.5 text-right font-semibold ${plClass(bet.pl)}`}>{amount(bet.pl)}</td>
