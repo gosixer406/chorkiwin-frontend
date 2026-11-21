@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 export default function Marquee({
   children,
-  duration = 30,
+  duration = 5,
   className = "text-black",
   groupClassName = "gap-x-1.5",
 }) {
