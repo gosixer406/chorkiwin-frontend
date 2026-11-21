@@ -95,14 +95,13 @@ export default function AccountStatementView({ dark = false }) {
             <div className="space-y-2">
                 {rows.map((row) => {
                     const amount = Number(row.amount || 0)
-                    const type = String(row.type || '').toLowerCase()
-                    const isDeposit = type === 'deposit'
-                    const isWithdrawal = type === 'withdrawal'
-                    const amountClass = isDeposit ? 'text-emerald-500' : isWithdrawal ? 'text-red-500' : amount >= 0 ? 'text-emerald-500' : 'text-red-500'
-                    const amountPrefix = isWithdrawal || amount < 0 ? '-' : '+'
+                    const isDeposit = (row.direction || (amount >= 0 ? 'deposit' : 'withdrawal')) === 'deposit'
+                    const amountClass = isDeposit ? 'text-emerald-500' : 'text-red-500'
+                    const amountPrefix = isDeposit ? '+' : '-'
+                    const label = row.type_label || String(row.type || 'transaction').replaceAll('_', ' ')
                     return <article key={row.id} className={`rounded-xl border p-4 text-sm ${panel}`}>
                         <div className="flex items-start justify-between gap-3">
-                            <div><strong className="capitalize">{String(row.type || 'transaction').replaceAll('_', ' ')}</strong><p className={`mt-1 text-xs ${muted}`}>{row.description || row.reference_id || 'Wallet transaction'}</p></div>
+                            <div><strong className="capitalize">{label}</strong><p className={`mt-1 text-xs ${muted}`}>{row.remark || row.description || row.reference_id || 'Wallet transaction'}</p>{row.from_to && <p className={`mt-0.5 text-xs ${muted}`}>{row.from_to}</p>}</div>
                             <strong className={amountClass}>{amountPrefix}{formatMoney(Math.abs(amount))}</strong>
                         </div>
                         <div className={`mt-3 grid grid-cols-2 gap-2 text-xs ${muted}`}><span>{formatDate(row.created_at)}</span><span className="text-right">Balance: {formatMoney(row.balance_after)}</span><span className="capitalize">{row.status || 'completed'}</span><span className="truncate text-right">{row.reference_id || '—'}</span></div>
