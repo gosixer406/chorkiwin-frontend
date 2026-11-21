@@ -5,10 +5,9 @@ import { HOT_CATALOGUE_PATH, newCatalogueCache, preloadNewHomeCatalogues } from 
 const RETRY_DELAY = 3000
 const MAX_RETRIES = 5
 
-// A few hot titles come back without provider artwork; use our bundled icon.
+// No bundled/static hot icons: only the artwork the API sends is used.
 function withHotArtwork(game) {
-    if (game.img) return game
-    return { ...game, img: HOT_GAME_ARTWORK[game.name.trim().toLowerCase()] || '' }
+    return game
 }
 
 // Only hot games that actually have artwork are shown; one with no image at all

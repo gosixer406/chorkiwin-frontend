@@ -38,13 +38,13 @@ export function normalizeGame(game) {
         game.img_url || game.game_image_narrow || game.game_image ||
         game.thumbnail_url || game.image_url || game.image || game.logo || ''
     ))
-    const featuredArtwork = featuredGameArtwork(name)
     return {
         uid,
         referenceId: String(game.reference_id || ''),
         name,
-        img: featuredArtwork || providerArtwork,
-        fallbackImg: featuredArtwork ? providerArtwork : '',
+        // Only the provider's own API artwork is used — no bundled/static images.
+        img: providerArtwork,
+        fallbackImg: '',
         provider,
         category: game.game_type || game.category || game.game_category || '',
         referenceGroup: game.reference_group || '',

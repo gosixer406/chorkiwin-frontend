@@ -75,27 +75,10 @@ function providerMatches(game, referenceProvider) {
     })
 }
 
+// Static/bundled game images are no longer used: a card shows only the
+// provider's own artwork from the API; an imageless game is dropped upstream.
 export function withLightReferenceImage(game) {
-    const featuredImage = featuredGameArtwork(game.name)
-    if (featuredImage) return { ...game, img: featuredImage }
-
-    const uidCandidates = [
-        game.uid,
-        game.raw?.reference_code,
-        game.raw?.game_code,
-        game.raw?.game_id,
-    ]
-    for (const value of uidCandidates) {
-        const match = referenceImagesByUid.get(normalizedReferenceKey(value))
-        if (match?.img) return { ...game, img: match.img, fallbackImg: game.img }
-    }
-
-    const candidates = referenceImagesByName.get(normalizedReferenceKey(game.name)) || []
-    if (!candidates.length) return game
-
-    const providerMatch = candidates.find((candidate) => providerMatches(game, candidate.provider))
-    const referenceImage = providerMatch?.img || candidates[0].img
-    return referenceImage ? { ...game, img: referenceImage, fallbackImg: game.img } : game
+    return game
 }
 
 export function availableReferenceProviders(category, apiGames = []) {
