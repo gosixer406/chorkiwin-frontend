@@ -11,11 +11,15 @@ function withHotArtwork(game) {
     return { ...game, img: HOT_GAME_ARTWORK[game.name.trim().toLowerCase()] || '' }
 }
 
+// Only hot games that actually have artwork are shown; one with no image at all
+// (would render a blank placeholder) is dropped from the list.
+const hotWithArtwork = (games) => (games || []).map(withHotArtwork).filter((game) => game.img)
+
 // The curated Hot list from the backend. While 9W is still warming its
 // catalogue the API answers with `loading`, so retry a few times.
 export default function useHotGames() {
     const cached = newCatalogueCache.get(HOT_CATALOGUE_PATH)
-    const [games, setGames] = useState(() => (cached?.games || []).map(withHotArtwork))
+    const [games, setGames] = useState(() => hotWithArtwork(cached?.games))
     const [loading, setLoading] = useState(!cached?.games?.length)
     const [error, setError] = useState('')
 
@@ -26,7 +30,7 @@ export default function useHotGames() {
             const [result] = await preloadNewHomeCatalogues({ paths: [HOT_CATALOGUE_PATH] })
             if (!active) return
             const catalogue = result.status === 'fulfilled' ? result.value : null
-            if (catalogue?.games?.length) setGames(catalogue.games.map(withHotArtwork))
+            if (catalogue?.games?.length) setGames(hotWithArtwork(catalogue.games))
             if (catalogue?.timestamp || attempt >= MAX_RETRIES) {
                 setLoading(false)
                 // An empty admin Hot list is not an error; a failed request is.

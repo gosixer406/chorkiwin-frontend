@@ -90,7 +90,9 @@ function normalizeRows(response) {
   return (Array.isArray(response.data) ? response.data : [])
     .map(normalizeGame)
     .map(withLightReferenceImage)
-    .filter((game) => game.uid);
+    // Only games that actually have artwork are shown; a game with no image
+    // (would fall back to a blank placeholder) is dropped from the grid.
+    .filter((game) => game.uid && game.img);
 }
 
 function mergeRows(current, incoming) {
