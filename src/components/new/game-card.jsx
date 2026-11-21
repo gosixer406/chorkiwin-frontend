@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import poster from '../../assets/img/new/game/poster.png'
 import { isFavorite, toggleFavorite } from '@/lib/favorites'
 import GameImage from '@/components/game-image'
 
@@ -23,7 +22,6 @@ export default function GameCard({ item, onLaunch, launching = false, priority =
                 <GameImage
                     src={item.img}
                     fallback={item.fallbackImg}
-                    placeholder={poster}
                     alt={item.name}
                     priority={priority}
                     className="block size-full object-cover transition-all duration-300 group-hover:scale-102 group-hover:opacity-95"
