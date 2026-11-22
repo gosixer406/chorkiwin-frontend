@@ -4,7 +4,7 @@
 // for the launch URL, then moves the tab on to the provider.
 //
 //   * One tab for every casino game (a named window): opening another game
-//     replaces the one running, so two SoftAPI sessions never share a balance.
+//     replaces the one running, so two casino sessions never share a balance.
 //   * While that tab is open the site is "away on a game", so the 5-minute
 //     away sign-out does not end the player's session.
 //   * When the tab closes (or the provider sends the player back to the site)
