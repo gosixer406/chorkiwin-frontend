@@ -4,7 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import useSiteFeatures, { anyLossBack } from "@/hooks/use-site-features";
 import PageTitle from "@/components/dashboard/page-title";
 import Reload from "@/components/reload";
-import { UplineWhatsappButton } from "@/components/upline-agent-card";
+import {
+  UplineImoButton,
+  UplineTelegramButton,
+  UplineWhatsappButton,
+} from "@/components/upline-agent-card";
 import {
   ArrowLeftRight,
   ChartNoAxesColumn,
@@ -292,7 +296,9 @@ export default function Profile() {
           ))}
         </nav>
 
+        <UplineImoButton className="mt-3" />
         <UplineWhatsappButton className="mt-4" />
+        <UplineTelegramButton className="mt-4" />
 
         <div className="mb-4 mt-4 flex flex-col gap-y-3 pb-[max(12px,env(safe-area-inset-bottom))]">
           <button

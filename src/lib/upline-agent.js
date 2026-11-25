@@ -45,8 +45,69 @@ export function useUplineAgent() {
   };
 }
 
+// Loads the logged-in player's upline IMO number (set by the Master Agent on the
+// Upline Whatsapp/Imo page). `phone` is "" while loading and when none is set.
+export function useUplineImo(enabled = true) {
+  const [numbers, setNumbers] = useState(undefined);
+
+  useEffect(() => {
+    if (!enabled) return undefined;
+    let active = true;
+    api
+      .get("/api/user/upline-imo", { cache: "no-store" })
+      .then((response) => active && setNumbers(response.data?.numbers || []))
+      .catch(() => active && setNumbers([]));
+    return () => {
+      active = false;
+    };
+  }, [enabled]);
+
+  const primary = (numbers || []).find((item) => item.is_primary) || (numbers || [])[0];
+  return {
+    loading: numbers === undefined,
+    phone: primary?.number || "",
+  };
+}
+
+// Loads the logged-in player's upline Telegram username (set by the Master
+// Agent on the Upline Whatsapp/Imo page, without the "@"). `username` is ""
+// while loading and when none is set.
+export function useUplineTelegram(enabled = true) {
+  const [numbers, setNumbers] = useState(undefined);
+
+  useEffect(() => {
+    if (!enabled) return undefined;
+    let active = true;
+    api
+      .get("/api/user/upline-telegram", { cache: "no-store" })
+      .then((response) => active && setNumbers(response.data?.numbers || []))
+      .catch(() => active && setNumbers([]));
+    return () => {
+      active = false;
+    };
+  }, [enabled]);
+
+  const primary = (numbers || []).find((item) => item.is_primary) || (numbers || [])[0];
+  return {
+    loading: numbers === undefined,
+    username: String(primary?.number || "").replace(/^@/, ""),
+  };
+}
+
+// Opens that user's chat in Telegram (the app, or Telegram web without it).
+export const telegramLink = (username) =>
+  `https://t.me/${encodeURIComponent(String(username || "").replace(/^@/, ""))}`;
+
 export const whatsappLink = (phone) =>
   `https://wa.me/${String(phone).replace(/[^\d]/g, "")}`;
+
+// IMO: a full invite link (e.g. https://s.imoim.net/XXXX) is used as-is;
+// a plain number opens a chat through the imo deep link.
+export const imoLink = (value) => {
+  const raw = String(value || "").trim();
+  if (/^https?:\/\//i.test(raw)) return raw;
+  return `imo://chat?number=${raw.replace(/[^\d]/g, "")}`;
+};
 
 export function useCopy() {
   const [copied, setCopied] = useState(false);

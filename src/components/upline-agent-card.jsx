@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { BadgeCheck, ChevronDown } from "lucide-react";
-import { useUplineAgent, whatsappLink } from "@/lib/upline-agent";
+import { FaTelegram } from "react-icons/fa";
+import {
+  imoLink,
+  telegramLink,
+  useUplineAgent,
+  useUplineImo,
+  useUplineTelegram,
+  whatsappLink,
+} from "@/lib/upline-agent";
 import whatsapp_icon from "@/assets/img/new/whastapp-icon.jpeg";
 
 export function VerifiedBadge({ className = "" }) {
@@ -95,6 +103,73 @@ export function UplineWhatsappButton({ className = "" }) {
         />
       </span>
       <p>Upline Whatsapp Number</p>
+    </a>
+  );
+}
+
+/**
+ * The upline's IMO number as one button, matching the WhatsApp button but in
+ * IMO blue. Hidden when the upline chain has no IMO number of its own.
+ */
+export function UplineImoButton({ className = "" }) {
+  const { phone } = useUplineImo();
+
+  if (!phone) return null;
+
+  return (
+    <a
+      href={imoLink(phone)}
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Chat with your upline on IMO"
+      title="IMO"
+      className={`flex h-[42px] gap-2 items-center justify-center rounded-md border border-solid border-[#13BDEC] bg-surface px-4 hover:bg-surface-2 ${className}`}
+    >
+      {/* Official imo logo (assets/img/icons/imo-stroke-rounded.svg), in IMO cyan. */}
+      <span className="grid size-6 shrink-0 place-items-center text-[#13BDEC]">
+        <svg
+          viewBox="0 0 24 24"
+          className="size-full"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.8214 2.48697 15.5291 3.33782 17L2 22L7 20.6622C8.47087 21.513 10.1786 22 12 22Z" />
+          <path
+            d="M7.00859 9L7 9M7.00112 11V15M8.91304 15V12.25C8.91304 11.5596 9.44836 11 10.1087 11C10.769 11 11.3043 11.5596 11.3043 12.25M11.3043 12.25V15M11.3043 12.25C11.3043 11.5596 11.8397 11 12.5 11C13.1603 11 13.6957 11.5596 13.6957 12.25V15M15.6087 12.25V13.75C15.6087 14.4404 16.144 15 16.8043 15C17.4647 15 18 14.4404 18 13.75V12.25C18 11.5596 17.4647 11 16.8043 11C16.144 11 15.6087 11.5596 15.6087 12.25Z"
+            strokeLinecap="round"
+          />
+        </svg>
+      </span>
+      <p>Upline IMO Number</p>
+    </a>
+  );
+}
+
+/**
+ * The upline's Telegram as one button, matching the WhatsApp / IMO buttons in
+ * Telegram blue; it opens a chat with that Telegram user. Hidden when the
+ * upline chain has no Telegram username.
+ */
+export function UplineTelegramButton({ className = "" }) {
+  const { username } = useUplineTelegram();
+
+  if (!username) return null;
+
+  return (
+    <a
+      href={telegramLink(username)}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={`Chat with your upline on Telegram (@${username})`}
+      title={`Telegram @${username}`}
+      className={`flex h-[42px] gap-2 items-center justify-center rounded-md border border-solid border-[#229ED9] bg-surface px-4 hover:bg-surface-2 ${className}`}
+    >
+      {/* Official Telegram logo, in Telegram blue. */}
+      <FaTelegram className="size-6 shrink-0 text-[#229ED9]" aria-hidden="true" />
+      <p>Upline Telegram</p>
     </a>
   );
 }
