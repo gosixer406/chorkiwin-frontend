@@ -1,5 +1,11 @@
 import Loader from "@/components/loader";
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ChevronLeft, Search } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import GameTitle from "@/components/new/game-title";
@@ -180,6 +186,77 @@ function ProviderMark({ name }) {
   );
 }
 
+// Page numbers to show: always the first and last page, the current page and
+// its neighbours, with "…" for the gaps (1 … 4 5 6 … 12).
+function pageItems(page, totalPages) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+  const start = Math.max(2, Math.min(page - 1, totalPages - 4));
+  const end = Math.min(totalPages - 1, Math.max(page + 1, 5));
+  const items = [1];
+  if (start > 2) items.push("gap-start");
+  for (let value = start; value <= end; value += 1) items.push(value);
+  if (end < totalPages - 1) items.push("gap-end");
+  items.push(totalPages);
+  return items;
+}
+
+function CataloguePagination({ page, totalPages, onChange, disabled }) {
+  if (totalPages <= 1) return null;
+  const box =
+    "flex h-8 min-w-8 items-center justify-center rounded border px-2 text-xs font-bold transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-40";
+  const idle = "border-line bg-surface text-ink-soft hover:border-primary2";
+  return (
+    <nav
+      aria-label="Game pages"
+      className="swiper-no-swiping flex flex-wrap items-center justify-center gap-1"
+    >
+      <button
+        type="button"
+        onClick={() => onChange(page - 1)}
+        disabled={disabled || page <= 1}
+        aria-label="Previous page"
+        className={`${box} ${idle}`}
+      >
+        <ChevronLeft className="size-4" />
+      </button>
+      {pageItems(page, totalPages).map((item) =>
+        typeof item === "number" ? (
+          <button
+            type="button"
+            key={item}
+            onClick={() => onChange(item)}
+            disabled={disabled && item !== page}
+            aria-label={`Page ${item}`}
+            aria-current={item === page ? "page" : undefined}
+            className={`${box} ${item === page ? "border-primary2 bg-primary2 text-surface" : idle}`}
+          >
+            {item}
+          </button>
+        ) : (
+          <span
+            key={item}
+            className="px-1 text-xs text-ink-muted"
+            aria-hidden="true"
+          >
+            …
+          </span>
+        ),
+      )}
+      <button
+        type="button"
+        onClick={() => onChange(page + 1)}
+        disabled={disabled || page >= totalPages}
+        aria-label="Next page"
+        className={`${box} ${idle}`}
+      >
+        <ChevronLeft className="size-4 -scale-x-100" />
+      </button>
+    </nav>
+  );
+}
+
 export default function CatalogueSection({
   title,
   icon,
@@ -209,16 +286,20 @@ export default function CatalogueSection({
   const provider = showTools ? urlProvider || "All" : "All";
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search.trim());
+  // The page belongs to one provider + search; changing either starts at 1.
+  const filterKey = `${provider}|${deferredSearch}`;
+  const [pageState, setPageState] = useState({ key: filterKey, page: 1 });
+  const page = pageState.key === filterKey ? pageState.page : 1;
   const requestPath = useMemo(
-    () => cataloguePagePath(basePath, 1, pageSize, provider, deferredSearch),
-    [basePath, deferredSearch, pageSize, provider],
+    () => cataloguePagePath(basePath, page, pageSize, provider, deferredSearch),
+    [basePath, deferredSearch, page, pageSize, provider],
   );
   const cached = useMemo(() => catalogueCache.get(requestPath), [requestPath]);
   const [games, setGames] = useState(cached?.games || []);
   const [meta, setMeta] = useState(cached?.meta || {});
   const [loading, setLoading] = useState(!cached);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [catalogueError, setCatalogueError] = useState("");
+  const sectionRef = useRef(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const launcher = useGameLauncher();
 
@@ -231,9 +312,17 @@ export default function CatalogueSection({
     window.queueMicrotask(() => {
       if (!active) return;
       setGames(freshCache?.games || []);
-      setMeta(freshCache?.meta || {});
+      // Keep the provider row and page count as they are while the next page
+      // or another provider loads, so they don't empty out and jump.
+      setMeta(
+        (current) =>
+          freshCache?.meta || {
+            providers: current.providers,
+            total: current.total,
+            pages: current.pages,
+          },
+      );
       setLoading(!freshCache);
-      setLoadingMore(false);
     });
 
     const load = async () => {
@@ -248,7 +337,11 @@ export default function CatalogueSection({
           rows = normalizeRows(response);
         }
         setCatalogueError("");
-        setMeta(response.meta || {});
+        setMeta((current) =>
+          response.meta?.providers?.length
+            ? response.meta
+            : { ...(response.meta || {}), providers: current.providers },
+        );
         if (response.meta?.loading) {
           setGames((current) => mergeRows(current, rows));
           if (rows.length) setLoading(false);
@@ -297,35 +390,19 @@ export default function CatalogueSection({
     };
   }, [requestPath]);
 
-  const loadMore = async () => {
-    if (loadingMore || !meta.has_next) return;
-    setLoadingMore(true);
-    setCatalogueError("");
-    try {
-      const nextPage = Math.max(2, Number(meta.page || 1) + 1);
-      const nextPath = cataloguePagePath(
-        basePath,
-        nextPage,
-        pageSize,
-        provider,
-        deferredSearch,
-      );
-      const response = await api.get(nextPath);
-      const rows = normalizeRows(response);
-      setGames((current) => mergeRows(current, rows));
-      setMeta(response.meta || {});
-      if (!response.meta?.loading) {
-        catalogueCache.set(nextPath, {
-          games: rows,
-          meta: response.meta || {},
-          timestamp: Date.now(),
-        });
-      }
-    } catch (error) {
-      setCatalogueError(error.message || "Unable to load more games.");
-    } finally {
-      setLoadingMore(false);
-    }
+  // Page count from the category's game total (only games with artwork are
+  // counted by the API, so every page it promises has games on it).
+  const totalGames = Number(meta.total) || 0;
+  const totalPages = Math.max(
+    1,
+    Number(meta.pages) || Math.ceil(totalGames / pageSize) || 1,
+  );
+  const goToPage = (next) => {
+    const target = Math.min(Math.max(1, next), totalPages);
+    if (target === page) return;
+    setPageState({ key: filterKey, page: target });
+    // Back to the top of this category so the new page starts in view.
+    sectionRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
   };
 
   const providers = useMemo(() => {
@@ -391,6 +468,57 @@ export default function CatalogueSection({
   }, [decoratedGames, search]);
   const renderedGames = visibleGames;
 
+  // Keep the active provider pill in view: centre it in the row whenever the
+  // selection or the list changes. Only the row scrolls, never the page.
+  const providerRowRef = useRef(null);
+  const providerCount = providers.length;
+  useEffect(() => {
+    const row = providerRowRef.current;
+    if (!row) return;
+    const pill =
+      provider === "All"
+        ? null
+        : [...row.children].find((child) => child.dataset.provider === provider);
+    const left = pill
+      ? pill.offsetLeft - (row.clientWidth - pill.offsetWidth) / 2
+      : 0;
+    row.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+  }, [provider, providerCount, searchOpen]);
+
+  // Mouse drag scrolls the row the way the pointer moves (drag left → the
+  // row moves left); touch already scrolls natively. A drag doesn't count
+  // as a click on the pill under the pointer.
+  const dragRef = useRef(null);
+  const onRowPointerDown = (event) => {
+    if (event.pointerType !== "mouse" || event.button !== 0) return;
+    dragRef.current = {
+      x: event.clientX,
+      left: event.currentTarget.scrollLeft,
+      moved: false,
+    };
+  };
+  const onRowPointerMove = (event) => {
+    const drag = dragRef.current;
+    if (!drag) return;
+    const dx = event.clientX - drag.x;
+    if (!drag.moved && Math.abs(dx) < 5) return;
+    if (!drag.moved) event.currentTarget.setPointerCapture(event.pointerId);
+    drag.moved = true;
+    event.currentTarget.scrollLeft = drag.left - dx;
+  };
+  const onRowPointerUp = () => {
+    const drag = dragRef.current;
+    dragRef.current = null;
+    if (drag?.moved) {
+      // Swallow the click that follows the drag.
+      window.addEventListener(
+        "click",
+        (clickEvent) => clickEvent.stopPropagation(),
+        { capture: true, once: true },
+      );
+    }
+  };
+
   const selectProvider = (name) => {
     if (!categoryCode) return;
     navigate(location.pathname, {
@@ -447,16 +575,12 @@ export default function CatalogueSection({
                 />
               ))}
             </div>
-            {meta.has_next && (
-              <button
-                type="button"
-                onClick={loadMore}
-                disabled={loadingMore}
-                className="mx-auto rounded border border-primary2 px-4 py-2.5 text-[10px] leading-[15px] text-primary2 disabled:opacity-60"
-              >
-                {loadingMore ? "Loading…" : "Load More"}
-              </button>
-            )}
+            <CataloguePagination
+              page={page}
+              totalPages={totalPages}
+              onChange={goToPage}
+              disabled={loading}
+            />
           </div>
         ) : (
           <div className="grid flex-1 place-items-center pb-24 text-xs text-ink-soft">
@@ -468,7 +592,11 @@ export default function CatalogueSection({
   }
 
   return (
-    <section className="flex flex-col gap-3" aria-label={title}>
+    <section
+      ref={sectionRef}
+      className="flex scroll-mt-28 flex-col gap-3"
+      aria-label={title}
+    >
       <GameTitle icon={icon} title={title} />
 
       {showTools && (
@@ -484,13 +612,22 @@ export default function CatalogueSection({
           >
             <ProviderMark name="All" />
           </button>
-          <div className="flex min-w-0 grow gap-1.5 overflow-x-auto hide-scrollbar">
+          <div
+            ref={providerRowRef}
+            onPointerDown={onRowPointerDown}
+            onPointerMove={onRowPointerMove}
+            onPointerUp={onRowPointerUp}
+            onPointerCancel={onRowPointerUp}
+            className="relative flex min-w-0 grow cursor-grab gap-1.5 overflow-x-auto overscroll-x-contain select-none hide-scrollbar active:cursor-grabbing"
+          >
             {providers
               .filter((name) => name !== "All")
               .map((name) => (
                 <button
                   type="button"
                   key={name}
+                  data-provider={name}
+                  draggable={false}
                   onClick={() => selectProvider(name)}
                   aria-label={`Filter by ${name} provider`}
                   aria-pressed={provider === name}
@@ -563,38 +700,17 @@ export default function CatalogueSection({
         </div>
       )}
 
-      {!loading && meta.has_next && (
-        <div className="flex flex-col items-center gap-4">
-          <button
-            type="button"
-            onClick={loadMore}
-            disabled={loadingMore}
-            aria-label={`Load more ${title} games`}
-            className="rounded border border-primary2 px-4 py-2.5 text-[10px] leading-[15px] text-primary2 disabled:opacity-60"
-          >
-            {loadingMore ? "Loading…" : "Load More"}
-          </button>
-          <div className="flex h-[31px] w-full flex-col items-center gap-2">
-            <div
-              role="progressbar"
-              aria-label={`${title} games loaded`}
-              aria-valuemin="0"
-              aria-valuemax={Number(meta.total || renderedGames.length)}
-              aria-valuenow={renderedGames.length}
-              className="h-1.5 w-[250px] overflow-hidden rounded-full bg-surface"
-            >
-              <div
-                className="h-full rounded-full bg-primary2"
-                style={{
-                  width: `${Math.min(100, (renderedGames.length / Math.max(1, Number(meta.total || renderedGames.length))) * 100)}%`,
-                }}
-              />
-            </div>
-            <p className="text-[10px] leading-none text-ink-muted">
-              Shown {renderedGames.length} of{" "}
-              {Number(meta.total || renderedGames.length)} games
-            </p>
-          </div>
+      {totalGames > 0 && (
+        <div className="flex flex-col items-center gap-2 pb-2">
+          <CataloguePagination
+            page={page}
+            totalPages={totalPages}
+            onChange={goToPage}
+            disabled={loading}
+          />
+          <p className="text-[10px] leading-none text-ink-muted">
+            Page {page} of {totalPages} · {totalGames} games
+          </p>
         </div>
       )}
     </section>

@@ -11,6 +11,10 @@ export default function GameImage({ src, fallback, placeholder, alt = '', width 
     const [failure, setFailure] = useState({ key, index: 0 })
     const index = failure.key === key ? failure.index : 0
     const current = candidates[Math.min(index, candidates.length - 1)]
+    // Shimmer until this exact image has loaded, then fade it in, so a slow
+    // card never shows a blank or half-drawn tile.
+    const [loadedSrc, setLoadedSrc] = useState('')
+    const loaded = Boolean(current) && loadedSrc === current.src
 
     if (!current) return placeholder ? <img src={placeholder} alt={alt} className={className} /> : null
     return (
@@ -21,8 +25,9 @@ export default function GameImage({ src, fallback, placeholder, alt = '', width 
             loading={priority ? 'eager' : 'lazy'}
             fetchPriority={priority ? 'high' : 'auto'}
             decoding="async"
+            onLoad={() => setLoadedSrc(current.src)}
             onError={() => setFailure({ key, index: Math.min(index + 1, candidates.length - 1) })}
-            className={className}
+            className={`${className} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'animate-pulse bg-surface-2 opacity-60'}`}
         />
     )
 }
