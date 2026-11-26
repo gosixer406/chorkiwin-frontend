@@ -11,13 +11,13 @@ import { api } from '@/lib/api'
 // Toss being cricket toss markets), sportsbook (SABA, BTI) and casino (one
 // line per game round).
 const sources = [
+    // Same order as the admin panel's Betting History tabs (no BTI tab).
     { label: 'Exchange', value: 'exchange', category: 'exchange', kind: 'exchange' },
     { label: 'FancyBet', value: 'exchange', category: 'fancy', kind: 'exchange' },
-    { label: 'Toss', value: 'exchange', category: 'toss', kind: 'exchange' },
-    { label: 'Sportsbook', value: 'exchange', category: 'sportsbook', kind: 'exchange' },
     { label: 'BookMaker', value: 'exchange', category: 'bookmaker', kind: 'exchange' },
+    { label: 'Sportsbook', value: 'exchange', category: 'sportsbook', kind: 'exchange' },
     { label: 'SABA SPORTS', value: 'saba', kind: 'sportsbook' },
-    { label: 'BTI', value: 'bti', kind: 'sportsbook' },
+    { label: 'Toss', value: 'exchange', category: 'toss', kind: 'exchange' },
     { label: 'Casino', value: 'casino', kind: 'casino' },
 ]
 

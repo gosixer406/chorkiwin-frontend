@@ -7,11 +7,13 @@ import { api } from "../../lib/api";
 import { formatMoney } from "../../lib/currency";
 import { requestAccountRefresh } from "../../lib/refresh-account";
 
+// Same order as the admin panel's bet tabs.
 const betTabs = [
   { name: "Exchange", source: "exchange", category: "exchange" },
+  { name: "FancyBet", source: "exchange", category: "fancy" },
   { name: "BookMaker", source: "exchange", category: "bookmaker" },
-  { name: "Fancybet", source: "exchange", category: "fancy" },
   { name: "Sportsbook", source: "exchange", category: "sportsbook" },
+  { name: "Toss", source: "exchange", category: "toss" },
 ];
 
 const statusStyles = {

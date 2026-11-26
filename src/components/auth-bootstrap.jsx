@@ -37,6 +37,9 @@ export default function AuthBootstrap({ children }) {
     const initialized = useSelector((state) => state.auth.initialized)
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
     const accountRole = useSelector((state) => state.auth.user?.role)
+    // The wallet is stored on the user: poll it only once the user is loaded,
+    // or the first answer is dropped and every later identical one skipped.
+    const hasUser = useSelector((state) => Boolean(state.auth.user))
     const [startupReady, setStartupReady] = useState(false)
 
     // This site is for players only: a staff session already open here is ended.
@@ -85,7 +88,7 @@ export default function AuthBootstrap({ children }) {
     }, [dispatch, isLoggedIn])
 
     useEffect(() => {
-        if (!startupReady || !initialized || !readSession().accessToken) return undefined
+        if (!startupReady || !initialized || !hasUser || !readSession().accessToken) return undefined
         let active = true
         let lastWalletSignature = ''
 
@@ -109,7 +112,7 @@ export default function AuthBootstrap({ children }) {
             active = false
             poller.stop()
         }
-    }, [dispatch, initialized, startupReady])
+    }, [dispatch, hasUser, initialized, startupReady])
 
     useEffect(() => {
         let active = true
