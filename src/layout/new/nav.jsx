@@ -20,6 +20,7 @@ import {
   SquareUser,
   TrendingUp,
   Wallet,
+  ReceiptText,
 } from "lucide-react";
 
 import btn_img_1 from "@/assets/img/new/menu/btn/1.png";
@@ -712,11 +713,13 @@ export default function Nav({ className = "" }) {
           title: "Wallet",
           links: [
             { icon: accountIcon(Wallet), is_svg: true, name: "Balance Overview", path: "/dashboard/balance-overview" },
+            // Deposits and withdrawals (gateway and agent Banking).
+            { icon: accountIcon(ReceiptText), is_svg: true, name: "Transaction", path: "/dashboard/transaction" },
             // P2P and Loss Back show only when this site has them switched on.
             ...(features.p2p
               ? [
                   { icon: accountIcon(ArrowLeftRight), is_svg: true, name: "P2P Transfer", path: "/dashboard/p2p" },
-                  { icon: accountIcon(ScrollText), is_svg: true, name: "P2P Transfer Log", path: "/dashboard/transaction" },
+                  { icon: accountIcon(ScrollText), is_svg: true, name: "P2P Transfer Log", path: "/dashboard/p2p-log" },
                 ]
               : []),
             ...(anyLossBack(features)

@@ -30,6 +30,7 @@ const UplineWhatsapp = lazy(() => import('./pages/new/upline-whatsapp'))
 const AgentList = lazy(() => import('./pages/new/agent-list'))
 const P2p = lazy(() => import('./pages/new/dashboard/p2p'))
 const Transaction = lazy(() => import('./pages/new/dashboard/transaction'))
+const P2pLog = lazy(() => import('./pages/new/dashboard/p2p-log'))
 const BetHistory = lazy(() => import('./pages/new/dashboard/bet-history'))
 const NewProfitLoss = lazy(() => import('./pages/new/dashboard/profit-loss'))
 const NewAccountStatement = lazy(() => import('./pages/new/dashboard/account-statement'))
@@ -50,7 +51,6 @@ const ActivityLog = lazy(() => import('./pages/new/dashboard/activity-log'))
 // The light (legacy) experience has been retired. Its URLs stay valid and land on
 // the matching dark page so old bookmarks, shared links and returnTo values work.
 const darkDashboardPaths = {
-  'p2p-log': 'transaction',
   balance: 'balance-overview',
   turnover: 'turnover',
   referral: 'referral',
@@ -228,6 +228,10 @@ export default function App() {
         {
           path: 'transaction',
           element: <Transaction />
+        },
+        {
+          path: 'p2p-log',
+          element: <P2pLog />
         },
         {
           path: 'bet-history',

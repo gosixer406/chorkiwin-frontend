@@ -34,11 +34,23 @@ const metal_card = {
 };
 
 const menu_links = [
-  { icon: <Waypoints />, name: "P2P Transfer", path: "/dashboard/p2p" },
   {
     icon: <ArrowLeftRight />,
     name: "Transaction",
+    hint: "Your deposits and withdrawals",
     path: "/dashboard/transaction",
+  },
+  {
+    icon: <Waypoints />,
+    name: "P2P Transfer",
+    hint: "Send balance to another player",
+    path: "/dashboard/p2p",
+  },
+  {
+    icon: <FileClock />,
+    name: "P2P Transfer Log",
+    hint: "Your past transfers",
+    path: "/dashboard/p2p-log",
   },
   { icon: <ScrollText />, name: "Bet History", path: "/dashboard/bet-history" },
   { icon: <Banknote />, name: "Profit/Loss", path: "/dashboard/profit-loss" },
@@ -288,8 +300,15 @@ export default function Profile() {
               className="flex min-h-[37px] items-center gap-x-2.5 rounded-md px-2 text-ink-soft hover:bg-surface [&>svg:first-child]:size-4.5"
             >
               {item.icon}
-              <span className="truncate font-inter text-[14px] font-medium">
-                {item.name}
+              <span className="flex min-w-0 flex-col py-1">
+                <span className="truncate font-inter text-[14px] font-medium">
+                  {item.name}
+                </span>
+                {item.hint && (
+                  <span className="truncate font-inter text-[11px] text-ink-muted">
+                    {item.hint}
+                  </span>
+                )}
               </span>
               <ChevronRight className="ml-auto size-4 flex-none text-ink-muted" />
             </Link>
