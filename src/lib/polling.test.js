@@ -33,7 +33,7 @@ describe('startPolling', () => {
     it('uses the requested interval', () => {
         const page = fakePage()
         startPolling(async () => {}, BALANCE_POLL_MS, page)
-        assert.equal(page.interval.ms, 10_000)
+        assert.equal(page.interval.ms, 5_000)
         assert.equal(CURRENT_BETS_POLL_MS, 10_000)
     })
 

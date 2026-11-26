@@ -1,4 +1,5 @@
-export const BALANCE_POLL_MS = 10_000
+// Header Main / Exp: refreshed every 5 s (live exposure of open bets).
+export const BALANCE_POLL_MS = 5_000
 export const CURRENT_BETS_POLL_MS = 10_000
 export const RETURN_SYNC_GAP_MS = 60_000
 
