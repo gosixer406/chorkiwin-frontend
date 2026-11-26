@@ -78,11 +78,13 @@ export default function UplineAgentCard({ className = "" }) {
 
 /**
  * The upline's WhatsApp as one button, styled like the profile page's Log Out
- * button, showing only the WhatsApp icon. Always shown: the number falls back
- * to the upline's own number, then the site's default one.
+ * button, showing only the WhatsApp icon. Hidden when the upline chain has no
+ * WhatsApp number of its own.
  */
 export function UplineWhatsappButton({ className = "" }) {
   const { phone } = useUplineAgent();
+
+  if (!phone) return null;
 
   return (
     <a

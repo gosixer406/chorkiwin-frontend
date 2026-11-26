@@ -67,6 +67,8 @@ function ShieldIcon() {
 }
 
 function EyeIcon({ visible }) {
+  // Password shown → "eye-off" (slashed) icon in gold; hidden → open eye.
+  const stroke = visible ? "var(--c-gold)" : "white";
   return (
     <svg
       className="size-5"
@@ -75,19 +77,31 @@ function EyeIcon({ visible }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <path
-        d="M3 3l18 18"
-        stroke={visible ? "var(--c-gold)" : "white"}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M10.58 10.58A3 3 0 0 0 13.42 13.42M7.37 7.37C5.23 8.74 3.73 10.74 3 12c1.73 3.11 5 6 9 6a9.4 9.4 0 0 0 4.63-1.37M9 5.07A9.2 9.2 0 0 1 12 5c4 0 7.27 2.89 9 6a13.5 13.5 0 0 1-1.67 2.68"
-        stroke={visible ? "var(--c-gold)" : "white"}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      {visible ? (
+        <>
+
+         <path
+            d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"
+            stroke={stroke}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="12" cy="12" r="3" stroke={stroke} strokeWidth="1.5" />
+          
+        </>
+      ) : (
+        <>
+         <path
+            d="M10.58 10.58A3 3 0 0 0 13.42 13.42M7.37 7.37C5.23 8.74 3.73 10.74 3 12c1.73 3.11 5 6 9 6a9.4 9.4 0 0 0 4.63-1.37M9 5.07A9.2 9.2 0 0 1 12 5c4 0 7.27 2.89 9 6a13.5 13.5 0 0 1-1.67 2.68"
+            stroke={stroke}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path d="M3 3l18 18" stroke={stroke} strokeWidth="1.5" strokeLinecap="round" />
+        </>
+      )}
     </svg>
   );
 }

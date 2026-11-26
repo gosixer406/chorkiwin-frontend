@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { api } from "@/lib/api";
-import { DEFAULT_UPLINE_WHATSAPP } from "@/pages/new/upline-whatsapp";
 
 // Loads the logged-in player's upline agent. `contact` is undefined while
 // loading, then { agent, number } (either may be null).
-export function useUplineAgent() {
+export function useUplineAgent(enabled = true) {
   const user = useSelector((state) => state.auth.user) || {};
   const [contact, setContact] = useState(undefined);
 
   useEffect(() => {
+    if (!enabled) return undefined;
     let active = true;
     api
       .get("/api/user/upline-whatsapp", { cache: "no-store" })
@@ -27,7 +27,7 @@ export function useUplineAgent() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [enabled]);
 
   return {
     loading: contact === undefined,
@@ -36,12 +36,13 @@ export function useUplineAgent() {
     isOnline: Boolean(contact?.agent?.id_number),
     agentId: contact?.agent?.id_number || "",
     // The number the upline (Master Agent) set in its panel's Upline Whatsapp
-    // comes first, then the online agent's Agent List number.
+    // comes first, then the online agent's Agent List number. Empty string when
+    // there is no number anywhere up the chain.
     phone:
       contact?.number ||
       contact?.agent?.whatsapp ||
       user.upline_whatsapp ||
-      DEFAULT_UPLINE_WHATSAPP,
+      "",
   };
 }
 

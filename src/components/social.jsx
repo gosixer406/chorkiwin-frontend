@@ -7,16 +7,24 @@ export default function Social({ className = "", btnClass = "bg-black text-white
     {
       name: 'whatsapp',
       icon: <FaWhatsapp />,
-      url: 'https://wa.me/+447520636263',
+      url: '',
     },
   ];
   return (
     <div className={`flex items-center flex-wrap gap-3 ${className}`}>
-      {socialIcons.map((item, index) => (
-        <a key={index} href={item.url} aria-label={item.name[0].toUpperCase() + item.name.slice(1)} className={`size-8 rounded-full flex items-center justify-center hover:bg-primary ${btnClass}`}>
-          {item.icon}
-        </a>
-      ))}
+      {socialIcons.map((item, index) => {
+        const label = item.name[0].toUpperCase() + item.name.slice(1);
+        const look = `size-8 rounded-full flex items-center justify-center hover:bg-primary ${btnClass}`;
+        return item.url ? (
+          <a key={index} href={item.url} aria-label={label} className={look}>
+            {item.icon}
+          </a>
+        ) : (
+          <span key={index} role="img" aria-label={label} className={look}>
+            {item.icon}
+          </span>
+        );
+      })}
     </div>
   )
 }

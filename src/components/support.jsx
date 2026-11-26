@@ -17,11 +17,16 @@ import {
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { api } from "@/lib/api";
+import {
+  imoLink,
+  useUplineAgent,
+  useUplineImo,
+  whatsappLink,
+} from "@/lib/upline-agent";
 import GameHall from "@/components/game-hall";
 import brandLogo from "@/assets/img/logo/short_logo_3d.png";
 import SpinWheel from "@/components/spin-wheel";
 import useSiteFeatures from "@/hooks/use-site-features";
-import launcherGif from "@/assets/img/new/three-logo-animation-images.gif";
 import luckySpinWheel from "@/assets/img/lucky-spin-wheel.svg";
 
 function getGuestToken() {
@@ -171,10 +176,16 @@ function FloatingLauncher({ hidden, actions }) {
   const fanDown = position ? position.y < 220 : false;
   const dx = fanRight ? 1 : -1;
   const dy = fanDown ? 1 : -1;
-  const offsets = [
-    [0, dy * LAUNCHER_RADIUS],
-    [dx * LAUNCHER_RADIUS, 0],
-  ];
+  // Spread the buttons evenly along a quarter-circle arc into the open corner,
+  // so two, three or four of them all stay on screen. The arc grows with the
+  // count so the extra buttons keep a comfortable gap instead of crowding.
+  const count = actions.length;
+  const radius = LAUNCHER_RADIUS + Math.max(0, count - 2) * 26;
+  const offsets = actions.map((_, index) => {
+    const angle =
+      count > 1 ? (index / (count - 1)) * (Math.PI / 2) : Math.PI / 4;
+    return [dx * radius * Math.cos(angle), dy * radius * Math.sin(angle)];
+  });
 
   return (
     <>
@@ -219,7 +230,10 @@ function FloatingLauncher({ hidden, actions }) {
                 transitionDelay: expanded ? `${index * 50}ms` : "0ms",
               }}
             >
-              <span className="grid size-13 place-items-center overflow-hidden rounded-full border-2 border-[var(--c-gold)] bg-[var(--c-surface)] text-[var(--c-gold)] shadow-lg">
+              <span
+                className="grid size-13 place-items-center overflow-hidden rounded-full border-2 border-[var(--c-gold)] text-[var(--c-gold)] shadow-lg"
+                style={{ backgroundColor: action.iconBg || "var(--c-surface)" }}
+              >
                 {action.icon}
               </span>
               <CountBadge count={action.badge} />
@@ -239,12 +253,26 @@ function FloatingLauncher({ hidden, actions }) {
             if (event.detail === 0) toggle();
           }}
         >
-          <img
-            className="pointer-events-none size-full rounded-full object-cover"
-            src={launcherGif}
-            alt=""
-            draggable="false"
-          />
+          {/* Launcher face: the four services on the site's #333333 surface. */}
+          <span
+            className="pointer-events-none grid size-full grid-cols-2 place-items-center gap-1 rounded-full border-[3px] border-[#CDA54A] p-2"
+            style={{ backgroundColor: "#333333" }}
+          >
+            <img
+              src={luckySpinWheel}
+              alt=""
+              className="size-full object-contain"
+              draggable="false"
+            />
+            <img
+              src="/game.svg"
+              alt=""
+              className="size-full object-contain"
+              draggable="false"
+            />
+            <WhatsappLogo className="size-[82%] text-[#25D366]" />
+            <ImoLogo className="size-[82%] text-[#13BDEC]" />
+          </span>
           {expanded && (
             <span className="absolute inset-0 grid place-items-center rounded-full bg-black/45 text-white">
               <X className="size-7" strokeWidth={2.5} />
@@ -307,6 +335,27 @@ function WhatsappLogo({ className }) {
       aria-hidden="true"
     >
       <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.62-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.31 1.27.49 1.7.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35ZM12.05 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.9-9.88a9.83 9.83 0 0 1 9.88 9.89c0 5.45-4.44 9.88-9.89 9.88Zm8.41-18.3A11.81 11.81 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.94L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.9 0-3.17-1.24-6.16-3.48-8.4Z" />
+    </svg>
+  );
+}
+
+// Official imo logo (assets/img/icons/imo-stroke-rounded.svg), colour via currentColor.
+function ImoLogo({ className }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 13.8214 2.48697 15.5291 3.33782 17L2 22L7 20.6622C8.47087 21.513 10.1786 22 12 22Z" />
+      <path
+        d="M7.00859 9L7 9M7.00112 11V15M8.91304 15V12.25C8.91304 11.5596 9.44836 11 10.1087 11C10.769 11 11.3043 11.5596 11.3043 12.25M11.3043 12.25V15M11.3043 12.25C11.3043 11.5596 11.8397 11 12.5 11C13.1603 11 13.6957 11.5596 13.6957 12.25V15M15.6087 12.25V13.75C15.6087 14.4404 16.144 15 16.8043 15C17.4647 15 18 14.4404 18 13.75V12.25C18 11.5596 17.4647 11 16.8043 11C16.144 11 15.6087 11.5596 15.6087 12.25Z"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -1052,6 +1101,15 @@ export default function Support() {
   // The Lucky Spin shows only when this site has it switched on.
   const { spin: spinEnabled } = useSiteFeatures();
 
+  // The upline's WhatsApp / IMO numbers, same as the profile buttons; only
+  // fetched for logged-in players, and each action shows only when set.
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const { phone: uplineWhatsapp } = useUplineAgent(isLoggedIn);
+  const { phone: uplineImo } = useUplineImo(isLoggedIn);
+
+  const openExternal = (url) =>
+    window.open(url, "_blank", "noopener,noreferrer");
+
   const launcherActions = [
     spinEnabled && {
       label: "Spin",
@@ -1065,6 +1123,19 @@ export default function Support() {
       label: "Games",
       onClick: () => setHallOpen(true),
       icon: <img src="/game.svg" alt="" className="size-full object-contain" />,
+    },
+    uplineWhatsapp && {
+      label: "Upline WhatsApp",
+      onClick: () => openExternal(whatsappLink(uplineWhatsapp)),
+      // Logo on the site's main background, like the launcher animation.
+      iconBg: "var(--c-page)",
+      icon: <WhatsappLogo className="size-10 text-[#25D366]" />,
+    },
+    uplineImo && {
+      label: "Upline IMO",
+      onClick: () => openExternal(imoLink(uplineImo)),
+      iconBg: "var(--c-page)",
+      icon: <ImoLogo className="size-10 text-[#13BDEC]" />,
     },
   ].filter(Boolean);
 

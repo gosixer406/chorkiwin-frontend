@@ -28,7 +28,9 @@ const NewLogin = lazy(() => import('./pages/new/auth/login'))
 const Profile = lazy(() => import('./pages/new/profile'))
 const UplineWhatsapp = lazy(() => import('./pages/new/upline-whatsapp'))
 const AgentList = lazy(() => import('./pages/new/agent-list'))
-const P2p = lazy(() => import('./pages/new/dashboard/p2p'))
+// Deposit, Withdraw and P2P share one tabbed Banking page; the active tab is
+// read from the route so each path deep-links into the right section.
+const Banking = lazy(() => import('./pages/new/dashboard/banking'))
 const Transaction = lazy(() => import('./pages/new/dashboard/transaction'))
 const P2pLog = lazy(() => import('./pages/new/dashboard/p2p-log'))
 const BetHistory = lazy(() => import('./pages/new/dashboard/bet-history'))
@@ -222,8 +224,16 @@ export default function App() {
           element: <Navigate to="p2p" replace />
         },
         {
+          path: 'deposit',
+          element: <Banking />
+        },
+        {
+          path: 'withdraw',
+          element: <Banking />
+        },
+        {
           path: 'p2p',
-          element: <P2p />
+          element: <Banking />
         },
         {
           path: 'transaction',

@@ -7,9 +7,6 @@ import PageTitle from "@/components/dashboard/page-title";
 import { api } from "@/lib/api";
 import whatsapp_icon from "@/assets/img/whatsapp.png";
 
-// Fallback when the account has no upline number of its own.
-export const DEFAULT_UPLINE_WHATSAPP = "+447520636263";
-
 const whatsappLink = (phone) =>
   `https://wa.me/${String(phone).replace(/[^\d]/g, "")}`;
 
@@ -75,12 +72,13 @@ export default function UplineWhatsapp() {
     };
   }, [isLoggedIn]);
 
+  // null when the upline chain has no number — the row is then hidden.
   const uplinePhone =
     primaryNumber ||
     user.upline_whatsapp ||
     user.upline?.whatsapp ||
     user.upline?.phone ||
-    DEFAULT_UPLINE_WHATSAPP;
+    null;
   const agentPhones = [
     user.agent_whatsapp,
     user.agent?.whatsapp,
@@ -92,7 +90,9 @@ export default function UplineWhatsapp() {
     "CS Manager",
     csManagers.length > 0
       ? csManagers.map((contact) => contact.whatsapp)
-      : [uplinePhone],
+      : uplinePhone
+        ? [uplinePhone]
+        : [],
   );
   const supportRows = numberedContacts(
     "Customer Support",

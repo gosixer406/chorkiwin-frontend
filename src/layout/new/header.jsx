@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { LockKeyhole, SquarePen } from "lucide-react";
+import { ArrowDownToLine, LockKeyhole, SquarePen } from "lucide-react";
 import Reload from "@/components/reload";
 import { setUser, setWallet } from "@/lib/auth";
 import {
@@ -92,6 +92,14 @@ export default function Header() {
               onClick={refreshAccount}
               label="Refresh balance"
             />
+            <Link
+              to="/dashboard/deposit"
+              aria-label="Deposit"
+              title="Deposit"
+              className="grid size-6 shrink-0 place-items-center rounded-md bg-green-500 text-white transition-opacity hover:opacity-80 sm:size-7"
+            >
+              <ArrowDownToLine className="size-3.5" strokeWidth={2.5} />
+            </Link>
           </div>
         </div>
       ) : (

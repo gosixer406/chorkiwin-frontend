@@ -7,6 +7,8 @@ import { Link, useLocation } from "react-router-dom";
 import PageTitle from "@/components/dashboard/page-title";
 import {
   ArrowLeftRight,
+  ArrowDownToLine,
+  ArrowUpFromLine,
   ChevronRight,
   Crown,
   ExternalLink,
@@ -713,6 +715,9 @@ export default function Nav({ className = "" }) {
           title: "Wallet",
           links: [
             { icon: accountIcon(Wallet), is_svg: true, name: "Balance Overview", path: "/dashboard/balance-overview" },
+            // Agent Banking: the player's upline agent's deposit / withdraw numbers.
+            { icon: accountIcon(ArrowDownToLine), is_svg: true, name: "Deposit", path: "/dashboard/deposit" },
+            { icon: accountIcon(ArrowUpFromLine), is_svg: true, name: "Withdraw", path: "/dashboard/withdraw" },
             // Deposits and withdrawals (gateway and agent Banking).
             { icon: accountIcon(ReceiptText), is_svg: true, name: "Transaction", path: "/dashboard/transaction" },
             // P2P and Loss Back show only when this site has them switched on.

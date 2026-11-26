@@ -11,6 +11,8 @@ import {
 } from "@/components/upline-agent-card";
 import {
   ArrowLeftRight,
+  ArrowDownToLine,
+  ArrowUpFromLine,
   ChartNoAxesColumn,
   ChevronRight,
   Banknote,
@@ -35,21 +37,33 @@ const metal_card = {
 
 const menu_links = [
   {
+    icon: <ArrowDownToLine />,
+    name: "Deposit",
+
+    path: "/dashboard/deposit",
+  },
+  {
+    icon: <ArrowUpFromLine />,
+    name: "Withdraw",
+
+    path: "/dashboard/withdraw",
+  },
+  {
     icon: <ArrowLeftRight />,
     name: "Transaction",
-    hint: "Your deposits and withdrawals",
+
     path: "/dashboard/transaction",
   },
   {
     icon: <Waypoints />,
     name: "P2P Transfer",
-    hint: "Send balance to another player",
+
     path: "/dashboard/p2p",
   },
   {
     icon: <FileClock />,
     name: "P2P Transfer Log",
-    hint: "Your past transfers",
+
     path: "/dashboard/p2p-log",
   },
   { icon: <ScrollText />, name: "Bet History", path: "/dashboard/bet-history" },
@@ -316,9 +330,8 @@ export default function Profile() {
         </nav>
 
         <UplineImoButton className="mt-3" />
-        <UplineWhatsappButton className="mt-4" />
         <UplineTelegramButton className="mt-4" />
-
+        <UplineWhatsappButton className="mt-4" />
         <div className="mb-4 mt-4 flex flex-col gap-y-3 pb-[max(12px,env(safe-area-inset-bottom))]">
           <button
             type="button"

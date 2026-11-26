@@ -28,7 +28,7 @@ export const COMMUNITY_LINKS = [
 export const FALLBACK_SOCIAL_LINKS = {
   facebook: "",
   telegram: "",
-  whatsapp: "https://wa.me/+447520636263",
+  whatsapp: "",
 };
 
 // One request per page load, shared by every component that shows the links.
