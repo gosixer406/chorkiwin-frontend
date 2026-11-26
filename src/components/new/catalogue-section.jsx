@@ -186,77 +186,6 @@ function ProviderMark({ name }) {
   );
 }
 
-// Page numbers to show: always the first and last page, the current page and
-// its neighbours, with "…" for the gaps (1 … 4 5 6 … 12).
-function pageItems(page, totalPages) {
-  if (totalPages <= 7) {
-    return Array.from({ length: totalPages }, (_, index) => index + 1);
-  }
-  const start = Math.max(2, Math.min(page - 1, totalPages - 4));
-  const end = Math.min(totalPages - 1, Math.max(page + 1, 5));
-  const items = [1];
-  if (start > 2) items.push("gap-start");
-  for (let value = start; value <= end; value += 1) items.push(value);
-  if (end < totalPages - 1) items.push("gap-end");
-  items.push(totalPages);
-  return items;
-}
-
-function CataloguePagination({ page, totalPages, onChange, disabled }) {
-  if (totalPages <= 1) return null;
-  const box =
-    "flex h-8 min-w-8 items-center justify-center rounded border px-2 text-xs font-bold transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-40";
-  const idle = "border-line bg-surface text-ink-soft hover:border-primary2";
-  return (
-    <nav
-      aria-label="Game pages"
-      className="swiper-no-swiping flex flex-wrap items-center justify-center gap-1"
-    >
-      <button
-        type="button"
-        onClick={() => onChange(page - 1)}
-        disabled={disabled || page <= 1}
-        aria-label="Previous page"
-        className={`${box} ${idle}`}
-      >
-        <ChevronLeft className="size-4" />
-      </button>
-      {pageItems(page, totalPages).map((item) =>
-        typeof item === "number" ? (
-          <button
-            type="button"
-            key={item}
-            onClick={() => onChange(item)}
-            disabled={disabled && item !== page}
-            aria-label={`Page ${item}`}
-            aria-current={item === page ? "page" : undefined}
-            className={`${box} ${item === page ? "border-primary2 bg-primary2 text-surface" : idle}`}
-          >
-            {item}
-          </button>
-        ) : (
-          <span
-            key={item}
-            className="px-1 text-xs text-ink-muted"
-            aria-hidden="true"
-          >
-            …
-          </span>
-        ),
-      )}
-      <button
-        type="button"
-        onClick={() => onChange(page + 1)}
-        disabled={disabled || page >= totalPages}
-        aria-label="Next page"
-        className={`${box} ${idle}`}
-      >
-        <ChevronLeft className="size-4 -scale-x-100" />
-      </button>
-    </nav>
-  );
-}
-
 export default function CatalogueSection({
   title,
   icon,
@@ -286,20 +215,16 @@ export default function CatalogueSection({
   const provider = showTools ? urlProvider || "All" : "All";
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search.trim());
-  // The page belongs to one provider + search; changing either starts at 1.
-  const filterKey = `${provider}|${deferredSearch}`;
-  const [pageState, setPageState] = useState({ key: filterKey, page: 1 });
-  const page = pageState.key === filterKey ? pageState.page : 1;
   const requestPath = useMemo(
-    () => cataloguePagePath(basePath, page, pageSize, provider, deferredSearch),
-    [basePath, deferredSearch, page, pageSize, provider],
+    () => cataloguePagePath(basePath, 1, pageSize, provider, deferredSearch),
+    [basePath, deferredSearch, pageSize, provider],
   );
   const cached = useMemo(() => catalogueCache.get(requestPath), [requestPath]);
   const [games, setGames] = useState(cached?.games || []);
   const [meta, setMeta] = useState(cached?.meta || {});
   const [loading, setLoading] = useState(!cached);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [catalogueError, setCatalogueError] = useState("");
-  const sectionRef = useRef(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const launcher = useGameLauncher();
 
@@ -312,17 +237,13 @@ export default function CatalogueSection({
     window.queueMicrotask(() => {
       if (!active) return;
       setGames(freshCache?.games || []);
-      // Keep the provider row and page count as they are while the next page
-      // or another provider loads, so they don't empty out and jump.
+      // Keep the provider row as it is while another provider loads, so it
+      // doesn't empty out and jump back to the start.
       setMeta(
-        (current) =>
-          freshCache?.meta || {
-            providers: current.providers,
-            total: current.total,
-            pages: current.pages,
-          },
+        (current) => freshCache?.meta || { providers: current.providers },
       );
       setLoading(!freshCache);
+      setLoadingMore(false);
     });
 
     const load = async () => {
@@ -390,19 +311,40 @@ export default function CatalogueSection({
     };
   }, [requestPath]);
 
-  // Page count from the category's game total (only games with artwork are
-  // counted by the API, so every page it promises has games on it).
-  const totalGames = Number(meta.total) || 0;
-  const totalPages = Math.max(
-    1,
-    Number(meta.pages) || Math.ceil(totalGames / pageSize) || 1,
-  );
-  const goToPage = (next) => {
-    const target = Math.min(Math.max(1, next), totalPages);
-    if (target === page) return;
-    setPageState({ key: filterKey, page: target });
-    // Back to the top of this category so the new page starts in view.
-    sectionRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+  const loadMore = async () => {
+    if (loadingMore || !meta.has_next) return;
+    setLoadingMore(true);
+    setCatalogueError("");
+    try {
+      const nextPage = Math.max(2, Number(meta.page || 1) + 1);
+      const nextPath = cataloguePagePath(
+        basePath,
+        nextPage,
+        pageSize,
+        provider,
+        deferredSearch,
+      );
+      const response = await api.get(nextPath);
+      const rows = normalizeRows(response);
+      setGames((current) => mergeRows(current, rows));
+      setMeta((current) => ({
+        ...(response.meta || {}),
+        providers: response.meta?.providers?.length
+          ? response.meta.providers
+          : current.providers,
+      }));
+      if (!response.meta?.loading) {
+        catalogueCache.set(nextPath, {
+          games: rows,
+          meta: response.meta || {},
+          timestamp: Date.now(),
+        });
+      }
+    } catch (error) {
+      setCatalogueError(error.message || "Unable to load more games.");
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
   const providers = useMemo(() => {
@@ -467,6 +409,12 @@ export default function CatalogueSection({
       : [];
   }, [decoratedGames, search]);
   const renderedGames = visibleGames;
+  // The category's game count from the API; once the last page is in, the
+  // bar is full and the count is exactly what's on screen.
+  const shownGames = renderedGames.length;
+  const totalGames = meta.has_next
+    ? Math.max(Number(meta.total) || 0, shownGames)
+    : shownGames;
 
   // Keep the active provider pill in view: centre it in the row whenever the
   // selection or the list changes. Only the row scrolls, never the page.
@@ -575,12 +523,16 @@ export default function CatalogueSection({
                 />
               ))}
             </div>
-            <CataloguePagination
-              page={page}
-              totalPages={totalPages}
-              onChange={goToPage}
-              disabled={loading}
-            />
+            {meta.has_next && (
+              <button
+                type="button"
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="mx-auto rounded border border-primary2 px-4 py-2.5 text-[10px] leading-[15px] text-primary2 disabled:opacity-60"
+              >
+                {loadingMore ? "Loading…" : "Load More"}
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid flex-1 place-items-center pb-24 text-xs text-ink-soft">
@@ -592,11 +544,7 @@ export default function CatalogueSection({
   }
 
   return (
-    <section
-      ref={sectionRef}
-      className="flex scroll-mt-28 flex-col gap-3"
-      aria-label={title}
-    >
+    <section className="flex flex-col gap-3" aria-label={title}>
       <GameTitle icon={icon} title={title} />
 
       {showTools && (
@@ -700,17 +648,41 @@ export default function CatalogueSection({
         </div>
       )}
 
-      {totalGames > 0 && (
-        <div className="flex flex-col items-center gap-2 pb-2">
-          <CataloguePagination
-            page={page}
-            totalPages={totalPages}
-            onChange={goToPage}
-            disabled={loading}
-          />
-          <p className="text-[10px] leading-none text-ink-muted">
-            Page {page} of {totalPages} · {totalGames} games
-          </p>
+      {!loading && renderedGames.length > 0 && (
+        <div className="flex flex-col items-center gap-4">
+          {meta.has_next && (
+            <button
+              type="button"
+              onClick={loadMore}
+              disabled={loadingMore}
+              aria-label={`Load more ${title} games`}
+              className="rounded border border-primary2 px-4 py-2.5 text-[10px] leading-[15px] text-primary2 disabled:opacity-60"
+            >
+              {loadingMore ? "Loading…" : "Load More"}
+            </button>
+          )}
+          <div className="flex h-[31px] w-full flex-col items-center gap-2">
+            <div
+              role="progressbar"
+              aria-label={`${title} games loaded`}
+              aria-valuemin="0"
+              aria-valuemax={totalGames}
+              aria-valuenow={shownGames}
+              className="h-1.5 w-[250px] overflow-hidden rounded-full bg-surface"
+            >
+              <div
+                className="h-full rounded-full bg-primary2"
+                style={{
+                  width: `${Math.min(100, (shownGames / Math.max(1, totalGames)) * 100)}%`,
+                }}
+              />
+            </div>
+            <p className="text-[10px] leading-none text-ink-muted">
+              {meta.has_next
+                ? `Shown ${shownGames} of ${totalGames} games`
+                : `All ${totalGames} games shown`}
+            </p>
+          </div>
         </div>
       )}
     </section>
