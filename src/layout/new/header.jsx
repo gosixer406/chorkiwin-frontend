@@ -11,6 +11,12 @@ import {
 import logo from "@/assets/img/logo/short_logo_3d.png";
 import LoadingDots from "@/components/loading-dots";
 
+// Set once this page has fetched its first balance. Coming back to the
+// window (or the browser's back button restoring the page, which remounts
+// the header) must not fetch it again: the balance poll and the return sync
+// in AuthBootstrap update it in the background, only when it changed.
+let pageBalanceLoaded = false;
+
 export default function Header() {
   const dispatch = useDispatch();
   const { isLoggedIn, user, freshLogin } = useSelector((state) => state.auth);
@@ -25,27 +31,30 @@ export default function Header() {
   );
   const exposure = Number(wallet.exposure ?? 0).toFixed(2);
 
-  const refreshAccount = useCallback(async ({ showLoader = false } = {}) => {
-    if (!isLoggedIn) return;
-    if (showLoader) {
-      if (loaderShown.current) return;
-      loaderShown.current = true;
-      setRefreshing(true);
-    }
-    try {
-      await refreshBalanceFast({
-        onWallet: (nextWallet) => dispatch(setWallet(nextWallet)),
-        onAccount: (account) => dispatch(setUser(account)),
-      });
-    } catch {
-      // Leave the last known balance on screen if the network is briefly unavailable.
-    } finally {
+  const refreshAccount = useCallback(
+    async ({ showLoader = false } = {}) => {
+      if (!isLoggedIn) return;
       if (showLoader) {
-        loaderShown.current = false;
-        setRefreshing(false);
+        if (loaderShown.current) return;
+        loaderShown.current = true;
+        setRefreshing(true);
       }
-    }
-  }, [dispatch, isLoggedIn]);
+      try {
+        await refreshBalanceFast({
+          onWallet: (nextWallet) => dispatch(setWallet(nextWallet)),
+          onAccount: (account) => dispatch(setUser(account)),
+        });
+      } catch {
+        // Leave the last known balance on screen if the network is briefly unavailable.
+      } finally {
+        if (showLoader) {
+          loaderShown.current = false;
+          setRefreshing(false);
+        }
+      }
+    },
+    [dispatch, isLoggedIn],
+  );
 
   // A deposit, transfer or game return asked for a fresh balance: quietly.
   useEffect(() => {
@@ -54,11 +63,16 @@ export default function Header() {
     return () => window.removeEventListener("velki:balance-changed", refresh);
   }, [refreshAccount]);
 
-  // Signed in, or the page opened signed in: fetch the balance right away.
-  // The loader only right after signing in; a page that opens on a saved
-  // session (e.g. coming back from 9 Wickets) keeps its figures and updates them.
+  // Signed in, or the page opened signed in: fetch the balance right away,
+  // once. The loader only right after signing in; a page that opens on a
+  // saved session (e.g. coming back from 9 Wickets) keeps its figures.
   useEffect(() => {
-    if (!isLoggedIn) return;
+    if (!isLoggedIn) {
+      pageBalanceLoaded = false;
+      return;
+    }
+    if (pageBalanceLoaded && !freshLogin) return;
+    pageBalanceLoaded = true;
     refreshAccount({ showLoader: freshLogin });
     if (freshLogin) dispatch(loginBalanceShown());
     requestAccountRefresh();
@@ -91,12 +105,12 @@ export default function Header() {
               ) : (
                 <>
                   <span className="text-[11px] font-bold text-gold sm:text-[12px]">
-                    <span className="font-medium text-ink-soft">Main: </span>
-                    ৳{balance}
+                    <span className="font-medium text-ink-soft">Main: </span>৳
+                    {balance}
                   </span>
                   <span className="text-[11px] font-bold text-[#FF4D4F] sm:text-[12px]">
-                    <span className="font-medium text-ink-soft">Exp: </span>
-                    ৳{exposure}
+                    <span className="font-medium text-ink-soft">Exp: </span>৳
+                    {exposure}
                   </span>
                 </>
               )}
