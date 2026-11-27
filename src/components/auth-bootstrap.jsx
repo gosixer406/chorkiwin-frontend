@@ -16,6 +16,8 @@ import {
     markExchangeExitObserved,
     readExchangeWalletSnapshot,
     requestAccountRefresh,
+    exchangeReturnPending,
+    exchangeSyncInProgress,
 } from '@/lib/refresh-account'
 import { AWAY_LIMIT_MS, isAwayTooLong, markSeen, returnFromGame } from '@/lib/away-logout'
 import { BALANCE_POLL_MS, shouldSyncOnReturn, startPolling } from '@/lib/polling'
@@ -98,6 +100,11 @@ export default function AuthBootstrap({ children }) {
             })
             const { exchange_collected: exchangeCollected, ...nextWallet } = response.data || {}
             const signature = JSON.stringify(nextWallet)
+            // Read while a 9 Wickets balance was still coming home: its main
+            // balance is a passing 0. The collection refreshes the wallet itself
+            // (a failed one leaves the markers set, so only a 0 is skipped then).
+            const mainNow = Number(nextWallet.available ?? nextWallet.main_balance ?? 0)
+            if (exchangeSyncInProgress() || (exchangeReturnPending() && mainNow === 0)) return
             if (active && signature !== lastWalletSignature) {
                 lastWalletSignature = signature
                 dispatch(setWallet(nextWallet))

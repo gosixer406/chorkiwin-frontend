@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { ArrowDownToLine, LockKeyhole, SquarePen } from "lucide-react";
 import Reload from "@/components/reload";
-import { setUser, setWallet } from "@/lib/auth";
+import { loginBalanceShown, setUser, setWallet } from "@/lib/auth";
 import {
   refreshBalanceFast,
   requestAccountRefresh,
@@ -13,17 +13,25 @@ import LoadingDots from "@/components/loading-dots";
 
 export default function Header() {
   const dispatch = useDispatch();
-  const { isLoggedIn, user } = useSelector((state) => state.auth);
+  const { isLoggedIn, user, freshLogin } = useSelector((state) => state.auth);
+  // The loading dots: only for the first balance after signing in and for
+  // the Refresh button. Every other refresh (back from 9 Wickets or a casino
+  // game, a deposit, a transfer) updates the figures in place, no loader.
   const [refreshing, setRefreshing] = useState(false);
+  const loaderShown = useRef(false);
   const wallet = user?.wallet || {};
   const balance = Number(wallet.available ?? wallet.main_balance ?? 0).toFixed(
     2,
   );
   const exposure = Number(wallet.exposure ?? 0).toFixed(2);
 
-  const refreshAccount = useCallback(async () => {
-    if (!isLoggedIn || refreshing) return;
-    setRefreshing(true);
+  const refreshAccount = useCallback(async ({ showLoader = false } = {}) => {
+    if (!isLoggedIn) return;
+    if (showLoader) {
+      if (loaderShown.current) return;
+      loaderShown.current = true;
+      setRefreshing(true);
+    }
     try {
       await refreshBalanceFast({
         onWallet: (nextWallet) => dispatch(setWallet(nextWallet)),
@@ -32,22 +40,29 @@ export default function Header() {
     } catch {
       // Leave the last known balance on screen if the network is briefly unavailable.
     } finally {
-      setRefreshing(false);
+      if (showLoader) {
+        loaderShown.current = false;
+        setRefreshing(false);
+      }
     }
-  }, [dispatch, isLoggedIn, refreshing]);
+  }, [dispatch, isLoggedIn]);
 
+  // A deposit, transfer or game return asked for a fresh balance: quietly.
   useEffect(() => {
     const refresh = () => refreshAccount();
     window.addEventListener("velki:balance-changed", refresh);
     return () => window.removeEventListener("velki:balance-changed", refresh);
   }, [refreshAccount]);
 
-  // Signed in (or the page opened signed in): fetch the balance right away,
-  // with the loader in the header (the listener above runs refreshAccount).
+  // Signed in, or the page opened signed in: fetch the balance right away.
+  // The loader only right after signing in; a page that opens on a saved
+  // session (e.g. coming back from 9 Wickets) keeps its figures and updates them.
   useEffect(() => {
     if (!isLoggedIn) return;
-    window.dispatchEvent(new Event("velki:balance-changed"));
+    refreshAccount({ showLoader: freshLogin });
+    if (freshLogin) dispatch(loginBalanceShown());
     requestAccountRefresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per sign-in / page open
   }, [isLoggedIn]);
 
   return (
@@ -89,7 +104,7 @@ export default function Header() {
             <Reload
               className="size-3.5! text-gold"
               buttonClassName="grid size-6 shrink-0 place-items-center rounded-md border border-gold/70 transition-opacity hover:opacity-70 disabled:opacity-40 sm:size-7"
-              onClick={refreshAccount}
+              onClick={() => refreshAccount({ showLoader: true })}
               label="Refresh balance"
             />
             <Link

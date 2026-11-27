@@ -1,5 +1,5 @@
-import HistoryView from '@/components/new/history-view'
+import ProfitLossView from '@/components/reports/profit-loss-view'
 
 export default function ProfitLoss() {
-    return <HistoryView profitLoss />
+    return <ProfitLossView />
 }

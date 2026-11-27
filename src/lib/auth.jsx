@@ -11,6 +11,9 @@ const Auth = createSlice({
         user: savedSession.user || null,
         accessToken: savedSession.accessToken || null,
         refreshToken: savedSession.refreshToken || null,
+        // True right after the player signs in (not when a page opens on a
+        // saved session): the header shows its loader for that first balance.
+        freshLogin: false,
     },
     reducers: {
         toggleLogin(state, action) {
@@ -23,7 +26,11 @@ const Auth = createSlice({
             state.user = user;
             state.accessToken = accessToken;
             state.refreshToken = refreshToken;
+            state.freshLogin = true;
             writeSession({ user, accessToken, refreshToken });
+        },
+        loginBalanceShown(state) {
+            state.freshLogin = false;
         },
         setUser(state, action) {
             const latestSession = readSession();
@@ -58,6 +65,7 @@ const Auth = createSlice({
         },
         logout(state) {
             state.isLoggedIn = false;
+            state.freshLogin = false;
             state.initialized = true;
             state.user = null;
             state.accessToken = null;
@@ -66,5 +74,5 @@ const Auth = createSlice({
         },
     }
 })
-export const { toggleLogin, setSession, setUser, setWallet, finishAuth, logout } = Auth.actions;
+export const { toggleLogin, setSession, loginBalanceShown, setUser, setWallet, finishAuth, logout } = Auth.actions;
 export default Auth.reducer;

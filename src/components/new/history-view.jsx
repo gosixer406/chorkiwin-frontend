@@ -173,6 +173,49 @@ export default function HistoryView({ profitLoss = false }) {
 
     const activeQuery = profitLoss ? submittedQuery : query
 
+    // Profit & Loss: every category's P/L for the chosen dates, loaded on its
+    // own (no Submit needed) and again whenever the dates change.
+    const [summaryRefresh, setSummaryRefresh] = useState(0)
+    const summaryKey = profitLoss && from && to ? `${from}|${to}|${summaryRefresh}` : ''
+    const [summary, setSummary] = useState({ key: '', rows: [] })
+    const summaryLoading = Boolean(summaryKey) && summary.key !== summaryKey
+    useEffect(() => {
+        if (!summaryKey) return undefined
+        let active = true
+        const controller = new AbortController()
+        const [keyFrom, keyTo] = summaryKey.split('|')
+        Promise.all(sources.map(async (item) => {
+            const params = new URLSearchParams({ source: item.value, limit: '1', from: keyFrom, to: keyTo, tz_offset: String(-new Date().getTimezoneOffset()) })
+            if (item.category) params.set('category', item.category)
+            try {
+                const response = await api.get(`/api/betting/profit-loss?${params}`, { signal: controller.signal, cache: 'no-store' })
+                const totals = response.data?.totals || {}
+                return { item, pl: Number(totals.pl || 0), stake: Number(totals.stake || 0), count: Number(totals.count || 0) }
+            } catch {
+                return { item, failed: true }
+            }
+        })).then((rows) => {
+            if (active) setSummary({ key: summaryKey, rows })
+        })
+        return () => {
+            active = false
+            controller.abort()
+        }
+    }, [summaryKey])
+    const summaryTotal = summary.rows.reduce((sum, row) => sum + (row.pl || 0), 0)
+    const summaryStake = summary.rows.reduce((sum, row) => sum + (row.stake || 0), 0)
+
+    // Tapping a category opens its markets below.
+    const openSeq = useRef(0)
+    const openCategory = (item) => {
+        chooseSource(item)
+        const params = new URLSearchParams({ source: item.value, limit: '100', from, to, tz_offset: String(-new Date().getTimezoneOffset()), group: 'market' })
+        if (item.category) params.set('category', item.category)
+        // A fresh query each tap, so tapping the same category reloads it.
+        openSeq.current += 1
+        setSubmittedQuery(`${params}&_=open${openSeq.current}`)
+    }
+
     useEffect(() => {
         if (!activeQuery) return undefined
         let active = true
@@ -308,9 +351,57 @@ export default function HistoryView({ profitLoss = false }) {
                 </div>
 
                 {profitLoss && (
+                    <section aria-label="Profit and loss by category" className="overflow-hidden rounded-md border border-line bg-surface">
+                        <div className="flex items-center justify-between border-b border-line-strong px-3 py-2">
+                            <h2 className="text-[13px] font-semibold text-ink">P/L by category</h2>
+                            <span className="text-[11px] text-ink-muted">{displayDate(from)} – {displayDate(to)}</span>
+                        </div>
+                        {summaryLoading ? (
+                            <div className="py-6"><Loader /></div>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 px-3 pt-2 text-[10px] uppercase tracking-wide text-ink-muted">
+                                    <span>Category</span>
+                                    <span className="text-right">Stake</span>
+                                    <span className="min-w-[92px] text-right">P/L</span>
+                                </div>
+                                <ul>
+                                    {summary.rows.map(({ item, pl, stake, count, failed }) => (
+                                        <li key={`${item.value}-${item.category || item.label}`}>
+                                            <button
+                                                type="button"
+                                                onClick={() => openCategory(item)}
+                                                className={`grid w-full grid-cols-[1fr_auto_auto] items-center gap-x-3 border-b border-line/60 px-3 py-2 text-left text-[12px] transition-colors hover:bg-page ${activeSource === item && submittedQuery ? 'bg-page' : ''}`}
+                                            >
+                                                <span className="min-w-0 truncate text-ink">
+                                                    {item.label}
+                                                    {!failed && <span className="ml-1.5 text-[10px] text-ink-muted">{count} {count === 1 ? 'bet' : 'bets'}</span>}
+                                                </span>
+                                                <span className="text-right text-ink-soft">{failed ? '—' : money(stake)}</span>
+                                                <strong className={`min-w-[92px] text-right ${failed ? 'text-ink-muted' : pl > 0 ? 'text-emerald-400' : pl < 0 ? 'text-red-400' : 'text-ink-soft'}`}>
+                                                    {failed ? 'Unavailable' : money(pl)}
+                                                </strong>
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <div className="grid grid-cols-[1fr_auto_auto] items-center gap-x-3 px-3 py-2.5 text-[13px]">
+                                    <strong className="text-ink">Total</strong>
+                                    <span className="text-right text-ink-soft">{money(summaryStake)}</span>
+                                    <strong className={`min-w-[92px] text-right ${summaryTotal > 0 ? 'text-emerald-400' : summaryTotal < 0 ? 'text-red-400' : 'text-ink-soft'}`}>{money(summaryTotal)}</strong>
+                                </div>
+                            </>
+                        )}
+                    </section>
+                )}
+
+                {profitLoss && (
                     <button
                         type="button"
-                        onClick={() => setSubmittedQuery(`${query}&_=${Date.now()}`)}
+                        onClick={() => {
+                            setSubmittedQuery(`${query}&_=${Date.now()}`)
+                            setSummaryRefresh((current) => current + 1)
+                        }}
                         disabled={loading || !from || !to}
                         className="h-[35px] w-full rounded-xl bg-gold text-[14px] font-semibold text-on-gold transition-opacity hover:opacity-90 disabled:opacity-60"
                     >

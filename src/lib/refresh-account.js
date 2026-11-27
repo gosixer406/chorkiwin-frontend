@@ -371,6 +371,18 @@ export function exchangeSyncInProgress() {
   return exchangeSyncDepth > 0;
 }
 
+/**
+ * The player left 9 Wickets but its balance is not back in the main wallet
+ * yet (or is being collected right now). A wallet read at this moment shows
+ * the main balance as 0, so it must wait for the collection first.
+ */
+export function exchangeReturnPending() {
+  return (
+    exchangeSyncInProgress() ||
+    (localStorage.getItem(EXCHANGE_ACTIVE_KEY) === "1" && exchangeExitObserved())
+  );
+}
+
 export async function waitForExchangeRelaunch() {
   retryParkedLegacyCollect();
   // An explicit new launch first retrieves any previous transfer. Ordinary
@@ -459,6 +471,13 @@ let manualRefresh = null;
 export function refreshBalanceFast({ onWallet, onAccount } = {}) {
   if (manualRefresh) return manualRefresh;
   manualRefresh = (async () => {
+    // Back from 9 Wickets: bring its balance home first, so the first figure
+    // shown is the real one, never a 0 that corrects itself a moment later.
+    if (exchangeReturnPending()) {
+      await (exchangeCollectRequest || collectActiveExchange({ force: true })).catch(
+        () => null,
+      );
+    }
     const read = (path) =>
       api
         .get(path, { cache: "no-store" })
